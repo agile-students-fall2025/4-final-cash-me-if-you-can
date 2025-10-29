@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import './App.css';
 import TransactionCategories from './components/TransactionCategories';
 import ChatbotPage from './components/ChatbotPage';
 import LoginPage from './components/LoginPage';
+import ConnectAccounts from './components/ConnectAccounts';
 
 function HomePage() {
   return (
@@ -39,7 +40,7 @@ function HomePage() {
           <p>Visualize your spending patterns and financial health at a glance</p>
         </div>
 
-        <div className="feature-card">
+        <Link to="/connect" className="feature-card">
           <div className="feature-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="1" y="4" width="22" height="16" rx="2" />
@@ -48,7 +49,7 @@ function HomePage() {
           </div>
           <h3>Connect Accounts</h3>
           <p>Securely link your bank accounts and credit cards in one place</p>
-        </div>
+        </Link>
 
         <Link to="/categorize" className="feature-card">
           <div className="feature-icon">
@@ -64,8 +65,9 @@ function HomePage() {
   );
 }
 
-function App() {
+function AppContent() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -75,32 +77,46 @@ function App() {
     setMenuOpen(false);
   };
 
+  const handleLogout = () => {
+    closeMenu();
+    navigate('/');
+  };
+
+  return (
+    <div className="App">
+      <div className="hamburger" onClick={toggleMenu}>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+
+      <div className={`menu ${menuOpen ? 'open' : ''}`}>
+        <div className="menu-content">
+          <Link to="/home" onClick={closeMenu}>Home</Link>
+          <Link to="/chatbot" onClick={closeMenu}>Financial Assistant</Link>
+          <Link to="/connect" onClick={closeMenu}>Connect Accounts</Link>
+          <Link to="/categorize" onClick={closeMenu}>Categorize Transactions</Link>
+          <button className="logout-button" onClick={handleLogout}>Log Out</button>
+        </div>
+      </div>
+
+      {menuOpen && <div className="overlay" onClick={closeMenu}></div>}
+
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/chatbot" element={<ChatbotPage />} />
+        <Route path="/connect" element={<ConnectAccounts />} />
+        <Route path="/categorize" element={<TransactionCategories />} />
+      </Routes>
+    </div>
+  );
+}
+
+function App() {
   return (
     <Router>
-      <div className="App">
-        <div className="hamburger" onClick={toggleMenu}>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
-
-        <div className={`menu ${menuOpen ? 'open' : ''}`}>
-          <div className="menu-content">
-            <Link to="/home" onClick={closeMenu}>Home</Link>
-            <Link to="/chatbot" onClick={closeMenu}>Financial Assistant</Link>
-            <Link to="/categorize" onClick={closeMenu}>Categorize Transactions</Link>
-          </div>
-        </div>
-
-        {menuOpen && <div className="overlay" onClick={closeMenu}></div>}
-
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/chatbot" element={<ChatbotPage />} />
-          <Route path="/categorize" element={<TransactionCategories />} />
-        </Routes>
-      </div>
+      <AppContent />
     </Router>
   );
 }
