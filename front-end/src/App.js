@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import TransactionCategories from './components/TransactionCategories';
+import SpendingGraph from './components/SpendingGraph';
 
 function HomePage() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <div className="menu-content">
             <Link to="/" onClick={closeMenu}>Home</Link>
             <Link to="/categorize" onClick={closeMenu}>Categorize Transactions</Link>
+            <Link to="/Dashboard" onClick={closeMenu}>Dashboard</Link>
           </div>
         </div>
 
@@ -43,6 +45,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/categorize" element={<TransactionCategories />} />
+          <Route path="/Dashboard" element={<SpendingGraph />} />
         </Routes>
       </div>
     </Router>
