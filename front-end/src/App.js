@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import TransactionCategories from './components/TransactionCategories';
 import ChatbotPage from './components/ChatbotPage';
+import SettingsPage from './components/SettingsPage'
 
 function HomePage() {
   return (
@@ -37,6 +38,7 @@ function App() {
             <Link to="/" onClick={closeMenu}>Home</Link>
             <Link to="/chatbot" onClick={closeMenu}>Financial Assistant</Link>
             <Link to="/categorize" onClick={closeMenu}>Categorize Transactions</Link>
+            <Link to="/settings" onClick={closeMenu}>Settings</Link>
           </div>
         </div>
 
@@ -46,6 +48,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/chatbot" element={<ChatbotPage />} />
           <Route path="/categorize" element={<TransactionCategories />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </div>
     </Router>
