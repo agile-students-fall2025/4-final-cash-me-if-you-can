@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import TransactionCategories from './components/TransactionCategories';
+import ChatbotPage from './components/ChatbotPage';
 
 function HomePage() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <div className={`menu ${menuOpen ? 'open' : ''}`}>
           <div className="menu-content">
             <Link to="/" onClick={closeMenu}>Home</Link>
+            <Link to="/chatbot" onClick={closeMenu}>Financial Assistant</Link>
             <Link to="/categorize" onClick={closeMenu}>Categorize Transactions</Link>
           </div>
         </div>
@@ -42,6 +44,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/chatbot" element={<ChatbotPage />} />
           <Route path="/categorize" element={<TransactionCategories />} />
         </Routes>
       </div>
