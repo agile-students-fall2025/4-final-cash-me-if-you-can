@@ -94,6 +94,7 @@ function AppContent() {
       <div className={`menu ${menuOpen ? 'open' : ''}`}>
         <div className="menu-content">
           <Link to="/home" onClick={closeMenu}>Home</Link>
+          <Link to="/dashboard" onClick={closeMenu}>Dashboard</Link>
           <Link to="/chatbot" onClick={closeMenu}>Financial Assistant</Link>
           <Link to="/connect" onClick={closeMenu}>Connect Accounts</Link>
           <Link to="/categorize" onClick={closeMenu}>Categorize Transactions</Link>
@@ -109,6 +110,7 @@ function AppContent() {
         <Route path="/chatbot" element={<ChatbotPage />} />
         <Route path="/connect" element={<ConnectAccounts />} />
         <Route path="/categorize" element={<TransactionCategories />} />
+        <Route path="/dashboard" element={<SpendingGraph />} />
       </Routes>
     </div>
   );
