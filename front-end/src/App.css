@@ -17,9 +17,12 @@ body {
 
 .home-page {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  padding: 20px;
+  text-align: center;
 }
 
 .home-page h1 {
@@ -27,6 +30,15 @@ body {
   font-weight: 300;
   letter-spacing: 2px;
   text-transform: lowercase;
+  margin-bottom: 20px;
+}
+
+.home-description {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: #888;
+  max-width: 600px;
+  line-height: 1.6;
 }
 
 .hamburger {
@@ -96,7 +108,9 @@ body {
 @media (max-width: 768px) {
   .home-page h1 {
     font-size: 2rem;
-    padding: 20px;
-    text-align: center;
+  }
+
+  .home-description {
+    font-size: 1rem;
   }
 }

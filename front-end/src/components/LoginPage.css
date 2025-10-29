@@ -1,0 +1,135 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+  padding: 20px;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 450px;
+  background-color: #111;
+  border: 1px solid #222;
+  border-radius: 20px;
+  padding: 40px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.login-header h1 {
+  font-size: 2rem;
+  font-weight: 300;
+  margin-bottom: 10px;
+}
+
+.login-header p {
+  font-size: 0.9rem;
+  color: #888;
+  font-weight: 300;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: #fff;
+}
+
+.form-group input {
+  padding: 15px 20px;
+  background-color: #000;
+  border: 1px solid #333;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 300;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #0066ff;
+}
+
+.form-group input::placeholder {
+  color: #666;
+}
+
+.signin-button {
+  padding: 15px 30px;
+  background-color: #0066ff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.signin-button:hover {
+  background-color: #0052cc;
+  transform: translateY(-2px);
+}
+
+.signin-button:active {
+  transform: translateY(0);
+}
+
+.form-footer {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.forgot-password {
+  font-size: 0.9rem;
+  color: #888;
+  text-decoration: none;
+  font-weight: 300;
+  transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+  color: #0066ff;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 30px 25px;
+  }
+
+  .login-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .login-header p {
+    font-size: 0.85rem;
+  }
+
+  .form-group input {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+  }
+
+  .signin-button {
+    padding: 12px 25px;
+  }
+}
