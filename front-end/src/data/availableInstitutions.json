@@ -1,0 +1,10 @@
+[
+  { "name": "Bank of America", "type": "bank" },
+  { "name": "Wells Fargo", "type": "bank" },
+  { "name": "Capital One", "type": "bank" },
+  { "name": "Ally Bank", "type": "savings" },
+  { "name": "Marcus by Goldman Sachs", "type": "savings" },
+  { "name": "Fidelity", "type": "investment" },
+  { "name": "Vanguard", "type": "investment" },
+  { "name": "Charles Schwab", "type": "investment" }
+]

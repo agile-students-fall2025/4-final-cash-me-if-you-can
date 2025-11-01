@@ -1,19 +1,117 @@
-# Project Repository
+# Cash Me If You Can
 
-This repository will be used for team projects.
+## Product Vision Statement
 
-Several sets of instructions are included in this repository. They should each be treated as separate assignments with their own due dates and sets of requirements.
+A simple and intuitive financial management platform that helps users understand their spending habits, categorize transactions, and receive personalized financial guidance through an AI-powered assistant.
 
-1. See the [App Map & Wireframes](instructions-0a-app-map-wireframes.md) and [Prototyping](./instructions-0b-prototyping.md) instructions for the requirements of the initial user experience design of the app.
+## Team Members
 
-1. Delete the contents of this file and replace with the contents of a proper README.md, as described in the [project setup instructions](./instructions-0c-project-setup.md)
+- [Namay Jindal](https://github.com/namayjindal) - GitHub: @namayjindal
+- [Team Member 2](https://github.com/username2) - GitHub: @username2
+- [Team Member 3](https://github.com/username3) - GitHub: @username3
+- [Team Member 4](https://github.com/username4) - GitHub: @username4
 
-1. See the [Sprint Planning instructions](instructions-0d-sprint-planning.md) for the requirements of Sprint Planning for each Sprint.
+## Project Description
 
-1. See the [Front-End Development instructions](./instructions-1-front-end.md) for the requirements of the initial Front-End Development.
+Cash Me If You Can is a personal finance app where users can connect their bank accounts, categorize transactions, view spending graphs, and chat with an AI financial assistant for personalized advice. The app aims to make financial management accessible and easy for everyone.
 
-1. See the [Back-End Development instructions](./instructions-2-back-end.md) for the requirements of the initial Back-End Development.
+## Project History
 
-1. See the [Database Integration instructions](./instructions-3-database.md) for the requirements of integrating a database into the back-end.
+This project was created as part of an Agile Software Development course. Our team identified the need for a more user-friendly financial tracking tool that combines transaction management with AI-powered insights.
 
-1. See the [Deployment instructions](./instructions-4-deployment.md) for the requirements of deploying an app.
+## Features
+
+- User login and signup
+- Connect bank accounts via Plaid API
+- Automatic transaction import
+- Manual and automatic transaction categorization
+- Interactive spending dashboard with graphs
+- Time-based spending analysis (week/month/quarter/year)
+- AI chatbot for financial advice using RAG
+- Account balance tracking
+
+## Contributing
+
+Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our team norms, git workflow, and the process for contributing to this project.
+
+## Setup Instructions
+
+### Prerequisites
+
+- Node.js (version 14 or higher)
+- npm
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone [repository-url]
+cd 4-final-cash-me-if-you-can
+```
+
+2. Install dependencies for the front-end
+```bash
+cd front-end
+npm install
+```
+
+3. Start the development server
+```bash
+npm start
+```
+
+The app should open in your browser at `http://localhost:3000`
+
+## Building and Testing
+
+### Run the development server
+```bash
+cd front-end
+npm start
+```
+
+### Build for production
+```bash
+cd front-end
+npm run build
+```
+
+### Run tests
+```bash
+cd front-end
+npm test
+```
+
+## Usage
+
+- Navigate through different pages using the hamburger menu
+- Click on transactions to categorize them
+- View your spending patterns on the dashboard
+- Chat with the financial assistant for advice
+- Connect additional bank accounts
+
+## Built With
+
+- **Front-End**: React.js, React Router, Recharts
+- **Back-End**: (Coming in Sprint 2)
+- **Database**: (Coming in Sprint 3)
+- **APIs**: Plaid API for bank connections, RAG for AI chatbot
+
+## Project Structure
+
+```
+front-end/
+  src/
+    components/     # React components
+    data/          # Mock JSON data files
+    *.css          # Styling files
+```
+
+## Additional Documentation
+
+- [UX Design](./UX-DESIGN.md)
+- [Sprint Planning](./instructions-0d-sprint-planning.md)
+
+## License
+
+See [LICENSE.md](./LICENSE.md) for details.

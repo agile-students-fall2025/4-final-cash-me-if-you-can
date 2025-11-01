@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import './App.css';
-import TransactionCategories from './components/TransactionCategories';
-import ChatbotPage from './components/ChatbotPage';
-import LoginPage from './components/LoginPage';
-import ConnectAccounts from './components/ConnectAccounts';
-import SpendingGraph from './components/SpendingGraph';
+import TransactionCategories from './components/TransactionCategories.jsx';
+import ChatbotPage from './components/ChatbotPage.jsx';
+import LoginPage from './components/LoginPage.jsx';
+import ConnectAccounts from './components/ConnectAccounts.jsx';
+import SpendingGraph from './components/SpendingGraph.jsx';
 
 function HomePage() {
   return (
