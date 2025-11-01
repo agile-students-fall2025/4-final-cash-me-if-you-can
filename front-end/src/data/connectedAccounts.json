@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "institution": "Chase",
+    "accountType": "Checking",
+    "accountNumber": "****1234",
+    "balance": "$2,450.67",
+    "connected": true
+  }
+]

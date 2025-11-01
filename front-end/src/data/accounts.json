@@ -1,0 +1,5 @@
+[
+  { "id": 1, "name": "Checking", "type": "checking", "balance": 5848.32 },
+  { "id": 2, "name": "Savings", "type": "savings", "balance": 12450.75 },
+  { "id": 3, "name": "Credit Card", "type": "credit", "balance": -1243.50 }
+]

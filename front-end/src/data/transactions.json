@@ -1,0 +1,12 @@
+[
+  { "id": 1, "date": "2025-10-26", "description": "Whole Foods Market", "amount": -87.43, "category": null },
+  { "id": 2, "date": "2025-10-25", "description": "Uber Ride", "amount": -23.50, "category": null },
+  { "id": 3, "date": "2025-10-25", "description": "Netflix Subscription", "amount": -15.99, "category": null },
+  { "id": 4, "date": "2025-10-24", "description": "Salary Deposit", "amount": 3500.00, "category": null },
+  { "id": 5, "date": "2025-10-23", "description": "Starbucks", "amount": -5.75, "category": null },
+  { "id": 6, "date": "2025-10-23", "description": "Gas Station", "amount": -45.00, "category": null },
+  { "id": 7, "date": "2025-10-22", "description": "Amazon Purchase", "amount": -124.99, "category": null },
+  { "id": 8, "date": "2025-10-21", "description": "Restaurant - Chipotle", "amount": -18.50, "category": null },
+  { "id": 9, "date": "2025-10-20", "description": "Gym Membership", "amount": -49.99, "category": null },
+  { "id": 10, "date": "2025-10-19", "description": "Electric Bill", "amount": -120.00, "category": null }
+]

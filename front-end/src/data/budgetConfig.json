@@ -1,0 +1,14 @@
+{
+  "timePeriods": {
+    "week": { "days": 7, "dailyAvg": 50, "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] },
+    "month": { "days": 30, "dailyAvg": 120 },
+    "quarter": { "days": 90, "dailyAvg": 120 },
+    "year": { "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] }
+  },
+  "budgets": {
+    "week": 800,
+    "month": 3500,
+    "quarter": 10500,
+    "year": 42000
+  }
+}
