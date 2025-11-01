@@ -1,28 +1,11 @@
 import React, { useState } from 'react';
 import './ConnectAccounts.css';
+import connectedAccountsData from '../data/connectedAccounts.json';
+import availableInstitutionsData from '../data/availableInstitutions.json';
 
 function ConnectAccounts() {
-  const [connectedAccounts, setConnectedAccounts] = useState([
-    {
-      id: 1,
-      institution: 'Chase',
-      accountType: 'Checking',
-      accountNumber: '****1234',
-      balance: '$2,450.67',
-      connected: true
-    }
-  ]);
-
-  const availableInstitutions = [
-    { name: 'Bank of America', type: 'bank' },
-    { name: 'Wells Fargo', type: 'bank' },
-    { name: 'Capital One', type: 'bank' },
-    { name: 'Ally Bank', type: 'savings' },
-    { name: 'Marcus by Goldman Sachs', type: 'savings' },
-    { name: 'Fidelity', type: 'investment' },
-    { name: 'Vanguard', type: 'investment' },
-    { name: 'Charles Schwab', type: 'investment' }
-  ];
+  const [connectedAccounts, setConnectedAccounts] = useState(connectedAccountsData);
+  const availableInstitutions = availableInstitutionsData;
 
   const handleConnectAccount = (institution) => {
     alert(`Connecting to ${institution.name} via Plaid API...`);

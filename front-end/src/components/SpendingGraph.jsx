@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, ComposedChart } from 'recharts';
 import './SpendingGraph.css';
-import Accounts from './Accounts';
+import Accounts from './Accounts.jsx';
+import budgetConfigData from '../data/budgetConfig.json';
 
 const TIME_PERIODS = {
   WEEK: 'week',
@@ -14,14 +15,7 @@ const generateSpendingData = (period) => {
   const data = [];
   let cumulative = 0;
 
-  const configs = {
-    week: { days: 7, dailyAvg: 50, labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
-    month: { days: 30, dailyAvg: 120 },
-    quarter: { days: 90, dailyAvg: 120 },
-    year: { months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] }
-  };
-
-  const config = configs[period];
+  const config = budgetConfigData.timePeriods[period];
 
   if (period === TIME_PERIODS.YEAR) {
     config.months.forEach((month, index) => {
@@ -48,8 +42,7 @@ const generateSpendingData = (period) => {
 };
 
 const getBudgetForPeriod = (period) => {
-  const budgets = { week: 800, month: 3500, quarter: 10500, year: 42000 };
-  return budgets[period] || 3500;
+  return budgetConfigData.budgets[period] || budgetConfigData.budgets.month;
 };
 
 function SpendingGraph() {

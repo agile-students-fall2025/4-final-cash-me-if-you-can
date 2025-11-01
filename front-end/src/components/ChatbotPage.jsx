@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import './ChatbotPage.css';
+import chatbotData from '../data/chatbotResponses.json';
 
 function ChatbotPage() {
   const [messages, setMessages] = useState([
     {
-      id: 1,
-      text: "Hello! I'm your financial assistant. How can I help you today?",
-      sender: 'bot',
+      id: chatbotData.initialMessage.id,
+      text: chatbotData.initialMessage.text,
+      sender: chatbotData.initialMessage.sender,
       timestamp: new Date().toISOString()
     }
   ]);
@@ -47,17 +48,16 @@ function ChatbotPage() {
   const getBotResponse = (userInput) => {
     const input = userInput.toLowerCase();
 
-
     if (input.includes('spending') || input.includes('expense')) {
-      return "I can help you analyze your spending patterns. Based on your recent transactions, you've spent the most on dining and entertainment. Would you like a detailed breakdown?";
+      return chatbotData.responses.spending;
     } else if (input.includes('budget')) {
-      return "Setting a budget is a great idea! I recommend the 50/30/20 rule: 50% for needs, 30% for wants, and 20% for savings. Would you like me to help you create a custom budget?";
+      return chatbotData.responses.budget;
     } else if (input.includes('save') || input.includes('saving')) {
-      return "Saving money is important! Consider setting up automatic transfers to a savings account. Even small amounts add up over time. Would you like tips on how to save more?";
+      return chatbotData.responses.saving;
     } else if (input.includes('account')) {
-      return "I can help you manage your accounts. You can view all your connected accounts, check balances, and see recent transactions. What would you like to know?";
+      return chatbotData.responses.account;
     } else {
-      return "I'm here to help with your financial questions! You can ask me about spending analysis, budgeting tips, savings strategies, or account management.";
+      return chatbotData.responses.default;
     }
   };
 

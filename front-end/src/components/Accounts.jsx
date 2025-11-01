@@ -1,13 +1,8 @@
 import './TransactionCategories.css';
-
-const MOCK_ACCOUNTS = [
-  { id: 1, name: 'Checking', type: 'checking', balance: 5848.32 },
-  { id: 2, name: 'Savings', type: 'savings', balance: 12450.75 },
-  { id: 3, name: 'Credit Card', type: 'credit', balance: -1243.50 }
-];
+import accountsData from '../data/accounts.json';
 
 function Accounts() {
-  const totalBalance = MOCK_ACCOUNTS.reduce((sum, account) => sum + account.balance, 0);
+  const totalBalance = accountsData.reduce((sum, account) => sum + account.balance, 0);
 
   return (
     <div className="transactions-container">
@@ -21,7 +16,7 @@ function Accounts() {
       </div>
 
       <div className="transactions-list">
-        {MOCK_ACCOUNTS.map(account => (
+        {accountsData.map(account => (
           <div key={account.id} className="transaction-item">
             <div className="transaction-info">
               <div className="transaction-description">{account.name}</div>
