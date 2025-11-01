@@ -1,19 +1,70 @@
-# Project Repository
+# Cash Me If You Can
 
-This repository will be used for team projects.
+A financial management app that helps users track transactions, categorize expenses, and get AI-powered financial insights.
 
-Several sets of instructions are included in this repository. They should each be treated as separate assignments with their own due dates and sets of requirements.
+## Team Members
 
-1. See the [App Map & Wireframes](instructions-0a-app-map-wireframes.md) and [Prototyping](./instructions-0b-prototyping.md) instructions for the requirements of the initial user experience design of the app.
+- [Add team member names here]
 
-1. Delete the contents of this file and replace with the contents of a proper README.md, as described in the [project setup instructions](./instructions-0c-project-setup.md)
+## Project Description
 
-1. See the [Sprint Planning instructions](instructions-0d-sprint-planning.md) for the requirements of Sprint Planning for each Sprint.
+Cash Me If You Can is a personal finance app where users can connect their bank accounts, categorize transactions, view spending graphs, and chat with an AI financial assistant for personalized advice.
 
-1. See the [Front-End Development instructions](./instructions-1-front-end.md) for the requirements of the initial Front-End Development.
+## Features
 
-1. See the [Back-End Development instructions](./instructions-2-back-end.md) for the requirements of the initial Back-End Development.
+- User login/signup
+- Connect bank accounts (Plaid integration planned)
+- Transaction categorization
+- Spending dashboard with graphs
+- AI chatbot for financial advice
 
-1. See the [Database Integration instructions](./instructions-3-database.md) for the requirements of integrating a database into the back-end.
+## Setup Instructions
 
-1. See the [Deployment instructions](./instructions-4-deployment.md) for the requirements of deploying an app.
+### Prerequisites
+
+- Node.js (version 14 or higher)
+- npm
+
+### Installation
+
+1. Clone the repository
+```
+git clone [repository-url]
+cd 4-final-cash-me-if-you-can
+```
+
+2. Install dependencies for the front-end
+```
+cd front-end
+npm install
+```
+
+3. Start the development server
+```
+npm start
+```
+
+The app should open in your browser at `http://localhost:3000`
+
+## Usage
+
+- Navigate through different pages using the hamburger menu
+- Click on transactions to categorize them
+- View your spending patterns on the dashboard
+- Chat with the financial assistant for advice
+
+## Built With
+
+- React.js
+- React Router
+- Recharts (for graphs)
+
+## Project Structure
+
+```
+front-end/
+  src/
+    components/     # React components
+    data/          # Mock JSON data files
+    *.css          # Styling files
+```
