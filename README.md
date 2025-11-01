@@ -1,22 +1,38 @@
 # Cash Me If You Can
 
-A financial management app that helps users track transactions, categorize expenses, and get AI-powered financial insights.
+## Product Vision Statement
+
+A simple and intuitive financial management platform that helps users understand their spending habits, categorize transactions, and receive personalized financial guidance through an AI-powered assistant.
 
 ## Team Members
 
-- [Add team member names here]
+- [Namay Jindal](https://github.com/namayjindal) - GitHub: @namayjindal
+- [Team Member 2](https://github.com/username2) - GitHub: @username2
+- [Team Member 3](https://github.com/username3) - GitHub: @username3
+- [Team Member 4](https://github.com/username4) - GitHub: @username4
 
 ## Project Description
 
-Cash Me If You Can is a personal finance app where users can connect their bank accounts, categorize transactions, view spending graphs, and chat with an AI financial assistant for personalized advice.
+Cash Me If You Can is a personal finance app where users can connect their bank accounts, categorize transactions, view spending graphs, and chat with an AI financial assistant for personalized advice. The app aims to make financial management accessible and easy for everyone.
+
+## Project History
+
+This project was created as part of an Agile Software Development course. Our team identified the need for a more user-friendly financial tracking tool that combines transaction management with AI-powered insights.
 
 ## Features
 
-- User login/signup
-- Connect bank accounts (Plaid integration planned)
-- Transaction categorization
-- Spending dashboard with graphs
-- AI chatbot for financial advice
+- User login and signup
+- Connect bank accounts via Plaid API
+- Automatic transaction import
+- Manual and automatic transaction categorization
+- Interactive spending dashboard with graphs
+- Time-based spending analysis (week/month/quarter/year)
+- AI chatbot for financial advice using RAG
+- Account balance tracking
+
+## Contributing
+
+Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our team norms, git workflow, and the process for contributing to this project.
 
 ## Setup Instructions
 
@@ -28,23 +44,43 @@ Cash Me If You Can is a personal finance app where users can connect their bank 
 ### Installation
 
 1. Clone the repository
-```
+```bash
 git clone [repository-url]
 cd 4-final-cash-me-if-you-can
 ```
 
 2. Install dependencies for the front-end
-```
+```bash
 cd front-end
 npm install
 ```
 
 3. Start the development server
-```
+```bash
 npm start
 ```
 
 The app should open in your browser at `http://localhost:3000`
+
+## Building and Testing
+
+### Run the development server
+```bash
+cd front-end
+npm start
+```
+
+### Build for production
+```bash
+cd front-end
+npm run build
+```
+
+### Run tests
+```bash
+cd front-end
+npm test
+```
 
 ## Usage
 
@@ -52,12 +88,14 @@ The app should open in your browser at `http://localhost:3000`
 - Click on transactions to categorize them
 - View your spending patterns on the dashboard
 - Chat with the financial assistant for advice
+- Connect additional bank accounts
 
 ## Built With
 
-- React.js
-- React Router
-- Recharts (for graphs)
+- **Front-End**: React.js, React Router, Recharts
+- **Back-End**: (Coming in Sprint 2)
+- **Database**: (Coming in Sprint 3)
+- **APIs**: Plaid API for bank connections, RAG for AI chatbot
 
 ## Project Structure
 
@@ -68,3 +106,12 @@ front-end/
     data/          # Mock JSON data files
     *.css          # Styling files
 ```
+
+## Additional Documentation
+
+- [UX Design](./UX-DESIGN.md)
+- [Sprint Planning](./instructions-0d-sprint-planning.md)
+
+## License
+
+See [LICENSE.md](./LICENSE.md) for details.
