@@ -25,12 +25,19 @@ Thank you for your interest in contributing to our project! This document outlin
 
 ## Git Workflow
 
-We follow the **Feature Branch Workflow**:
+We follow the **Feature Branch Workflow** with a staging branch:
 
-1. **Pull latest changes from main**
+### Branch Structure
+- `main` - Production-ready code
+- `staging` - Integration branch for testing features together
+- `[developer-name]/*` - Individual feature branches
+
+### Workflow Steps
+
+1. **Pull latest changes from staging**
    ```bash
-   git checkout main
-   git pull origin main
+   git checkout staging
+   git pull origin staging
    ```
 
 2. **Create a new branch for your feature/task**
@@ -45,12 +52,13 @@ We follow the **Feature Branch Workflow**:
    git commit -m "Clear description of what you did"
    ```
 
-4. **Push your branch to GitHub**
+4. **Push your feature branch to GitHub**
    ```bash
    git push origin feature/your-feature-name
    ```
 
-5. **Create a Pull Request on GitHub**
+5. **Create a Pull Request to staging**
+   - Create PR from your feature branch to `staging`
    - Add a clear description of changes
    - Link related issue (e.g., "Closes #23")
    - Request review from at least one team member
@@ -59,9 +67,14 @@ We follow the **Feature Branch Workflow**:
    - Make requested changes
    - Push updates to same branch
 
-7. **Merge after approval**
+7. **Merge to staging after approval**
    - Only merge after getting approval
-   - Delete branch after merging
+   - Delete feature branch after merging
+
+8. **Merge staging to main**
+   - When staging is stable and ready for release
+   - Create PR from `staging` to `main`
+   - Requires team review and approval
 
 ## Rules for Contributing
 
@@ -117,8 +130,10 @@ We follow the **Feature Branch Workflow**:
    ```
    App runs on `http://localhost:3000`
 
-4. **Create a feature branch**
+4. **Create a feature branch from staging**
    ```bash
+   git checkout staging
+   git pull origin staging
    git checkout -b feature/my-feature
    ```
 
