@@ -1,9 +1,9 @@
 import React, { createContext, useState, useContext } from 'react';
 import './SettingsPage.css';
-import LoginPage from './user-data/LoginPage'
+import LoginPage from './user-data/LoginPage.jsx'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { UserContext } from './user-data/UserContext' 
-
+a
 function SettingsPage() {
     const { user, changeFirstName, changeLastName, changeEmail, changePassword, resetUser } = useContext(UserContext);
     return(

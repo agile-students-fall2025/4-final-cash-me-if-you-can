@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import './App.css';
-import TransactionCategories from './components/TransactionCategories';
-import ChatbotPage from './components/ChatbotPage';
-import LoginPage from './components/user-data/LoginPage';
-import ConnectAccounts from './components/ConnectAccounts';
-import SpendingGraph from './components/SpendingGraph';
 import SettingsPage from './components/SettingsPage';
 import { UserProvider } from'./components/user-data/UserContext'
+import TransactionCategories from './components/TransactionCategories.jsx';
+import ChatbotPage from './components/ChatbotPage.jsx';
+import LoginPage from './components/user-data/LoginPage.jsx';
+import ConnectAccounts from './components/ConnectAccounts.jsx';
+import SpendingGraph from './components/SpendingGraph.jsx';
 
 function HomePage() {
   return (
