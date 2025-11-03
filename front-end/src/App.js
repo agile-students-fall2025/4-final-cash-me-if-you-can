@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import './App.css';
 import TransactionCategories from './components/TransactionCategories';
 import ChatbotPage from './components/ChatbotPage';
-import LoginPage from './components/LoginPage';
+import LoginPage from './components/user-data/LoginPage';
 import ConnectAccounts from './components/ConnectAccounts';
 import SpendingGraph from './components/SpendingGraph';
+import SettingsPage from './components/SettingsPage';
+import { UserProvider } from'./components/user-data/UserContext'
 
 function HomePage() {
   return (
@@ -98,6 +100,7 @@ function AppContent() {
           <Link to="/chatbot" onClick={closeMenu}>Financial Assistant</Link>
           <Link to="/connect" onClick={closeMenu}>Connect Accounts</Link>
           <Link to="/categorize" onClick={closeMenu}>Categorize Transactions</Link>
+          <Link to="/settings" onClick={closeMenu}>Settings</Link>
           <button className="logout-button" onClick={handleLogout}>Log Out</button>
         </div>
       </div>
@@ -111,6 +114,7 @@ function AppContent() {
         <Route path="/connect" element={<ConnectAccounts />} />
         <Route path="/categorize" element={<TransactionCategories />} />
         <Route path="/dashboard" element={<SpendingGraph />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </div>
   );
@@ -118,9 +122,11 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <UserProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </UserProvider>
   );
 }
 
