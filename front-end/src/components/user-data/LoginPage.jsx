@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from './UserContext'
 import './LoginPage.css';
 
 function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { user, changeFirstName, changeLastName, changeEmail, changePassword, resetUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -15,12 +13,9 @@ function LoginPage() {
     navigate('/home');
   };
 
+
   const toggleMode = () => {
     setIsSignUp(!isSignUp);
-    setFirstName('');
-    setLastName('');
-    setEmail('');
-    setPassword('');
   };
 
   return (
@@ -39,8 +34,8 @@ function LoginPage() {
                 <input
                   type="text"
                   id="firstName"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  value={user.firstName}
+                  onChange={(e) => changeFirstName(e.target.value)}
                   placeholder="Enter your first name"
                   required
                 />
@@ -51,8 +46,8 @@ function LoginPage() {
                 <input
                   type="text"
                   id="lastName"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
+                  value={user.lastName}
+                  onChange={(e) => changeLastName(e.target.value)}
                   placeholder="Enter your last name"
                   required
                 />
@@ -65,8 +60,8 @@ function LoginPage() {
             <input
               type="email"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={user.email}
+              onChange={(e) => changeEmail(e.target.value)}
               placeholder="Enter your email"
               required
             />
@@ -77,8 +72,8 @@ function LoginPage() {
             <input
               type="password"
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={user.password}
+              onChange={(e) => changePassword(e.target.value)}
               placeholder="Enter your password"
               required
             />
