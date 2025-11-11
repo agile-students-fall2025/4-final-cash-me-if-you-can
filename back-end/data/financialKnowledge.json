@@ -1,0 +1,142 @@
+[
+  {
+    "id": "budgeting-50-30-20",
+    "category": "budgeting",
+    "title": "The 50/30/20 Rule",
+    "content": "A popular budgeting method where you allocate 50% of your income to needs (rent, utilities, groceries), 30% to wants (entertainment, dining out), and 20% to savings and debt repayment. This provides a simple framework for balanced financial management.",
+    "keywords": ["budget", "budgeting", "50/30/20", "allocation", "spending plan"]
+  },
+  {
+    "id": "emergency-fund",
+    "category": "savings",
+    "title": "Emergency Fund Basics",
+    "content": "An emergency fund is 3-6 months of living expenses saved in a readily accessible account. This fund protects you from unexpected expenses like medical bills, car repairs, or job loss. Start small and build gradually - even $500 can help in emergencies.",
+    "keywords": ["emergency fund", "savings", "rainy day fund", "financial cushion", "security"]
+  },
+  {
+    "id": "debt-snowball",
+    "category": "debt",
+    "title": "Debt Snowball Method",
+    "content": "Pay off debts from smallest to largest balance, regardless of interest rate. Make minimum payments on all debts, but put extra money toward the smallest debt. Once paid off, roll that payment to the next smallest debt. This builds momentum and motivation.",
+    "keywords": ["debt", "payoff", "snowball", "debt reduction", "loans"]
+  },
+  {
+    "id": "debt-avalanche",
+    "category": "debt",
+    "title": "Debt Avalanche Method",
+    "content": "Pay off debts from highest to lowest interest rate. Make minimum payments on all debts, but put extra money toward the highest interest debt. This saves the most money on interest over time, though it may take longer to see your first debt eliminated.",
+    "keywords": ["debt", "payoff", "avalanche", "interest", "debt reduction"]
+  },
+  {
+    "id": "credit-score-basics",
+    "category": "credit",
+    "title": "Understanding Credit Scores",
+    "content": "Your credit score ranges from 300-850. Key factors: payment history (35%), credit utilization (30%), length of credit history (15%), new credit (10%), and credit mix (10%). Keep utilization under 30%, pay on time, and avoid opening too many accounts quickly.",
+    "keywords": ["credit score", "credit", "FICO", "credit report", "utilization"]
+  },
+  {
+    "id": "investing-basics",
+    "category": "investing",
+    "title": "Getting Started with Investing",
+    "content": "Start investing early to benefit from compound interest. Consider low-cost index funds for diversification. Common accounts: 401(k) with employer match (free money), Roth IRA for tax-free growth, and traditional IRA for tax deductions. Don't try to time the market - consistency wins.",
+    "keywords": ["investing", "stocks", "retirement", "401k", "IRA", "compound interest"]
+  },
+  {
+    "id": "compound-interest",
+    "category": "investing",
+    "title": "The Power of Compound Interest",
+    "content": "Compound interest means earning interest on your interest. Starting early makes a huge difference. For example, investing $200/month from age 25-35 (just 10 years) can grow more than investing $200/month from 35-65 (30 years) due to compounding.",
+    "keywords": ["compound interest", "growth", "investing", "returns", "time value"]
+  },
+  {
+    "id": "reduce-expenses",
+    "category": "budgeting",
+    "title": "Smart Ways to Reduce Expenses",
+    "content": "Review subscriptions monthly and cancel unused ones. Cook at home more often. Use cashback apps and credit card rewards. Buy generic brands. Use public transportation or carpool. Shop with a list to avoid impulse purchases. Small changes add up to significant savings.",
+    "keywords": ["expenses", "save money", "frugal", "budgeting", "cost cutting"]
+  },
+  {
+    "id": "track-spending",
+    "category": "budgeting",
+    "title": "Why Track Your Spending",
+    "content": "Tracking every expense reveals spending patterns and helps identify areas to cut back. Use apps like Cash Me to automatically categorize transactions. Review spending weekly. You can't manage what you don't measure - awareness is the first step to better financial habits.",
+    "keywords": ["tracking", "spending", "expenses", "budgeting", "awareness"]
+  },
+  {
+    "id": "retirement-savings",
+    "category": "investing",
+    "title": "Retirement Savings Goals",
+    "content": "Financial experts recommend saving 15% of your gross income for retirement. Start with your employer 401(k) match (don't leave free money on the table), then max out Roth IRA ($6,500/year in 2024), then back to 401(k). The earlier you start, the less you need to save monthly.",
+    "keywords": ["retirement", "401k", "savings", "planning", "future"]
+  },
+  {
+    "id": "avoid-lifestyle-inflation",
+    "category": "budgeting",
+    "title": "Avoiding Lifestyle Inflation",
+    "content": "When income increases, resist the urge to increase spending proportionally. Instead, maintain your current lifestyle and allocate raises to savings, investments, or debt payoff. This accelerates wealth building without feeling restrictive.",
+    "keywords": ["lifestyle inflation", "raises", "spending", "savings", "wealth building"]
+  },
+  {
+    "id": "automate-savings",
+    "category": "savings",
+    "title": "Automate Your Savings",
+    "content": "Set up automatic transfers from checking to savings on payday. Treat savings like a bill you must pay. Even $25-50 per paycheck builds up over time. Automation removes the temptation to skip savings and makes it effortless.",
+    "keywords": ["automation", "savings", "automatic transfer", "pay yourself first"]
+  },
+  {
+    "id": "high-yield-savings",
+    "category": "savings",
+    "title": "High-Yield Savings Accounts",
+    "content": "Keep emergency funds in high-yield savings accounts offering 4-5% APY (as of 2024) instead of traditional banks offering 0.01%. Online banks typically offer better rates. Your money stays liquid while earning significantly more interest.",
+    "keywords": ["high yield", "savings account", "interest rate", "APY", "online banking"]
+  },
+  {
+    "id": "insurance-importance",
+    "category": "protection",
+    "title": "Essential Insurance Coverage",
+    "content": "Protect yourself with health insurance (mandatory), auto insurance (if you drive), renters/homeowners insurance, and disability insurance. Life insurance is crucial if others depend on your income. Insurance is expensive but financial devastation from being uninsured costs more.",
+    "keywords": ["insurance", "protection", "health", "auto", "life insurance", "disability"]
+  },
+  {
+    "id": "financial-goals",
+    "category": "planning",
+    "title": "Setting Financial Goals",
+    "content": "Set SMART financial goals: Specific, Measurable, Achievable, Relevant, Time-bound. Examples: 'Save $5,000 for emergency fund in 12 months' or 'Pay off $3,000 credit card debt in 18 months.' Write goals down, track progress, and celebrate milestones.",
+    "keywords": ["goals", "planning", "SMART goals", "objectives", "milestones"]
+  },
+  {
+    "id": "meal-planning-savings",
+    "category": "budgeting",
+    "title": "Save Money with Meal Planning",
+    "content": "Plan weekly meals before grocery shopping. Cook in batches and freeze portions. Pack lunches instead of eating out - saving $10/day on lunch is $2,600/year. Use grocery store apps for digital coupons. Buy seasonal produce for better prices.",
+    "keywords": ["meal planning", "groceries", "food budget", "cooking", "savings"]
+  },
+  {
+    "id": "side-hustle",
+    "category": "income",
+    "title": "Boosting Income with Side Hustles",
+    "content": "Increase income through freelancing (writing, design, coding), gig economy (Uber, DoorDash), selling items online, tutoring, or monetizing hobbies. Even an extra $200-500/month significantly impacts debt payoff and savings goals.",
+    "keywords": ["side hustle", "extra income", "freelancing", "gig economy", "second job"]
+  },
+  {
+    "id": "tax-advantages",
+    "category": "taxes",
+    "title": "Utilizing Tax-Advantaged Accounts",
+    "content": "Maximize 401(k) and IRA contributions to reduce taxable income. Use HSA (Health Savings Account) for triple tax advantage. Consider 529 plans for education savings. Take advantage of employer benefits like FSA for healthcare costs. Tax planning saves thousands annually.",
+    "keywords": ["taxes", "tax deduction", "401k", "HSA", "IRA", "tax savings"]
+  },
+  {
+    "id": "impulse-buying",
+    "category": "budgeting",
+    "title": "Curbing Impulse Purchases",
+    "content": "Use the 30-day rule: wait 30 days before buying non-essential items over $50. Often the urge passes. Unsubscribe from marketing emails. Delete shopping apps. Ask: 'Do I need this or want this?' and 'How many hours of work does this cost?' before purchasing.",
+    "keywords": ["impulse buying", "shopping", "self control", "spending habits", "mindful spending"]
+  },
+  {
+    "id": "negotiate-bills",
+    "category": "budgeting",
+    "title": "Negotiating Your Bills",
+    "content": "Call service providers annually to negotiate lower rates on internet, phone, insurance, and subscriptions. Mention competitor pricing. Be polite but persistent. Threatening to cancel often unlocks retention discounts. Even saving $10-20/month per service adds up to hundreds yearly.",
+    "keywords": ["negotiate", "bills", "lower rates", "savings", "discounts"]
+  }
+]
