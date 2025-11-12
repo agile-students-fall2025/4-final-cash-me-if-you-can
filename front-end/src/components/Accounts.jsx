@@ -1,8 +1,34 @@
+import { useState, useEffect } from 'react';
 import './TransactionCategories.css';
-import accountsData from '../data/accounts.json';
+import { dashboardAPI } from '../services/api';
 
 function Accounts() {
-  const totalBalance = accountsData.reduce((sum, account) => sum + account.balance, 0);
+  const [accounts, setAccounts] = useState([]);
+  const [totalBalance, setTotalBalance] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAccounts();
+  }, []);
+
+  const fetchAccounts = async () => {
+    setLoading(true);
+    try {
+      const response = await dashboardAPI.getSummary();
+      setAccounts(response.accounts || []);
+      setTotalBalance(response.total_balance || 0);
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
+      setAccounts([]);
+      setTotalBalance(0);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="transactions-container">Loading accounts...</div>;
+  }
 
   return (
     <div className="transactions-container">
@@ -16,8 +42,8 @@ function Accounts() {
       </div>
 
       <div className="transactions-list">
-        {accountsData.map(account => (
-          <div key={account.id} className="transaction-item">
+        {accounts.map((account, index) => (
+          <div key={index} className="transaction-item">
             <div className="transaction-info">
               <div className="transaction-description">{account.name}</div>
             </div>

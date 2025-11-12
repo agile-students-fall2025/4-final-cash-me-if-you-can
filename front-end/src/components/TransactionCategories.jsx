@@ -1,14 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './TransactionCategories.css';
-import transactionsData from '../data/transactions.json';
 import categoriesData from '../data/categories.json';
+import { transactionAPI } from '../services/api';
 
 function TransactionCategories() {
-  const [transactions, setTransactions] = useState(transactionsData);
+  const [transactions, setTransactions] = useState([]);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [categories, setCategories] = useState(categoriesData);
   const [newCategory, setNewCategory] = useState('');
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  const fetchTransactions = async () => {
+    setLoading(true);
+    try {
+      const response = await transactionAPI.getTransactions();
+      setTransactions(response.transactions || []);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      setTransactions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const selectTransaction = (transaction) => {
     setSelectedTransaction(transaction);
@@ -16,12 +34,17 @@ function TransactionCategories() {
     setNewCategory('');
   };
 
-  const assignCategory = (category) => {
+  const assignCategory = async (category) => {
     if (selectedTransaction) {
-      setTransactions(transactions.map(t =>
-        t.id === selectedTransaction.id ? { ...t, category } : t
-      ));
-      setSelectedTransaction(null);
+      try {
+        await transactionAPI.updateCategory(selectedTransaction.transaction_id, category);
+        setTransactions(transactions.map(t =>
+          t.transaction_id === selectedTransaction.transaction_id ? { ...t, category } : t
+        ));
+        setSelectedTransaction(null);
+      } catch (error) {
+        console.error('Error updating category:', error);
+      }
     }
   };
 
@@ -46,32 +69,36 @@ function TransactionCategories() {
       <div className="transactions-container">
         <h2>Categorize Transactions</h2>
 
-        <div className="transactions-list">
-          {transactions.map(transaction => (
-            <div
-              key={transaction.id}
-              className={`transaction-item ${selectedTransaction?.id === transaction.id ? 'selected' : ''}`}
-              onClick={() => selectTransaction(transaction)}
-            >
-              <div className="transaction-info">
-                <div className="transaction-date">{transaction.date}</div>
-                <div className="transaction-description">{transaction.description}</div>
-              </div>
-              <div className="transaction-right">
-                <div className={`transaction-amount ${transaction.amount > 0 ? 'positive' : 'negative'}`}>
-                  {transaction.amount > 0 ? '+' : ''}{transaction.amount.toFixed(2)}
+        {loading ? (
+          <div>Loading transactions...</div>
+        ) : (
+          <div className="transactions-list">
+            {transactions.map(transaction => (
+              <div
+                key={transaction.transaction_id}
+                className={`transaction-item ${selectedTransaction?.transaction_id === transaction.transaction_id ? 'selected' : ''}`}
+                onClick={() => selectTransaction(transaction)}
+              >
+                <div className="transaction-info">
+                  <div className="transaction-date">{transaction.date}</div>
+                  <div className="transaction-description">{transaction.name || transaction.merchant_name}</div>
                 </div>
-                {transaction.category && (
-                  <div className="transaction-category">{transaction.category}</div>
-                )}
+                <div className="transaction-right">
+                  <div className={`transaction-amount ${transaction.amount < 0 ? 'positive' : 'negative'}`}>
+                    {transaction.amount < 0 ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
+                  </div>
+                  {transaction.category && (
+                    <div className="transaction-category">{Array.isArray(transaction.category) ? transaction.category[0] : transaction.category}</div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {selectedTransaction && (
           <div className="category-selector">
-            <h3>Select Category for: {selectedTransaction.description}</h3>
+            <h3>Select Category for: {selectedTransaction.name || selectedTransaction.merchant_name}</h3>
             <div className="categories-grid">
               {categories.map(category => (
                 <button
