@@ -1,0 +1,41 @@
+[
+  {
+    "account_id": "acc_checking_001",
+    "name": "Checking Account",
+    "official_name": "Chase Total Checking",
+    "type": "depository",
+    "subtype": "checking",
+    "balances": {
+      "available": 5848.32,
+      "current": 5848.32,
+      "limit": null
+    },
+    "mask": "0000"
+  },
+  {
+    "account_id": "acc_savings_001",
+    "name": "Savings Account",
+    "official_name": "Chase Savings",
+    "type": "depository",
+    "subtype": "savings",
+    "balances": {
+      "available": 12450.75,
+      "current": 12450.75,
+      "limit": null
+    },
+    "mask": "1111"
+  },
+  {
+    "account_id": "acc_credit_001",
+    "name": "Credit Card",
+    "official_name": "Chase Freedom Unlimited",
+    "type": "credit",
+    "subtype": "credit card",
+    "balances": {
+      "available": 8756.50,
+      "current": 1243.50,
+      "limit": 10000
+    },
+    "mask": "2222"
+  }
+]
