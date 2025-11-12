@@ -1,14 +1,83 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ConnectAccounts.css';
 import connectedAccountsData from '../data/connectedAccounts.json';
 import availableInstitutionsData from '../data/availableInstitutions.json';
+import { plaidAPI } from '../services/api';
 
 function ConnectAccounts() {
   const [connectedAccounts, setConnectedAccounts] = useState(connectedAccountsData);
   const availableInstitutions = availableInstitutionsData;
+  const [linkToken, setLinkToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleConnectAccount = (institution) => {
-    alert(`Connecting to ${institution.name} via Plaid API...`);
+  useEffect(() => {
+    // Load Plaid Link script
+    const script = document.createElement('script');
+    script.src = 'https://cdn.plaid.com/link/v2/stable/link-initialize.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const handleConnectAccount = async (institution) => {
+    setIsLoading(true);
+    try {
+      // Get link token from backend
+      const response = await plaidAPI.createLinkToken();
+
+      if (!response.link_token) {
+        alert('Unable to connect. Make sure backend server is running with Plaid credentials.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Initialize Plaid Link
+      if (window.Plaid) {
+        const handler = window.Plaid.create({
+          token: response.link_token,
+          onSuccess: async (public_token, metadata) => {
+            console.log('Plaid Link success:', metadata);
+
+            // Exchange public token for access token
+            try {
+              const exchangeResponse = await plaidAPI.exchangePublicToken(public_token);
+              console.log('Token exchange success:', exchangeResponse);
+
+              // Get accounts
+              const accountsResponse = await plaidAPI.getAccounts(exchangeResponse.access_token);
+              console.log('Accounts fetched:', accountsResponse);
+
+              alert(`Successfully connected to ${metadata.institution.name}! Check console for details.`);
+
+              // Update connected accounts list
+              // In production, you'd add the new accounts to state
+            } catch (error) {
+              console.error('Error exchanging token:', error);
+              alert('Connected to Plaid but error exchanging token. Check console.');
+            }
+          },
+          onExit: (err, metadata) => {
+            if (err) {
+              console.error('Plaid Link error:', err);
+            }
+            console.log('Plaid Link exit:', metadata);
+            setIsLoading(false);
+          },
+        });
+
+        handler.open();
+      } else {
+        alert('Plaid SDK not loaded. Please refresh the page.');
+      }
+    } catch (error) {
+      console.error('Error creating link token:', error);
+      alert('Error connecting to Plaid. Make sure backend is running on port 5000 (or check your .env file).');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getAccountIcon = (type) => {
@@ -91,8 +160,9 @@ function ConnectAccounts() {
                 <button
                   className="connect-button"
                   onClick={() => handleConnectAccount(institution)}
+                  disabled={isLoading}
                 >
-                  Connect
+                  {isLoading ? 'Connecting...' : 'Connect'}
                 </button>
               </div>
             ))}
