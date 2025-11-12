@@ -32,7 +32,7 @@ function HomePage() {
           <p>Get personalized financial advice and insights from our intelligent assistant</p>
         </Link>
 
-        <div className="feature-card">
+        <Link to="/dashboard" className="feature-card">
           <div className="feature-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -41,7 +41,7 @@ function HomePage() {
           </div>
           <h3>Dashboards</h3>
           <p>Visualize your spending patterns and financial health at a glance</p>
-        </div>
+        </Link>
 
         <Link to="/connect" className="feature-card">
           <div className="feature-icon">
