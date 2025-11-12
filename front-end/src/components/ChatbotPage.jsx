@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import './ChatbotPage.css';
-import chatbotData from '../data/chatbotResponses.json';
+import { chatAPI } from '../services/api';
 
 function ChatbotPage() {
   const [messages, setMessages] = useState([
     {
-      id: chatbotData.initialMessage.id,
-      text: chatbotData.initialMessage.text,
-      sender: chatbotData.initialMessage.sender,
+      id: 1,
+      text: "Hi! I'm your personal finance assistant. I can help you with budgeting tips, track your spending, and answer financial questions. What would you like to know?",
+      sender: 'bot',
       timestamp: new Date().toISOString()
     }
   ]);
@@ -19,7 +19,6 @@ function ChatbotPage() {
 
     if (!inputText.trim()) return;
 
-
     const userMessage = {
       id: Date.now(),
       text: inputText,
@@ -28,36 +27,35 @@ function ChatbotPage() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentMessage = inputText;
     setInputText('');
     setIsLoading(true);
 
+    try {
+      // Call backend API
+      const response = await chatAPI.sendMessage(currentMessage);
 
-    setTimeout(() => {
       const botResponse = {
         id: Date.now() + 1,
-        text: getBotResponse(inputText),
+        text: response.message,
         sender: 'bot',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        context: response.context_used,
+        tool: response.tool_used
       };
 
       setMessages(prev => [...prev, botResponse]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      const errorResponse = {
+        id: Date.now() + 1,
+        text: "Sorry, I'm having trouble connecting right now. Please make sure the backend server is running.",
+        sender: 'bot',
+        timestamp: new Date().toISOString()
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
-  };
-
-  const getBotResponse = (userInput) => {
-    const input = userInput.toLowerCase();
-
-    if (input.includes('spending') || input.includes('expense')) {
-      return chatbotData.responses.spending;
-    } else if (input.includes('budget')) {
-      return chatbotData.responses.budget;
-    } else if (input.includes('save') || input.includes('saving')) {
-      return chatbotData.responses.saving;
-    } else if (input.includes('account')) {
-      return chatbotData.responses.account;
-    } else {
-      return chatbotData.responses.default;
     }
   };
 

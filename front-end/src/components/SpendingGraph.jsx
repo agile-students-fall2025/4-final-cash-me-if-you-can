@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, ComposedChart } from 'recharts';
 import './SpendingGraph.css';
 import Accounts from './Accounts.jsx';
 import budgetConfigData from '../data/budgetConfig.json';
+import { dashboardAPI } from '../services/api';
 
 const TIME_PERIODS = {
   WEEK: 'week',
@@ -11,50 +12,47 @@ const TIME_PERIODS = {
   YEAR: 'year'
 };
 
-const generateSpendingData = (period) => {
-  const data = [];
-  let cumulative = 0;
-
-  const config = budgetConfigData.timePeriods[period];
-
-  if (period === TIME_PERIODS.YEAR) {
-    config.months.forEach((month, index) => {
-      cumulative += (Math.random() * 120 + 60) * 30;
-      data.push({
-        amount: parseFloat(cumulative.toFixed(2)),
-        date: month
-      });
-    });
-  } else {
-    for (let day = 1; day <= config.days; day++) {
-      cumulative += Math.random() * config.dailyAvg + (config.dailyAvg * 0.5);
-      let dateLabel = period === TIME_PERIODS.WEEK ? config.labels[day - 1] : 
-                      period === TIME_PERIODS.QUARTER ? `Day ${day}` : `Oct ${day}`;
-      
-      data.push({
-        amount: parseFloat(cumulative.toFixed(2)),
-        date: dateLabel
-      });
-    }
-  }
-  
-  return data;
-};
-
 const getBudgetForPeriod = (period) => {
   return budgetConfigData.budgets[period] || budgetConfigData.budgets.month;
 };
 
 function SpendingGraph() {
   const [timePeriod, setTimePeriod] = useState(TIME_PERIODS.MONTH);
-  const [spendingData, setSpendingData] = useState(generateSpendingData(TIME_PERIODS.MONTH));
-  
-  const currentSpend = spendingData[spendingData.length - 1].amount;
+  const [spendingData, setSpendingData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchSpendingData(timePeriod);
+  }, [timePeriod]);
+
+  const fetchSpendingData = async (period) => {
+    setLoading(true);
+    try {
+      const response = await dashboardAPI.getSpendingByPeriod(period);
+      // Transform data for chart - make cumulative
+      let cumulative = 0;
+      const chartData = response.data.map(item => {
+        cumulative += item.total;
+        return {
+          amount: cumulative,
+          date: item.label
+        };
+      });
+      setSpendingData(chartData);
+    } catch (error) {
+      console.error('Error fetching spending data:', error);
+      // Fallback to empty data
+      setSpendingData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const currentSpend = spendingData.length > 0 ? spendingData[spendingData.length - 1].amount : 0;
   const budget = getBudgetForPeriod(timePeriod);
 
   const handlePeriodChange = (period) => {
     setTimePeriod(period);
-    setSpendingData(generateSpendingData(period));
   };
 
   const getPeriodLabel = () => {
