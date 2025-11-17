@@ -8,6 +8,10 @@ router.get('/', transactionController.getTransactions);
 // Auto-categorize all transactions
 router.post('/categorize', transactionController.categorizeAll);
 
+// Category management
+router.get('/categories', transactionController.getCategories);
+router.post('/categories', transactionController.createCategory);
+
 // Update transaction category
 router.put('/:id/category', transactionController.updateCategory);
 

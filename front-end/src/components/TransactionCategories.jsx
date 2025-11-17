@@ -13,7 +13,19 @@ function TransactionCategories() {
 
   useEffect(() => {
     fetchTransactions();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await transactionAPI.getCategories();
+      if (response?.categories?.length) {
+        setCategories(response.categories);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   const fetchTransactions = async () => {
     setLoading(true);
@@ -51,7 +63,13 @@ function TransactionCategories() {
   const handleCreateCategory = () => {
     if (newCategory.trim() && !categories.includes(newCategory.trim())) {
       const trimmedCategory = newCategory.trim();
-      setCategories([...categories, trimmedCategory]);
+
+      // Update backend so list stays in sync
+      transactionAPI.createCategory?.(trimmedCategory).catch(() => {
+        // If endpoint missing, fallback to local update only
+      });
+
+      setCategories(prev => [...prev, trimmedCategory]);
       assignCategory(trimmedCategory);
       setNewCategory('');
       setShowNewCategoryInput(false);
