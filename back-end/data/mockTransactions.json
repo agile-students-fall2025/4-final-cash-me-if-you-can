@@ -1,0 +1,222 @@
+[
+  {
+    "transaction_id": "txn_001",
+    "account_id": "acc_checking_001",
+    "date": "2025-11-10",
+    "name": "Whole Foods Market",
+    "merchant_name": "Whole Foods",
+    "amount": 87.43,
+    "category": ["Groceries", "Food and Drink"],
+    "pending": false,
+    "payment_channel": "in store"
+  },
+  {
+    "transaction_id": "txn_002",
+    "account_id": "acc_checking_001",
+    "date": "2025-11-09",
+    "name": "Uber",
+    "merchant_name": "Uber",
+    "amount": 23.50,
+    "category": ["Transportation", "Ride Share"],
+    "pending": false,
+    "payment_channel": "online"
+  },
+  {
+    "transaction_id": "txn_003",
+    "account_id": "acc_checking_001",
+    "date": "2025-11-09",
+    "name": "Netflix",
+    "merchant_name": "Netflix",
+    "amount": 15.99,
+    "category": ["Entertainment", "Streaming Services"],
+    "pending": false,
+    "payment_channel": "online"
+  },
+  {
+    "transaction_id": "txn_004",
+    "account_id": "acc_checking_001",
+    "date": "2025-11-08",
+    "name": "Payroll Deposit",
+    "merchant_name": null,
+    "amount": -3500.00,
+    "category": ["Income", "Payroll"],
+    "pending": false,
+    "payment_channel": "other"
+  },
+  {
+    "transaction_id": "txn_005",
+    "account_id": "acc_checking_001",
+    "date": "2025-11-07",
+    "name": "Starbucks",
+    "merchant_name": "Starbucks",
+    "amount": 5.75,
+    "category": ["Dining", "Coffee Shop"],
+    "pending": false,
+    "payment_channel": "in store"
+  },
+  {
+    "transaction_id": "txn_006",
+    "account_id": "acc_checking_001",
+    "date": "2025-11-07",
+    "name": "Shell Gas Station",
+    "merchant_name": "Shell",
+    "amount": 45.00,
+    "category": ["Transportation", "Gas"],
+    "pending": false,
+    "payment_channel": "in store"
+  },
+  {
+    "transaction_id": "txn_007",
+    "account_id": "acc_credit_001",
+    "date": "2025-11-06",
+    "name": "Amazon",
+    "merchant_name": "Amazon",
+    "amount": 124.99,
+    "category": ["Shopping", "Online"],
+    "pending": false,
+    "payment_channel": "online"
+  },
+  {
+    "transaction_id": "txn_008",
+    "account_id": "acc_checking_001",
+    "date": "2025-11-05",
+    "name": "Chipotle Mexican Grill",
+    "merchant_name": "Chipotle",
+    "amount": 18.50,
+    "category": ["Dining", "Restaurants"],
+    "pending": false,
+    "payment_channel": "in store"
+  },
+  {
+    "transaction_id": "txn_009",
+    "account_id": "acc_checking_001",
+    "date": "2025-11-04",
+    "name": "LA Fitness",
+    "merchant_name": "LA Fitness",
+    "amount": 49.99,
+    "category": ["Healthcare", "Gym"],
+    "pending": false,
+    "payment_channel": "online"
+  },
+  {
+    "transaction_id": "txn_010",
+    "account_id": "acc_checking_001",
+    "date": "2025-11-03",
+    "name": "ConEdison",
+    "merchant_name": "ConEdison",
+    "amount": 120.00,
+    "category": ["Utilities", "Electric"],
+    "pending": false,
+    "payment_channel": "online"
+  },
+  {
+    "transaction_id": "txn_011",
+    "account_id": "acc_checking_001",
+    "date": "2025-11-02",
+    "name": "Target",
+    "merchant_name": "Target",
+    "amount": 67.82,
+    "category": ["Shopping", "General"],
+    "pending": false,
+    "payment_channel": "in store"
+  },
+  {
+    "transaction_id": "txn_012",
+    "account_id": "acc_checking_001",
+    "date": "2025-11-01",
+    "name": "Spotify",
+    "merchant_name": "Spotify",
+    "amount": 10.99,
+    "category": ["Entertainment", "Music Streaming"],
+    "pending": false,
+    "payment_channel": "online"
+  },
+  {
+    "transaction_id": "txn_013",
+    "account_id": "acc_savings_001",
+    "date": "2025-10-31",
+    "name": "Interest Payment",
+    "merchant_name": null,
+    "amount": -12.50,
+    "category": ["Income", "Interest"],
+    "pending": false,
+    "payment_channel": "other"
+  },
+  {
+    "transaction_id": "txn_014",
+    "account_id": "acc_checking_001",
+    "date": "2025-10-30",
+    "name": "CVS Pharmacy",
+    "merchant_name": "CVS",
+    "amount": 34.25,
+    "category": ["Healthcare", "Pharmacy"],
+    "pending": false,
+    "payment_channel": "in store"
+  },
+  {
+    "transaction_id": "txn_015",
+    "account_id": "acc_credit_001",
+    "date": "2025-10-29",
+    "name": "Delta Airlines",
+    "merchant_name": "Delta",
+    "amount": 425.00,
+    "category": ["Travel", "Airlines"],
+    "pending": false,
+    "payment_channel": "online"
+  },
+  {
+    "transaction_id": "txn_016",
+    "account_id": "acc_checking_001",
+    "date": "2025-10-28",
+    "name": "Trader Joe's",
+    "merchant_name": "Trader Joe's",
+    "amount": 52.18,
+    "category": ["Groceries", "Food and Drink"],
+    "pending": false,
+    "payment_channel": "in store"
+  },
+  {
+    "transaction_id": "txn_017",
+    "account_id": "acc_checking_001",
+    "date": "2025-10-27",
+    "name": "Rent Payment",
+    "merchant_name": null,
+    "amount": 1800.00,
+    "category": ["Rent/Mortgage", "Housing"],
+    "pending": false,
+    "payment_channel": "online"
+  },
+  {
+    "transaction_id": "txn_018",
+    "account_id": "acc_checking_001",
+    "date": "2025-10-26",
+    "name": "Dunkin Donuts",
+    "merchant_name": "Dunkin",
+    "amount": 4.50,
+    "category": ["Dining", "Coffee Shop"],
+    "pending": false,
+    "payment_channel": "in store"
+  },
+  {
+    "transaction_id": "txn_019",
+    "account_id": "acc_checking_001",
+    "date": "2025-10-25",
+    "name": "MTA MetroCard",
+    "merchant_name": "MTA",
+    "amount": 33.00,
+    "category": ["Transportation", "Public Transit"],
+    "pending": false,
+    "payment_channel": "in store"
+  },
+  {
+    "transaction_id": "txn_020",
+    "account_id": "acc_credit_001",
+    "date": "2025-10-24",
+    "name": "Best Buy",
+    "merchant_name": "Best Buy",
+    "amount": 299.99,
+    "category": ["Shopping", "Electronics"],
+    "pending": false,
+    "payment_channel": "in store"
+  }
+]
