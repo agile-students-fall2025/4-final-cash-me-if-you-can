@@ -15,6 +15,15 @@ body {
   background-color: #000;
 }
 
+/* Common page content wrapper styles for pages with header */
+.dashboard-content,
+.settings-content,
+.transactions-container,
+.accounts-container {
+  padding-top: 90px;
+  min-height: calc(100vh - 70px);
+}
+
 .home-page {
   min-height: 100vh;
   padding: 100px 40px 60px;

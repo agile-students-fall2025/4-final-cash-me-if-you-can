@@ -10,7 +10,7 @@ function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate('/home');
+    navigate('/chatbot');
   };
 
 

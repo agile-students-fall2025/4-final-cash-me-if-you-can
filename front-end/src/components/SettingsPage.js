@@ -1,12 +1,15 @@
 import React, { createContext, useState, useContext } from 'react';
 import './SettingsPage.css';
+import Header from './Header';
 import LoginPage from './user-data/LoginPage.jsx'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { UserContext } from './user-data/UserContext' 
+import { UserContext } from './user-data/UserContext'
 function SettingsPage() {
     const { user, changeFirstName, changeLastName, changeEmail, changePassword, resetUser } = useContext(UserContext);
     return(
         <div className="settings-page">
+            <Header title="Settings" subtitle="Manage your account preferences" />
+            <div className="settings-content">
             <h1>Settings</h1>
             <div className="setting">
                 <h2>User Settings</h2>
@@ -59,7 +62,7 @@ function SettingsPage() {
                     />
                 </div>
             </div>
-        
+            </div>
         </div>
     );
 }

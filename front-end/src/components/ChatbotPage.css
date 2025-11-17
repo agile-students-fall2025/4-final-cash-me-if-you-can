@@ -3,25 +3,85 @@
   display: flex;
   flex-direction: column;
   background-color: #000;
-  padding-top: 80px;
+  padding-top: 0;
 }
 
 .chat-header {
-  padding: 20px 30px;
+  padding: 15px 30px;
   border-bottom: 1px solid #222;
   background-color: #111;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 70px;
 }
 
-.chat-header h1 {
-  font-size: 2rem;
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.logo-container:hover {
+  background-color: #222;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  color: #0066ff;
+}
+
+.logo-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.header-content h1 {
+  font-size: 1.5rem;
   font-weight: 300;
-  margin-bottom: 5px;
+  margin-bottom: 2px;
+  color: #fff;
 }
 
-.chat-header p {
-  font-size: 0.9rem;
+.header-content p {
+  font-size: 0.85rem;
   color: #888;
   font-weight: 300;
+}
+
+.logout-btn {
+  padding: 8px 20px;
+  background-color: #222;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #333;
+  border-color: #666;
 }
 
 .chat-container {
@@ -32,6 +92,46 @@
   width: 100%;
   margin: 0 auto;
   padding: 0 20px;
+  padding-top: 70px;
+}
+
+/* Centered state for initial view */
+.chat-container.centered {
+  justify-content: center;
+  align-items: center;
+  padding-top: 0;
+}
+
+.welcome-message {
+  text-align: center;
+  max-width: 600px;
+  margin-bottom: 40px;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.welcome-message h2 {
+  font-size: 2rem;
+  font-weight: 300;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+.welcome-message p {
+  font-size: 1.1rem;
+  color: #888;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .messages-container {
@@ -141,6 +241,16 @@
   background-color: #000;
   position: sticky;
   bottom: 0;
+  width: 100%;
+}
+
+/* Centered input container for initial state */
+.chat-container.centered .input-container {
+  position: static;
+  max-width: 700px;
+  border-top: none;
+  padding: 20px;
+  margin: 0 auto;
 }
 
 .message-input {
@@ -196,18 +306,34 @@
 /* Responsive design */
 @media (max-width: 768px) {
   .chatbot-page {
-    padding-top: 70px;
+    padding-top: 0;
   }
 
   .chat-header {
-    padding: 15px 20px;
+    padding: 10px 15px;
+    height: auto;
+    flex-wrap: wrap;
   }
 
-  .chat-header h1 {
-    font-size: 1.5rem;
+  .logo-container {
+    gap: 8px;
   }
 
-  .chat-header p {
+  .logo-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .logo-text {
+    font-size: 1rem;
+  }
+
+  .header-content {
+    display: none;
+  }
+
+  .logout-btn {
+    padding: 6px 16px;
     font-size: 0.85rem;
   }
 
@@ -233,6 +359,67 @@
     width: 100%;
     padding: 12px;
   }
+
+  .quick-actions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .action-btn {
+    padding: 15px 10px;
+  }
+
+  .action-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .action-btn span {
+    font-size: 0.75rem;
+  }
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  padding: 20px;
+  background-color: #111;
+  border-top: 1px solid #222;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 15px;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+  background-color: #222;
+  border-color: #0066ff;
+  transform: translateY(-2px);
+}
+
+.action-btn svg {
+  width: 24px;
+  height: 24px;
+  color: #0066ff;
+}
+
+.action-btn span {
+  font-size: 0.85rem;
+  font-weight: 400;
+  text-align: center;
 }
 
 /* Scrollbar styling */

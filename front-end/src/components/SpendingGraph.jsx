@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, ComposedChart } from 'recharts';
 import './SpendingGraph.css';
+import Header from './Header';
 import Accounts from './Accounts.jsx';
 import budgetConfigData from '../data/budgetConfig.json';
 import { dashboardAPI } from '../services/api';
@@ -74,7 +75,9 @@ function SpendingGraph() {
 
   return (
     <div className="spending-graph-container">
-      <div className="time-period-selector">
+      <Header title="Dashboard" subtitle="Track your spending and budget" />
+      <div className="dashboard-content">
+        <div className="time-period-selector">
         {Object.entries(TIME_PERIODS).map(([key, value]) => (
           <button 
             key={value}
@@ -124,6 +127,7 @@ function SpendingGraph() {
         </ResponsiveContainer>
       </div>
       <Accounts />
+      </div>
     </div>
   );
 }

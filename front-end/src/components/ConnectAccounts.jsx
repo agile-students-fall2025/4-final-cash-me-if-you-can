@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './ConnectAccounts.css';
+import Header from './Header';
 import connectedAccountsData from '../data/connectedAccounts.json';
 import availableInstitutionsData from '../data/availableInstitutions.json';
 import { plaidAPI } from '../services/api';
@@ -110,10 +111,7 @@ function ConnectAccounts() {
 
   return (
     <div className="connect-accounts-page">
-      <div className="page-header">
-        <h1>Connect Accounts</h1>
-        <p>Securely link your financial accounts using Plaid API</p>
-      </div>
+      <Header title="Connect Accounts" subtitle="Securely link your financial accounts using Plaid API" />
 
       <div className="accounts-container">
         <section className="connected-section">

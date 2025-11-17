@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './TransactionCategories.css';
+import Header from './Header';
 import categoriesData from '../data/categories.json';
 import { transactionAPI } from '../services/api';
 
@@ -66,6 +67,7 @@ function TransactionCategories() {
 
   return (
     <div className="transactions-page">
+      <Header title="Categorize Transactions" subtitle="Organize and categorize your transactions" />
       <div className="transactions-container">
         <h2>Categorize Transactions</h2>
 
