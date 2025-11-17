@@ -59,6 +59,20 @@ export const transactionAPI = {
     return response.json();
   },
 
+  getCategories: async () => {
+    const response = await fetch(`${API_BASE_URL}/transactions/categories`);
+    return response.json();
+  },
+
+  createCategory: async (name) => {
+    const response = await fetch(`${API_BASE_URL}/transactions/categories`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+    return response.json();
+  },
+
   updateCategory: async (transactionId, category) => {
     const response = await fetch(`${API_BASE_URL}/transactions/${transactionId}/category`, {
       method: 'PUT',
