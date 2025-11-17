@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
 /**
  * Plaid API calls
@@ -55,6 +55,20 @@ export const transactionAPI = {
     const response = await fetch(`${API_BASE_URL}/transactions/categorize`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+    });
+    return response.json();
+  },
+
+  getCategories: async () => {
+    const response = await fetch(`${API_BASE_URL}/transactions/categories`);
+    return response.json();
+  },
+
+  createCategory: async (name) => {
+    const response = await fetch(`${API_BASE_URL}/transactions/categories`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
     });
     return response.json();
   },

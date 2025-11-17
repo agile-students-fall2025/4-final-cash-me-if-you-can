@@ -1,4 +1,5 @@
 const mockTransactions = require('../data/mockTransactions.json');
+const defaultCategories = require('../data/categories.json');
 const {
   categorizeTransaction,
   categorizeTransactions,
@@ -7,6 +8,11 @@ const {
 
 // Store transaction updates temporarily (use database in production)
 let transactionUpdates = {};
+let categoryList = [...new Set(defaultCategories)];
+
+const normalizeCategoryName = (name = '') => name.trim();
+const categoryExists = (name) =>
+  categoryList.some(category => category.toLowerCase() === name.toLowerCase());
 
 /**
  * Get all transactions with auto-categorization
@@ -203,10 +209,55 @@ const getSpendingByCategory = async (req, res) => {
   }
 };
 
+/**
+ * Get available categories (default + custom)
+ */
+const getCategories = (req, res) => {
+  try {
+    res.json({
+      categories: [...categoryList],
+      total: categoryList.length,
+    });
+  } catch (error) {
+    console.error('Error getting categories:', error);
+    res.status(500).json({ error: 'Failed to get categories' });
+  }
+};
+
+/**
+ * Create a new custom category
+ */
+const createCategory = (req, res) => {
+  try {
+    const normalizedName = normalizeCategoryName(req.body?.name);
+
+    if (!normalizedName) {
+      return res.status(400).json({ error: 'Category name is required' });
+    }
+
+    if (categoryExists(normalizedName)) {
+      return res.status(409).json({ error: 'Category already exists' });
+    }
+
+    categoryList.push(normalizedName);
+
+    res.status(201).json({
+      category: normalizedName,
+      categories: [...categoryList],
+      message: 'Category created successfully',
+    });
+  } catch (error) {
+    console.error('Error creating category:', error);
+    res.status(500).json({ error: 'Failed to create category' });
+  }
+};
+
 module.exports = {
   getTransactions,
   categorizeAll,
   updateCategory,
   getCategorySuggestions,
   getSpendingByCategory,
+  getCategories,
+  createCategory,
 };
