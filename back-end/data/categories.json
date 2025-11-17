@@ -1,10 +1,17 @@
 [
   "Groceries",
   "Transportation",
+  "Entertainment",
   "Dining",
   "Shopping",
   "Utilities",
   "Healthcare",
+  "Education",
+  "Income",
   "Subscriptions",
+  "Travel",
+  "Personal Care",
+  "Insurance",
+  "Investments",
   "Rent/Mortgage"
 ]
