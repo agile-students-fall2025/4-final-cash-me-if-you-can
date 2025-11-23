@@ -1,0 +1,907 @@
+{
+  "accounts": [
+    {
+      "account_id": "chase_student_checking_001",
+      "balances": {
+        "available": 847.23,
+        "current": 847.23,
+        "limit": null,
+        "iso_currency_code": "USD",
+        "unofficial_currency_code": null
+      },
+      "mask": "3341",
+      "name": "Chase College Checking",
+      "official_name": "Chase College Checking℠",
+      "type": "depository",
+      "subtype": "checking",
+      "institution": {
+        "institution_id": "ins_56",
+        "name": "Chase"
+      }
+    },
+    {
+      "account_id": "chase_savings_001",
+      "balances": {
+        "available": 2430.18,
+        "current": 2430.18,
+        "limit": null,
+        "iso_currency_code": "USD",
+        "unofficial_currency_code": null
+      },
+      "mask": "7712",
+      "name": "Chase Savings",
+      "official_name": "Chase Savings℠",
+      "type": "depository",
+      "subtype": "savings",
+      "institution": {
+        "institution_id": "ins_56",
+        "name": "Chase"
+      }
+    },
+    {
+      "account_id": "discover_student_credit_001",
+      "balances": {
+        "available": 745.00,
+        "current": -255.00,
+        "limit": 1000.00,
+        "iso_currency_code": "USD",
+        "unofficial_currency_code": null
+      },
+      "mask": "9024",
+      "name": "Discover it Student Chrome",
+      "official_name": "Discover it® Student Chrome",
+      "type": "credit",
+      "subtype": "credit card",
+      "institution": {
+        "institution_id": "ins_9",
+        "name": "Discover"
+      }
+    },
+    {
+      "account_id": "venmo_001",
+      "balances": {
+        "available": 47.50,
+        "current": 47.50,
+        "limit": null,
+        "iso_currency_code": "USD",
+        "unofficial_currency_code": null
+      },
+      "mask": "1234",
+      "name": "Venmo",
+      "official_name": "Venmo Balance",
+      "type": "depository",
+      "subtype": "other",
+      "institution": {
+        "institution_id": "ins_127990",
+        "name": "Venmo"
+      }
+    },
+    {
+      "account_id": "robinhood_brokerage_001",
+      "balances": {
+        "available": 1234.56,
+        "current": 1234.56,
+        "limit": null,
+        "iso_currency_code": "USD",
+        "unofficial_currency_code": null
+      },
+      "mask": "7890",
+      "name": "Robinhood Individual Brokerage",
+      "official_name": "Robinhood Individual Brokerage Account",
+      "type": "investment",
+      "subtype": "brokerage",
+      "institution": {
+        "institution_id": "ins_115617",
+        "name": "Robinhood"
+      }
+    },
+    {
+      "account_id": "robinhood_crypto_001",
+      "balances": {
+        "available": 189.47,
+        "current": 189.47,
+        "limit": null,
+        "iso_currency_code": "USD",
+        "unofficial_currency_code": null
+      },
+      "mask": "7891",
+      "name": "Robinhood Crypto",
+      "official_name": "Robinhood Crypto Account",
+      "type": "investment",
+      "subtype": "brokerage",
+      "institution": {
+        "institution_id": "ins_115617",
+        "name": "Robinhood"
+      }
+    }
+  ],
+  "transactions": [
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_001",
+      "amount": 650.00,
+      "date": "2025-11-15",
+      "name": "DIRECT DEPOSIT - NYU WORK STUDY",
+      "merchant_name": "New York University",
+      "pending": false,
+      "category": ["Income", "Payroll"],
+      "category_id": "21009000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_002",
+      "amount": 500.00,
+      "date": "2025-11-01",
+      "name": "ZELLE FROM MOM",
+      "merchant_name": null,
+      "pending": false,
+      "category": ["Transfer", "Deposit"],
+      "category_id": "21005000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_003",
+      "amount": -1450.00,
+      "date": "2025-11-01",
+      "name": "RENT - WASHINGTON SQ APARTMENTS",
+      "merchant_name": null,
+      "pending": false,
+      "category": ["Payment", "Rent"],
+      "category_id": "18068000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_004",
+      "amount": -5.75,
+      "date": "2025-11-22",
+      "name": "MTA NEW YORK CITY TRANSIT",
+      "merchant_name": "MTA",
+      "pending": true,
+      "category": ["Transportation", "Public Transportation Services"],
+      "category_id": "22017000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_005",
+      "amount": -127.00,
+      "date": "2025-11-05",
+      "name": "MTA OMNY MONTHLY UNLIMITED",
+      "merchant_name": "MTA",
+      "pending": false,
+      "category": ["Transportation", "Public Transportation Services"],
+      "category_id": "22017000",
+      "payment_channel": "online",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_006",
+      "amount": -6.50,
+      "date": "2025-11-21",
+      "name": "THINK COFFEE MERCER ST",
+      "merchant_name": "Think Coffee",
+      "pending": false,
+      "category": ["Food and Drink", "Restaurants", "Coffee Shop"],
+      "category_id": "13005043",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_007",
+      "amount": -8.25,
+      "date": "2025-11-20",
+      "name": "STARBUCKS WASHINGTON SQ",
+      "merchant_name": "Starbucks",
+      "pending": false,
+      "category": ["Food and Drink", "Restaurants", "Coffee Shop"],
+      "category_id": "13005043",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_008",
+      "amount": -14.50,
+      "date": "2025-11-19",
+      "name": "SHAKE SHACK ASTOR PLACE",
+      "merchant_name": "Shake Shack",
+      "pending": false,
+      "category": ["Food and Drink", "Restaurants", "Fast Food"],
+      "category_id": "13005032",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_009",
+      "amount": -23.75,
+      "date": "2025-11-18",
+      "name": "JOES PIZZA BLEECKER ST",
+      "merchant_name": "Joe's Pizza",
+      "pending": false,
+      "category": ["Food and Drink", "Restaurants"],
+      "category_id": "13005000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_010",
+      "amount": -45.67,
+      "date": "2025-11-17",
+      "name": "TRADER JOES UNION SQ",
+      "merchant_name": "Trader Joe's",
+      "pending": false,
+      "category": ["Shops", "Food and Beverage Store", "Supermarkets and Groceries"],
+      "category_id": "19046000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_011",
+      "amount": -15.99,
+      "date": "2025-11-10",
+      "name": "SPOTIFY STUDENT",
+      "merchant_name": "Spotify",
+      "pending": false,
+      "category": ["Service", "Entertainment"],
+      "category_id": "17001012",
+      "payment_channel": "online",
+      "transaction_type": "digital"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_012",
+      "amount": -5.99,
+      "date": "2025-11-10",
+      "name": "APPLE STUDENT DISCOUNT - MUSIC",
+      "merchant_name": "Apple",
+      "pending": false,
+      "category": ["Service", "Entertainment"],
+      "category_id": "17001012",
+      "payment_channel": "online",
+      "transaction_type": "digital"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_013",
+      "amount": -189.99,
+      "date": "2025-11-08",
+      "name": "NYU BOOKSTORE - TEXTBOOKS",
+      "merchant_name": "NYU Bookstore",
+      "pending": false,
+      "category": ["Shops", "Bookstores and News Stands"],
+      "category_id": "19005000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_014",
+      "amount": -67.50,
+      "date": "2025-11-12",
+      "name": "AMAZON - TEXTBOOK RENTAL",
+      "merchant_name": "Amazon",
+      "pending": false,
+      "category": ["Shops", "Digital Purchase"],
+      "category_id": "19019000",
+      "payment_channel": "online",
+      "transaction_type": "digital"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_015",
+      "amount": -12.00,
+      "date": "2025-11-16",
+      "name": "BOBST LIBRARY - PRINTING",
+      "merchant_name": "NYU Libraries",
+      "pending": false,
+      "category": ["Service"],
+      "category_id": "17000000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_016",
+      "amount": -38.50,
+      "date": "2025-11-14",
+      "name": "DOORDASH - HALAL GUYS",
+      "merchant_name": "DoorDash",
+      "pending": false,
+      "category": ["Food and Drink", "Restaurants"],
+      "category_id": "13005000",
+      "payment_channel": "online",
+      "transaction_type": "digital"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_017",
+      "amount": -25.00,
+      "date": "2025-11-13",
+      "name": "CITI BIKE - MONTHLY MEMBERSHIP",
+      "merchant_name": "Citi Bike",
+      "pending": false,
+      "category": ["Transportation"],
+      "category_id": "22000000",
+      "payment_channel": "online",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_018",
+      "amount": -85.00,
+      "date": "2025-11-07",
+      "name": "NYU PALLADIUM - GYM MEMBERSHIP",
+      "merchant_name": "NYU Wellness",
+      "pending": false,
+      "category": ["Recreation", "Gyms and Fitness Centers"],
+      "category_id": "18016000",
+      "payment_channel": "online",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_019",
+      "amount": -42.00,
+      "date": "2025-11-11",
+      "name": "DUANE READE #1234",
+      "merchant_name": "Duane Reade",
+      "pending": false,
+      "category": ["Shops", "Pharmacies"],
+      "category_id": "19047000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_020",
+      "amount": -15.00,
+      "date": "2025-11-09",
+      "name": "LAUNDROMAT - MACDOUGAL ST",
+      "merchant_name": null,
+      "pending": false,
+      "category": ["Service"],
+      "category_id": "17000000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "discover_student_credit_001",
+      "transaction_id": "txn_discover_001",
+      "amount": -45.00,
+      "date": "2025-11-20",
+      "name": "AMAZON PRIME STUDENT",
+      "merchant_name": "Amazon",
+      "pending": false,
+      "category": ["Service", "Subscription"],
+      "category_id": "17001012",
+      "payment_channel": "online",
+      "transaction_type": "digital"
+    },
+    {
+      "account_id": "discover_student_credit_001",
+      "transaction_id": "txn_discover_002",
+      "amount": -34.50,
+      "date": "2025-11-18",
+      "name": "ARTICHOKE BASILLE PIZZA",
+      "merchant_name": "Artichoke Basille's Pizza",
+      "pending": false,
+      "category": ["Food and Drink", "Restaurants"],
+      "category_id": "13005000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "discover_student_credit_001",
+      "transaction_id": "txn_discover_003",
+      "amount": -28.75,
+      "date": "2025-11-15",
+      "name": "INSOMNIA COOKIES NYU",
+      "merchant_name": "Insomnia Cookies",
+      "pending": false,
+      "category": ["Food and Drink", "Restaurants"],
+      "category_id": "13005000",
+      "payment_channel": "online",
+      "transaction_type": "digital"
+    },
+    {
+      "account_id": "discover_student_credit_001",
+      "transaction_id": "txn_discover_004",
+      "amount": -65.00,
+      "date": "2025-11-10",
+      "name": "UNIQLO SOHO",
+      "merchant_name": "Uniqlo",
+      "pending": false,
+      "category": ["Shops", "Clothing and Accessories"],
+      "category_id": "19012000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "discover_student_credit_001",
+      "transaction_id": "txn_discover_005",
+      "amount": -18.99,
+      "date": "2025-11-08",
+      "name": "CHEGG TEXTBOOK SOLUTIONS",
+      "merchant_name": "Chegg",
+      "pending": false,
+      "category": ["Service", "Educational"],
+      "category_id": "17000000",
+      "payment_channel": "online",
+      "transaction_type": "digital"
+    },
+    {
+      "account_id": "discover_student_credit_001",
+      "transaction_id": "txn_discover_006",
+      "amount": -52.50,
+      "date": "2025-11-05",
+      "name": "KTOWN KOREAN BBQ",
+      "merchant_name": null,
+      "pending": false,
+      "category": ["Food and Drink", "Restaurants"],
+      "category_id": "13005000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "venmo_001",
+      "transaction_id": "txn_venmo_001",
+      "amount": 15.00,
+      "date": "2025-11-21",
+      "name": "FROM SARAH - DINNER SPLIT",
+      "merchant_name": null,
+      "pending": false,
+      "category": ["Transfer", "Peer to Peer"],
+      "category_id": "21005000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "venmo_001",
+      "transaction_id": "txn_venmo_002",
+      "amount": 12.50,
+      "date": "2025-11-20",
+      "name": "FROM MIKE - UBER SPLIT",
+      "merchant_name": null,
+      "pending": false,
+      "category": ["Transfer", "Peer to Peer"],
+      "category_id": "21005000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "venmo_001",
+      "transaction_id": "txn_venmo_003",
+      "amount": -20.00,
+      "date": "2025-11-19",
+      "name": "TO ROOMMATE - UTILITIES",
+      "merchant_name": null,
+      "pending": false,
+      "category": ["Transfer", "Peer to Peer"],
+      "category_id": "21005000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "venmo_001",
+      "transaction_id": "txn_venmo_004",
+      "amount": 8.00,
+      "date": "2025-11-18",
+      "name": "FROM EMMA - COFFEE",
+      "merchant_name": null,
+      "pending": false,
+      "category": ["Transfer", "Peer to Peer"],
+      "category_id": "21005000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "venmo_001",
+      "transaction_id": "txn_venmo_005",
+      "amount": -32.00,
+      "date": "2025-11-15",
+      "name": "TO ALEX - CONCERT TICKET",
+      "merchant_name": null,
+      "pending": false,
+      "category": ["Transfer", "Peer to Peer"],
+      "category_id": "21005000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_021",
+      "amount": -18.50,
+      "date": "2025-11-22",
+      "name": "SWEETGREEN UNION SQUARE",
+      "merchant_name": "Sweetgreen",
+      "pending": true,
+      "category": ["Food and Drink", "Restaurants"],
+      "category_id": "13005000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_022",
+      "amount": -35.00,
+      "date": "2025-11-06",
+      "name": "THE VILLAGE POUR HOUSE",
+      "merchant_name": null,
+      "pending": false,
+      "category": ["Food and Drink", "Bars"],
+      "category_id": "13003000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_023",
+      "amount": -28.00,
+      "date": "2025-11-04",
+      "name": "NYU TICKET OFFICE - BASKETBALL GAME",
+      "merchant_name": "NYU Athletics",
+      "pending": false,
+      "category": ["Recreation", "Sporting Events"],
+      "category_id": "18000000",
+      "payment_channel": "online",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_024",
+      "amount": -75.00,
+      "date": "2025-11-02",
+      "name": "MUJI SOHO",
+      "merchant_name": "MUJI",
+      "pending": false,
+      "category": ["Shops", "Home and Garden"],
+      "category_id": "19014000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    },
+    {
+      "account_id": "robinhood_brokerage_001",
+      "transaction_id": "txn_rh_001",
+      "amount": 200.00,
+      "date": "2025-11-10",
+      "name": "DEPOSIT FROM BANK",
+      "merchant_name": null,
+      "pending": false,
+      "category": ["Transfer", "Deposit"],
+      "category_id": "21005000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "robinhood_brokerage_001",
+      "transaction_id": "txn_rh_002",
+      "amount": -178.50,
+      "date": "2025-11-12",
+      "name": "BUY AAPL - 1 SHARE",
+      "merchant_name": "Apple Inc.",
+      "pending": false,
+      "category": ["Transfer", "Investment and Retirement Funds"],
+      "category_id": "21006000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "robinhood_brokerage_001",
+      "transaction_id": "txn_rh_003",
+      "amount": -89.25,
+      "date": "2025-11-15",
+      "name": "BUY VOO - 0.25 SHARES",
+      "merchant_name": "Vanguard S&P 500 ETF",
+      "pending": false,
+      "category": ["Transfer", "Investment and Retirement Funds"],
+      "category_id": "21006000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "robinhood_crypto_001",
+      "transaction_id": "txn_rh_crypto_001",
+      "amount": 50.00,
+      "date": "2025-11-08",
+      "name": "DEPOSIT FROM BANK",
+      "merchant_name": null,
+      "pending": false,
+      "category": ["Transfer", "Deposit"],
+      "category_id": "21005000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "robinhood_crypto_001",
+      "transaction_id": "txn_rh_crypto_002",
+      "amount": -25.00,
+      "date": "2025-11-10",
+      "name": "BUY BTC - 0.00054 BTC",
+      "merchant_name": "Bitcoin",
+      "pending": false,
+      "category": ["Transfer", "Investment and Retirement Funds"],
+      "category_id": "21006000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "robinhood_crypto_001",
+      "transaction_id": "txn_rh_crypto_003",
+      "amount": -25.00,
+      "date": "2025-11-14",
+      "name": "BUY ETH - 0.01 ETH",
+      "merchant_name": "Ethereum",
+      "pending": false,
+      "category": ["Transfer", "Investment and Retirement Funds"],
+      "category_id": "21006000",
+      "payment_channel": "other",
+      "transaction_type": "special"
+    },
+    {
+      "account_id": "chase_student_checking_001",
+      "transaction_id": "txn_chase_025",
+      "amount": -22.50,
+      "date": "2025-11-03",
+      "name": "MAMOUN'S FALAFEL",
+      "merchant_name": "Mamoun's Falafel",
+      "pending": false,
+      "category": ["Food and Drink", "Restaurants"],
+      "category_id": "13005000",
+      "payment_channel": "in store",
+      "transaction_type": "place"
+    }
+  ],
+  "holdings": [
+    {
+      "account_id": "robinhood_brokerage_001",
+      "security_id": "sec_aapl_001",
+      "institution_price": 175.43,
+      "institution_price_as_of": "2025-11-22",
+      "institution_value": 175.43,
+      "cost_basis": 178.50,
+      "quantity": 1,
+      "iso_currency_code": "USD",
+      "unofficial_currency_code": null,
+      "security": {
+        "security_id": "sec_aapl_001",
+        "cusip": "037833100",
+        "sedol": null,
+        "isin": "US0378331005",
+        "ticker_symbol": "AAPL",
+        "name": "Apple Inc.",
+        "type": "equity",
+        "close_price": 175.43,
+        "close_price_as_of": "2025-11-22"
+      }
+    },
+    {
+      "account_id": "robinhood_brokerage_001",
+      "security_id": "sec_voo_001",
+      "institution_price": 458.67,
+      "institution_price_as_of": "2025-11-22",
+      "institution_value": 572.34,
+      "cost_basis": 535.50,
+      "quantity": 1.25,
+      "iso_currency_code": "USD",
+      "unofficial_currency_code": null,
+      "security": {
+        "security_id": "sec_voo_001",
+        "cusip": "922908769",
+        "sedol": null,
+        "isin": "US9229087690",
+        "ticker_symbol": "VOO",
+        "name": "Vanguard S&P 500 ETF",
+        "type": "etf",
+        "close_price": 458.67,
+        "close_price_as_of": "2025-11-22"
+      }
+    },
+    {
+      "account_id": "robinhood_brokerage_001",
+      "security_id": "sec_vti_001",
+      "institution_price": 267.89,
+      "institution_price_as_of": "2025-11-22",
+      "institution_value": 133.95,
+      "cost_basis": 125.00,
+      "quantity": 0.5,
+      "iso_currency_code": "USD",
+      "unofficial_currency_code": null,
+      "security": {
+        "security_id": "sec_vti_001",
+        "cusip": "922906866",
+        "sedol": null,
+        "isin": "US9229068687",
+        "ticker_symbol": "VTI",
+        "name": "Vanguard Total Stock Market ETF",
+        "type": "etf",
+        "close_price": 267.89,
+        "close_price_as_of": "2025-11-22"
+      }
+    },
+    {
+      "account_id": "robinhood_crypto_001",
+      "security_id": "sec_btc_001",
+      "institution_price": 46234.56,
+      "institution_price_as_of": "2025-11-22T14:30:00Z",
+      "institution_value": 124.87,
+      "cost_basis": 125.00,
+      "quantity": 0.0027,
+      "iso_currency_code": "USD",
+      "unofficial_currency_code": null,
+      "security": {
+        "security_id": "sec_btc_001",
+        "ticker_symbol": "BTC",
+        "name": "Bitcoin",
+        "type": "cryptocurrency",
+        "close_price": 46234.56,
+        "close_price_as_of": "2025-11-22T14:30:00Z"
+      }
+    },
+    {
+      "account_id": "robinhood_crypto_001",
+      "security_id": "sec_eth_001",
+      "institution_price": 2456.78,
+      "institution_price_as_of": "2025-11-22T14:30:00Z",
+      "institution_value": 64.60,
+      "cost_basis": 75.00,
+      "quantity": 0.0263,
+      "iso_currency_code": "USD",
+      "unofficial_currency_code": null,
+      "security": {
+        "security_id": "sec_eth_001",
+        "ticker_symbol": "ETH",
+        "name": "Ethereum",
+        "type": "cryptocurrency",
+        "close_price": 2456.78,
+        "close_price_as_of": "2025-11-22T14:30:00Z"
+      }
+    }
+  ],
+  "identity": {
+    "account_id": "chase_student_checking_001",
+    "names": ["Emily Rose Chen"],
+    "emails": [
+      {
+        "data": "ec2847@nyu.edu",
+        "primary": true,
+        "type": "primary"
+      },
+      {
+        "data": "emilychen@gmail.com",
+        "primary": false,
+        "type": "secondary"
+      }
+    ],
+    "phone_numbers": [
+      {
+        "data": "+1 917-555-0847",
+        "primary": true,
+        "type": "mobile"
+      }
+    ],
+    "addresses": [
+      {
+        "data": {
+          "street": "24 West 12th Street, Apt 4B",
+          "city": "New York",
+          "region": "NY",
+          "postal_code": "10011",
+          "country": "US"
+        },
+        "primary": true
+      }
+    ]
+  },
+  "liabilities": {
+    "credit": [
+      {
+        "account_id": "discover_student_credit_001",
+        "aprs": [
+          {
+            "apr_percentage": 19.99,
+            "apr_type": "purchase_apr",
+            "balance_subject_to_apr": 255.00,
+            "interest_charge_amount": 4.25
+          }
+        ],
+        "is_overdue": false,
+        "last_payment_amount": 50.00,
+        "last_payment_date": "2025-11-01",
+        "last_statement_issue_date": "2025-11-01",
+        "minimum_payment_amount": 25.00,
+        "next_payment_due_date": "2025-12-01"
+      }
+    ],
+    "student": [
+      {
+        "account_id": "student_loan_001",
+        "disbursement_dates": ["2022-08-15", "2023-08-15", "2024-08-15"],
+        "expected_payoff_date": "2035-08-01",
+        "guarantor": "Department of Education",
+        "interest_rate_percentage": 4.99,
+        "is_overdue": false,
+        "last_payment_amount": 0.00,
+        "last_payment_date": null,
+        "last_statement_issue_date": "2025-11-01",
+        "loan_name": "Federal Direct Unsubsidized Loan",
+        "loan_status": {
+          "type": "in_school",
+          "end_date": "2026-05-15"
+        },
+        "minimum_payment_amount": 0.00,
+        "next_payment_due_date": null,
+        "origination_date": "2022-08-15",
+        "origination_principal_amount": 45000.00,
+        "outstanding_interest_amount": 3847.23,
+        "payment_reference_number": "FDU-2022-NYU-847293",
+        "pslf_status": {
+          "estimated_eligibility_date": null,
+          "payments_made": 0,
+          "payments_remaining": null
+        },
+        "repayment_plan": {
+          "type": "standard",
+          "description": "Standard 10-year repayment plan"
+        },
+        "sequence_number": "1",
+        "servicer_address": {
+          "city": "Wilkes-Barre",
+          "country": "US",
+          "postal_code": "18773-0001",
+          "region": "PA",
+          "street": "P.O. Box 60001"
+        },
+        "ytd_interest_paid": 0.00,
+        "ytd_principal_paid": 0.00
+      }
+    ]
+  },
+  "auth": {
+    "accounts": [
+      {
+        "account_id": "chase_student_checking_001",
+        "account": "3341",
+        "routing": "021000021",
+        "wire_routing": "021000021"
+      },
+      {
+        "account_id": "chase_savings_001",
+        "account": "7712",
+        "routing": "021000021",
+        "wire_routing": "021000021"
+      }
+    ]
+  },
+  "item": {
+    "item_id": "mock_item_12345",
+    "institution_id": "multiple",
+    "webhook": "https://example.com/webhook",
+    "error": null,
+    "available_products": [
+      "auth",
+      "balance",
+      "transactions",
+      "investments",
+      "identity",
+      "liabilities"
+    ],
+    "billed_products": [
+      "transactions",
+      "investments"
+    ],
+    "consent_expiration_time": null,
+    "update_type": "background"
+  }
+}
