@@ -127,3 +127,6 @@ typings/
 ## Jekyll artifacts
 **/.jekyll-cache
 **/_site/
+
+## personal helpful resources for further work
+.guides
