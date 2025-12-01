@@ -1,132 +1,42 @@
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { UserContext } from "./UserContext";
+import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 
-function LoginPage() {
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: ""
-  });
-
-  const { login } = useContext(UserContext);
+export default function LoginPage() {
+  const { loginUser } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    const endpoint = isSignUp
-      ? "http://localhost:5000/api/auth/signup"
-      : "http://localhost:5000/api/auth/login";
-
-    const res = await fetch(endpoint, {
+    const res = await fetch("http://localhost:5000/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ email, password }),
     });
 
     const data = await res.json();
+    if (!res.ok) return alert(data.error);
 
-    if (!res.ok) {
-      alert(data.error);
-      return;
-    }
-
-    if (isSignUp) {
-      alert("Account created! Please log in.");
-      setIsSignUp(false);
-      return;
-    }
-
-    // Save JWT
     localStorage.setItem("token", data.token);
+    loginUser(data.user);
 
-    // Store user globally
-    login(data.user);
-
-    navigate("/home");
+    navigate("/settings");
   };
 
   return (
-    <div className="login-page">
-      <div className="login-container">
-        <div className="login-header">
-          <h1>cash me if you can</h1>
-          <p>{isSignUp ? "Create your account" : "Sign in to your account"}</p>
-        </div>
+    <form onSubmit={handleLogin}>
+      <h2>Login</h2>
 
-        <form className="login-form" onSubmit={handleSubmit}>
-          {isSignUp && (
-            <>
-              <div className="form-group">
-                <label>First Name</label>
-                <input
-                  name="firstName"
-                  value={form.firstName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
 
-              <div className="form-group">
-                <label>Last Name</label>
-                <input
-                  name="lastName"
-                  value={form.lastName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </>
-          )}
+      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
 
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <button type="submit" className="signin-button">
-            {isSignUp ? "Sign Up" : "Sign In"}
-          </button>
-
-          <div className="form-footer">
-            <button
-              type="button"
-              className="toggle-mode"
-              onClick={() => setIsSignUp(!isSignUp)}
-            >
-              {isSignUp
-                ? "Already have an account? Sign in"
-                : "Need an account? Sign up"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      <button type="submit">Login</button>
+    </form>
   );
 }
-
-export default LoginPage;

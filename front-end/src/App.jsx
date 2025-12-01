@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import './App.css';
-import SettingsPage from './components/SettingsPage';
+import SettingsPage from './components/user-data/SettingsPage';
 import { UserProvider } from'./components/user-data/UserContext'
 import TransactionCategories from './components/TransactionCategories.jsx';
 import ChatbotPage from './components/ChatbotPage.jsx';
