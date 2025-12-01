@@ -1,103 +1,84 @@
 const mongoose = require('mongoose');
 
-const AccountSchema = new mongoose.Schema(
-  {
-    // Plaid API fields
-    account_id: {
-      type: String,
+const accountSchema = new mongoose.Schema({
+  account_id: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  item_id: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  official_name: {
+    type: String,
+  },
+  type: {
+    type: String,
+    required: true,
+    enum: ['depository', 'credit', 'loan', 'investment', 'other'],
+  },
+  subtype: {
+    type: String,
+    required: true,
+    enum: [
+      'checking', 'savings', 'money market', 'cd', 'paypal',
+      'prepaid', 'cash management', 'ebt', 'hsa',
+      'credit card', 'auto', 'business', 'commercial',
+      'construction', 'consumer', 'home equity', 'loan',
+      'mortgage', 'overdraft', 'line of credit', 'student',
+      '401k', '401a', '403b', '457b', '529', 'brokerage',
+      'cash isa', 'education savings account', 'fixed annuity',
+      'gic', 'health reimbursement arrangement', 'ira', 'isa',
+      'keogh', 'lif', 'lira', 'lrif', 'lrsp', 'mutual fund',
+      'non-taxable brokerage account', 'pension', 'plan',
+      'prif', 'profit sharing plan', 'rdsp', 'resp', 'retirement',
+      'rlif', 'roth', 'roth 401k', 'rrif', 'rrsp', 'sarsep',
+      'sep ira', 'simple ira', 'sipp', 'stock plan', 'tfsa',
+      'trust', 'ugma', 'utma', 'variable annuity', 'other',
+    ],
+  },
+  balances: {
+    current: {
+      type: Number,
       required: true,
-      unique: true,
-      index: true,
     },
-    user_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-      index: true,
+    available: {
+      type: Number,
     },
-    item_id: {
+    limit: {
+      type: Number,
+    },
+    currency: {
       type: String,
-      required: true,
-      index: true,
-    },
-    // Account information
-    name: {
-      type: String,
-      required: true,
-    },
-    official_name: {
-      type: String,
-      default: null,
-    },
-    type: {
-      type: String,
-      enum: ['depository', 'credit', 'loan', 'investment', 'other'],
-      required: true,
-    },
-    subtype: {
-      type: String,
-      enum: [
-        'checking',
-        'savings',
-        'money market',
-        'prepaid',
-        'cash management',
-        'credit card',
-        'paypal',
-        'auto',
-        'mortgage',
-        'line of credit',
-        'student',
-        'investment',
-        'other',
-      ],
-      required: true,
-    },
-    // Balance information
-    balances: {
-      available: {
-        type: Number,
-        default: null,
-      },
-      current: {
-        type: Number,
-        default: null,
-      },
-      iso_currency_code: {
-        type: String,
-        default: 'USD',
-      },
-      limit: {
-        type: Number,
-        default: null,
-      },
-      unofficial_currency_code: {
-        type: String,
-        default: null,
-      },
-    },
-    // Account identification
-    mask: {
-      type: String,
-      default: null,
-    },
-    verification_status: {
-      type: String,
-      enum: ['verified', 'unverified', 'pending_automatic_verification'],
-      default: 'unverified',
-    },
-    // Access token reference
-    access_token: {
-      type: String,
-      default: null,
+      default: 'USD',
     },
   },
-  {
-    timestamps: true,
-  }
-);
+  mask: {
+    type: String,
+  },
+  verification_status: {
+    type: String,
+    enum: ['pending', 'verified', 'failed'],
+    default: 'pending',
+  },
+  access_token: {
+    type: String,
+  },
+}, {
+  timestamps: true,
+});
 
-// Index for common queries
-AccountSchema.index({ user_id: 1, item_id: 1 });
+accountSchema.index({ user_id: 1, item_id: 1 });
+accountSchema.index({ account_id: 1 });
 
-module.exports = mongoose.model('Account', AccountSchema);
+module.exports = mongoose.model('Account', accountSchema);

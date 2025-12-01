@@ -1,65 +1,58 @@
 const mongoose = require('mongoose');
 
-const UserSchema = new mongoose.Schema(
-  {
-    email: {
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true,
+  },
+  first_name: {
+    type: String,
+    required: true,
+  },
+  last_name: {
+    type: String,
+    required: true,
+  },
+  password_hash: {
+    type: String,
+    required: true,
+  },
+  plaid_user_id: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
+  preferences: {
+    currency: {
       type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      index: true,
+      default: 'USD',
     },
-    first_name: {
+    theme: {
       type: String,
-      default: null,
+      enum: ['light', 'dark', 'auto'],
+      default: 'auto',
     },
-    last_name: {
-      type: String,
-      default: null,
-    },
-    // Password will be handled by Sanay's auth implementation
-    password_hash: {
-      type: String,
-      required: true,
-    },
-    // Plaid integration
-    plaid_user_id: {
-      type: String,
-      default: null,
-      unique: true,
-      sparse: true,
-      index: true,
-    },
-    // User preferences
-    preferences: {
-      currency: {
-        type: String,
-        default: 'USD',
-      },
-      theme: {
-        type: String,
-        enum: ['light', 'dark'],
-        default: 'light',
-      },
-      notifications_enabled: {
-        type: Boolean,
-        default: true,
-      },
-    },
-    // Account status
-    is_active: {
-      type: Boolean,
-      default: true,
-      index: true,
-    },
-    email_verified: {
-      type: Boolean,
-      default: false,
+    notifications: {
+      email: { type: Boolean, default: true },
+      push: { type: Boolean, default: false },
     },
   },
-  {
-    timestamps: true,
-  }
-);
+  is_active: {
+    type: Boolean,
+    default: true,
+  },
+  email_verified: {
+    type: Boolean,
+    default: false,
+  },
+}, {
+  timestamps: true,
+});
 
-module.exports = mongoose.model('User', UserSchema);
+userSchema.index({ email: 1 });
+userSchema.index({ plaid_user_id: 1 });
+
+module.exports = mongoose.model('User', userSchema);
