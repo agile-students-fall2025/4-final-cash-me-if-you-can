@@ -1,0 +1,81 @@
+{
+  "user_id": "student_001",
+  "profile": {
+    "name": "Alex Johnson",
+    "age": 21,
+    "status": "College Student",
+    "school": "State University",
+    "year": "Junior",
+    "major": "Computer Science"
+  },
+  "financial_context": {
+    "monthly_income": {
+      "part_time_job": 900,
+      "family_support": 500,
+      "financial_aid": 800,
+      "total": 2200
+    },
+    "monthly_expenses": {
+      "rent": 0,
+      "meal_plan": 250,
+      "groceries": 150,
+      "transportation": 80,
+      "entertainment": 100,
+      "textbooks_supplies": 100,
+      "subscriptions": 20,
+      "healthcare": 25,
+      "personal": 50,
+      "misc": 75,
+      "total": 850
+    },
+    "savings_goals": {
+      "emergency_fund_target": 3000,
+      "current_emergency_fund": 1250,
+      "monthly_savings_target": 200,
+      "summer_trip_fund": 500
+    },
+    "debt": {
+      "student_loans": {
+        "total": 15000,
+        "status": "deferred",
+        "deferred_until": "2026-06-01"
+      },
+      "credit_card": {
+        "current_balance": 314.77,
+        "limit": 1000,
+        "utilization": 31.48
+      }
+    },
+    "living_situation": "On-campus dorm (covered by scholarship)",
+    "work_schedule": "Part-time campus library, 20 hours/week at $11.25/hour",
+    "financial_aid": "Merit scholarship covering tuition and housing",
+    "financial_concerns": [
+      "Building emergency fund",
+      "Managing credit card responsibly",
+      "Saving for post-graduation expenses",
+      "Budgeting dining and entertainment spending"
+    ],
+    "financial_goals": [
+      "Graduate debt-free (excluding student loans)",
+      "Build 3-6 months emergency fund",
+      "Maintain good credit score",
+      "Save $2000 before graduation for moving expenses"
+    ]
+  },
+  "spending_patterns": {
+    "top_categories": [
+      {"category": "Dining", "monthly_average": 180, "notes": "Coffee shops and quick meals between classes"},
+      {"category": "Groceries", "monthly_average": 150, "notes": "Budget-conscious shopping at Trader Joe's and Aldi"},
+      {"category": "Education", "monthly_average": 100, "notes": "Textbook rentals and course materials"},
+      {"category": "Transportation", "monthly_average": 80, "notes": "Bus pass and occasional ride-shares"},
+      {"category": "Entertainment", "monthly_average": 100, "notes": "Movies, streaming services, social activities"}
+    ],
+    "habits": [
+      "Frequent coffee shop visits for studying",
+      "Uses student discounts when available",
+      "Shops at budget-friendly grocers",
+      "Splits costs with friends via Venmo",
+      "Maintains low credit card utilization"
+    ]
+  }
+}
