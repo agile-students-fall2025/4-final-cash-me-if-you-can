@@ -1,21 +1,56 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { UserContext } from './UserContext'
-import './LoginPage.css';
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "./UserContext";
+import "./LoginPage.css";
 
 function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
-  const { user, changeFirstName, changeLastName, changeEmail, changePassword, resetUser } = useContext(UserContext);
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: ""
+  });
+
+  const { login } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/home');
-  };
 
+    const endpoint = isSignUp
+      ? "http://localhost:5000/api/auth/signup"
+      : "http://localhost:5000/api/auth/login";
 
-  const toggleMode = () => {
-    setIsSignUp(!isSignUp);
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error);
+      return;
+    }
+
+    if (isSignUp) {
+      alert("Account created! Please log in.");
+      setIsSignUp(false);
+      return;
+    }
+
+    // Save JWT
+    localStorage.setItem("token", data.token);
+
+    // Store user globally
+    login(data.user);
+
+    navigate("/home");
   };
 
   return (
@@ -23,32 +58,28 @@ function LoginPage() {
       <div className="login-container">
         <div className="login-header">
           <h1>cash me if you can</h1>
-          <p>{isSignUp ? 'Create your account' : 'Sign in to your account'}</p>
+          <p>{isSignUp ? "Create your account" : "Sign in to your account"}</p>
         </div>
 
         <form className="login-form" onSubmit={handleSubmit}>
           {isSignUp && (
             <>
               <div className="form-group">
-                <label htmlFor="firstName">First Name</label>
+                <label>First Name</label>
                 <input
-                  type="text"
-                  id="firstName"
-                  value={user.firstName}
-                  onChange={(e) => changeFirstName(e.target.value)}
-                  placeholder="Enter your first name"
+                  name="firstName"
+                  value={form.firstName}
+                  onChange={handleChange}
                   required
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="lastName">Last Name</label>
+                <label>Last Name</label>
                 <input
-                  type="text"
-                  id="lastName"
-                  value={user.lastName}
-                  onChange={(e) => changeLastName(e.target.value)}
-                  placeholder="Enter your last name"
+                  name="lastName"
+                  value={form.lastName}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -56,37 +87,40 @@ function LoginPage() {
           )}
 
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label>Email</label>
             <input
+              name="email"
               type="email"
-              id="email"
-              value={user.email}
-              onChange={(e) => changeEmail(e.target.value)}
-              placeholder="Enter your email"
+              value={form.email}
+              onChange={handleChange}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label>Password</label>
             <input
+              name="password"
               type="password"
-              id="password"
-              value={user.password}
-              onChange={(e) => changePassword(e.target.value)}
-              placeholder="Enter your password"
+              value={form.password}
+              onChange={handleChange}
               required
             />
           </div>
 
           <button type="submit" className="signin-button">
-            {isSignUp ? 'Sign Up' : 'Sign In'}
+            {isSignUp ? "Sign Up" : "Sign In"}
           </button>
 
           <div className="form-footer">
-            {!isSignUp && <a href="#" className="forgot-password">Forgot password?</a>}
-            <button type="button" className="toggle-mode" onClick={toggleMode}>
-              {isSignUp ? 'Already have an account? Sign in' : 'Need an account? Sign up'}
+            <button
+              type="button"
+              className="toggle-mode"
+              onClick={() => setIsSignUp(!isSignUp)}
+            >
+              {isSignUp
+                ? "Already have an account? Sign in"
+                : "Need an account? Sign up"}
             </button>
           </div>
         </form>

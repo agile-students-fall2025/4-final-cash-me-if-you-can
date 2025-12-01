@@ -1,48 +1,15 @@
 import { createContext, useState, useContext } from 'react'
-
 export const UserContext = createContext();
 
 export function UserProvider({ children }) {
-    const [user, setUser] = useState({ 
-        firstName: '', 
-        lastName: '', 
-        email: '', 
-        password:'' 
-    })
+  const [user, setUser] = useState(null); // null = not logged in
 
-    const changeFirstName = (firstName) => {
-        setUser((prev) => ({ ...prev, firstName }))
-    };
+  const login = (userObject) => setUser(userObject);
+  const logout = () => setUser(null);
 
-    const changeLastName = (lastName) => {
-        setUser((prev) => ({ ...prev, lastName }))
-    };
-
-    const changeEmail = (email) => {
-        setUser((prev) => ({ ...prev, email }))
-    };
-
-    const changePassword = (password) => {
-        setUser((prev) => ({ ...prev, password }))
-    };
-    
-    const resetUser = () => {
-        setUser({ firstName: '', lastName: '', email: '', password: '' });
-    };
-
-    return (
-        <UserContext.Provider 
-            value={{ 
-                user, 
-                setUser,
-                changeFirstName,
-                changeLastName,
-                changeEmail,
-                changePassword,
-                resetUser
-            }}
-        >
-            {children}
-        </UserContext.Provider>
-    )
+  return (
+    <UserContext.Provider value={{ user, setUser, login, logout }}>
+      {children}
+    </UserContext.Provider>
+  );
 }
