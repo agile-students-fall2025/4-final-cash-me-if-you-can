@@ -10,6 +10,8 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const { connectDB } = require('./config/database');
 
+connectDB();
+
 const app = express();
 
 // Initialize database connection
