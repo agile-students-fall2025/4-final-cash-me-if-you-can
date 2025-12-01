@@ -68,7 +68,7 @@ const sendMessage = async (req, res) => {
     }
 
     // Search knowledge base for relevant context
-    const relevantDocs = vectorStore.search(message, 2);
+    const relevantDocs = await vectorStore.search(message, 2);
     const context = relevantDocs.map(doc => `${doc.title}: ${doc.content}`).join('\n\n');
 
     // Use OpenAI if available, otherwise fallback
