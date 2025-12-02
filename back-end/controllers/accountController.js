@@ -6,12 +6,13 @@ exports.getAccounts = async (req, res) => {
   try {
     const userId = req.user?.id || '673e8d9a5e9e123456789abc';
 
-    // For demo: return mock data from JSON file
-    const mockAccounts = require('../data/mockAccounts.json');
+    const accounts = await Account.find();
+
+    const total_balance = accounts.reduce((sum, acc) => sum + acc.balances.current, 0);
 
     res.json({
-      accounts: mockAccounts,
-      total_balance: mockAccounts.reduce((sum, acc) => sum + acc.balances.current, 0)
+      accounts,
+      total_balance
     });
   } catch (error) {
     console.error('Error fetching accounts:', error);
@@ -25,9 +26,12 @@ exports.getAccountById = async (req, res) => {
     const userId = req.user?.id || '673e8d9a5e9e123456789abc';
     const accountId = req.params.id;
 
-    // For demo: return from mock data
-    const mockAccounts = require('../data/mockAccounts.json');
-    const account = mockAccounts.find(acc => acc.account_id === accountId);
+    const account = await Account.findOne({
+      $or: [
+        { account_id: accountId },
+        { _id: accountId }
+      ]
+    });
 
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });
@@ -54,7 +58,7 @@ exports.createAccount = async (req, res) => {
     }
 
     // Create account object
-    const newAccount = {
+    const accountData = {
       account_id: `manual_${uuidv4()}`,
       user_id: userId,
       is_manual: true,
@@ -69,24 +73,14 @@ exports.createAccount = async (req, res) => {
       },
       mask: mask || null,
       verification_status: 'verified',
-      last_sync: new Date(),
-      createdAt: new Date(),
-      updatedAt: new Date()
+      last_sync: new Date()
     };
 
-    // In production, save to MongoDB:
-    // const account = new Account(newAccount);
-    // await account.save();
+    // Save to MongoDB
+    const account = new Account(accountData);
+    await account.save();
 
-    // For demo: append to mock data file
-    const fs = require('fs');
-    const path = require('path');
-    const mockFilePath = path.join(__dirname, '../data/mockAccounts.json');
-    const mockAccounts = require('../data/mockAccounts.json');
-    mockAccounts.push(newAccount);
-    fs.writeFileSync(mockFilePath, JSON.stringify(mockAccounts, null, 2));
-
-    res.status(201).json(newAccount);
+    res.status(201).json(account);
   } catch (error) {
     console.error('Error creating account:', error);
     res.status(500).json({ error: 'Failed to create account' });
@@ -100,33 +94,33 @@ exports.updateAccount = async (req, res) => {
     const accountId = req.params.id;
     const { bank_name, name, type, subtype, current_balance, mask } = req.body;
 
-    // For demo: update in mock data
-    const fs = require('fs');
-    const path = require('path');
-    const mockFilePath = path.join(__dirname, '../data/mockAccounts.json');
-    const mockAccounts = require('../data/mockAccounts.json');
+    // Find account by account_id or MongoDB _id
+    const account = await Account.findOne({
+      $or: [
+        { account_id: accountId },
+        { _id: accountId }
+      ]
+    });
 
-    const accountIndex = mockAccounts.findIndex(acc => acc.account_id === accountId);
-
-    if (accountIndex === -1) {
+    if (!account) {
       return res.status(404).json({ error: 'Account not found' });
     }
 
     // Update fields
-    if (bank_name) mockAccounts[accountIndex].bank_name = bank_name;
-    if (name) mockAccounts[accountIndex].name = name;
-    if (type) mockAccounts[accountIndex].type = type;
-    if (subtype) mockAccounts[accountIndex].subtype = subtype;
+    if (bank_name) account.bank_name = bank_name;
+    if (name) account.name = name;
+    if (type) account.type = type;
+    if (subtype) account.subtype = subtype;
     if (current_balance !== undefined) {
-      mockAccounts[accountIndex].balances.current = parseFloat(current_balance);
-      mockAccounts[accountIndex].balances.available = parseFloat(current_balance);
+      account.balances.current = parseFloat(current_balance);
+      account.balances.available = parseFloat(current_balance);
     }
-    if (mask) mockAccounts[accountIndex].mask = mask;
-    mockAccounts[accountIndex].updatedAt = new Date();
+    if (mask) account.mask = mask;
+    account.last_sync = new Date();
 
-    fs.writeFileSync(mockFilePath, JSON.stringify(mockAccounts, null, 2));
+    await account.save();
 
-    res.json(mockAccounts[accountIndex]);
+    res.json(account);
   } catch (error) {
     console.error('Error updating account:', error);
     res.status(500).json({ error: 'Failed to update account' });
@@ -139,23 +133,19 @@ exports.deleteAccount = async (req, res) => {
     const userId = req.user?.id || '673e8d9a5e9e123456789abc';
     const accountId = req.params.id;
 
-    // For demo: remove from mock data
-    const fs = require('fs');
-    const path = require('path');
-    const mockFilePath = path.join(__dirname, '../data/mockAccounts.json');
-    const mockAccounts = require('../data/mockAccounts.json');
+    // Find and delete account by account_id or MongoDB _id
+    const account = await Account.findOneAndDelete({
+      $or: [
+        { account_id: accountId },
+        { _id: accountId }
+      ]
+    });
 
-    const accountIndex = mockAccounts.findIndex(acc => acc.account_id === accountId);
-
-    if (accountIndex === -1) {
+    if (!account) {
       return res.status(404).json({ error: 'Account not found' });
     }
 
-    // Remove account
-    const deletedAccount = mockAccounts.splice(accountIndex, 1)[0];
-    fs.writeFileSync(mockFilePath, JSON.stringify(mockAccounts, null, 2));
-
-    res.json({ message: 'Account deleted successfully', account: deletedAccount });
+    res.json({ message: 'Account deleted successfully', account });
   } catch (error) {
     console.error('Error deleting account:', error);
     res.status(500).json({ error: 'Failed to delete account' });

@@ -1,5 +1,5 @@
-const mockTransactions = require('../data/mockTransactions.json');
-const mockAccounts = require('../data/mockAccounts.json');
+const Transaction = require('../models/Transaction');
+const Account = require('../models/Account');
 const { categorizeTransaction } = require('../utils/categorizer');
 
 /**
@@ -7,20 +7,22 @@ const { categorizeTransaction } = require('../utils/categorizer');
  */
 const getSummary = async (req, res) => {
   try {
+    // Get all accounts
+    const accounts = await Account.find();
+
     // Calculate total balance across all accounts
-    const totalBalance = mockAccounts.reduce((sum, acc) => {
+    const totalBalance = accounts.reduce((sum, acc) => {
       return sum + acc.balances.current;
     }, 0);
 
     // Get this month's transactions
     const now = new Date();
-    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-      .toISOString()
-      .split('T')[0];
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const thisMonthTransactions = mockTransactions.filter(
-      t => t.date >= thisMonthStart && t.amount > 0
-    );
+    const thisMonthTransactions = await Transaction.find({
+      date: { $gte: thisMonthStart },
+      amount: { $gt: 0 }
+    });
 
     const thisMonthSpending = thisMonthTransactions.reduce(
       (sum, t) => sum + t.amount,
@@ -28,16 +30,13 @@ const getSummary = async (req, res) => {
     );
 
     // Get last month's spending for comparison
-    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-      .toISOString()
-      .split('T')[0];
-    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
-      .toISOString()
-      .split('T')[0];
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
-    const lastMonthTransactions = mockTransactions.filter(
-      t => t.date >= lastMonthStart && t.date <= lastMonthEnd && t.amount > 0
-    );
+    const lastMonthTransactions = await Transaction.find({
+      date: { $gte: lastMonthStart, $lte: lastMonthEnd },
+      amount: { $gt: 0 }
+    });
 
     const lastMonthSpending = lastMonthTransactions.reduce(
       (sum, t) => sum + t.amount,
@@ -50,13 +49,19 @@ const getSummary = async (req, res) => {
         : 0;
 
     // Get income this month
-    const thisMonthIncome = mockTransactions
-      .filter(t => t.date >= thisMonthStart && t.amount < 0)
-      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    const thisMonthIncomeTransactions = await Transaction.find({
+      date: { $gte: thisMonthStart },
+      amount: { $lt: 0 }
+    });
+
+    const thisMonthIncome = thisMonthIncomeTransactions.reduce(
+      (sum, t) => sum + Math.abs(t.amount),
+      0
+    );
 
     // Top spending categories this month
     const categorized = thisMonthTransactions.map(t => ({
-      ...t,
+      ...t.toObject(),
       category: t.category?.[0] || categorizeTransaction(t),
     }));
 
@@ -77,7 +82,7 @@ const getSummary = async (req, res) => {
       spending_change_percent: parseFloat(spendingChange.toFixed(1)),
       spending_trend: spendingChange > 0 ? 'up' : spendingChange < 0 ? 'down' : 'stable',
       top_categories: topCategories,
-      accounts: mockAccounts.map(acc => ({
+      accounts: accounts.map(acc => ({
         name: acc.name,
         type: acc.subtype,
         balance: acc.balances.current,
@@ -99,15 +104,19 @@ const getSpendingByPeriod = async (req, res) => {
     let groupedData = [];
     const now = new Date();
 
+    // Get all transactions with positive amounts (expenses)
+    const allTransactions = await Transaction.find({ amount: { $gt: 0 } }).sort({ date: 1 });
+
     if (period === 'week') {
       // Last 7 days
       for (let i = 6; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
+        const nextDayStr = new Date(date.getTime() + 86400000).toISOString().split('T')[0];
 
-        const dayTransactions = mockTransactions.filter(
-          t => t.date === dateStr && t.amount > 0
+        const dayTransactions = allTransactions.filter(
+          t => t.date.toISOString().split('T')[0] === dateStr
         );
 
         const total = dayTransactions.reduce((sum, t) => sum + t.amount, 0);
@@ -127,9 +136,9 @@ const getSpendingByPeriod = async (req, res) => {
         const weekStart = new Date(weekEnd);
         weekStart.setDate(weekStart.getDate() - 6);
 
-        const weekTransactions = mockTransactions.filter(t => {
+        const weekTransactions = allTransactions.filter(t => {
           const tDate = new Date(t.date);
-          return tDate >= weekStart && tDate <= weekEnd && t.amount > 0;
+          return tDate >= weekStart && tDate <= weekEnd;
         });
 
         const total = weekTransactions.reduce((sum, t) => sum + t.amount, 0);
@@ -145,23 +154,21 @@ const getSpendingByPeriod = async (req, res) => {
       // Last 3 months
       for (let i = 2; i >= 0; i--) {
         const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const monthStart = monthDate.toISOString().split('T')[0];
         const monthEnd = new Date(
           monthDate.getFullYear(),
           monthDate.getMonth() + 1,
           0
-        )
-          .toISOString()
-          .split('T')[0];
-
-        const monthTransactions = mockTransactions.filter(
-          t => t.date >= monthStart && t.date <= monthEnd && t.amount > 0
         );
+
+        const monthTransactions = allTransactions.filter(t => {
+          const tDate = new Date(t.date);
+          return tDate >= monthDate && tDate <= monthEnd;
+        });
 
         const total = monthTransactions.reduce((sum, t) => sum + t.amount, 0);
 
         groupedData.push({
-          date: monthStart,
+          date: monthDate.toISOString().split('T')[0],
           label: monthDate.toLocaleDateString('en-US', { month: 'short' }),
           total: parseFloat(total.toFixed(2)),
           count: monthTransactions.length,
@@ -171,23 +178,21 @@ const getSpendingByPeriod = async (req, res) => {
       // Last 12 months
       for (let i = 11; i >= 0; i--) {
         const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const monthStart = monthDate.toISOString().split('T')[0];
         const monthEnd = new Date(
           monthDate.getFullYear(),
           monthDate.getMonth() + 1,
           0
-        )
-          .toISOString()
-          .split('T')[0];
-
-        const monthTransactions = mockTransactions.filter(
-          t => t.date >= monthStart && t.date <= monthEnd && t.amount > 0
         );
+
+        const monthTransactions = allTransactions.filter(t => {
+          const tDate = new Date(t.date);
+          return tDate >= monthDate && tDate <= monthEnd;
+        });
 
         const total = monthTransactions.reduce((sum, t) => sum + t.amount, 0);
 
         groupedData.push({
-          date: monthStart,
+          date: monthDate.toISOString().split('T')[0],
           label: monthDate.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
           total: parseFloat(total.toFixed(2)),
           count: monthTransactions.length,
@@ -197,7 +202,7 @@ const getSpendingByPeriod = async (req, res) => {
 
     // Calculate average and total
     const totalSpending = groupedData.reduce((sum, d) => sum + d.total, 0);
-    const averageSpending = totalSpending / groupedData.length;
+    const averageSpending = groupedData.length > 0 ? totalSpending / groupedData.length : 0;
 
     res.json({
       period,
@@ -236,16 +241,15 @@ const getCategoryBreakdown = async (req, res) => {
       startDate.setFullYear(startDate.getFullYear() - 1);
     }
 
-    const startDateStr = startDate.toISOString().split('T')[0];
-
     // Filter transactions
-    const periodTransactions = mockTransactions.filter(
-      t => t.date >= startDateStr && t.amount > 0
-    );
+    const periodTransactions = await Transaction.find({
+      date: { $gte: startDate },
+      amount: { $gt: 0 }
+    });
 
     // Categorize and group
     const categorized = periodTransactions.map(t => ({
-      ...t,
+      ...t.toObject(),
       category: t.category?.[0] || categorizeTransaction(t),
     }));
 
@@ -269,7 +273,7 @@ const getCategoryBreakdown = async (req, res) => {
         category,
         total: parseFloat(data.total.toFixed(2)),
         count: data.count,
-        percentage: parseFloat(((data.total / totalSpending) * 100).toFixed(1)),
+        percentage: totalSpending > 0 ? parseFloat(((data.total / totalSpending) * 100).toFixed(1)) : 0,
       }))
       .sort((a, b) => b.total - a.total);
 
