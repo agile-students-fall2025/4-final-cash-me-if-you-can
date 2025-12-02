@@ -5,7 +5,6 @@ module.exports = (req, res, next) => {
   const authHeader = req.headers.authorization;
   // Expect header form: "Bearer <token>"
   const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
-  console.log("Token from header:", token);
 
   if (!token) {
     return res.status(401).json({ error: 'Authentication token missing' });
