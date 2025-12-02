@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import SettingsPage from './components/user-data/SettingsPage';
 import { UserProvider, UserContext } from'./components/user-data/UserContext'
@@ -97,6 +97,10 @@ function AppContent() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, logoutUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Determine if we're on a public page (login/register)
+  const isPublicPage = location.pathname === '/' || location.pathname === '/register';
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -120,29 +124,34 @@ function AppContent() {
 
   return (
     <div className="App">
-      <div className="hamburger" onClick={toggleMenu}>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      {/* Only show hamburger menu when user is logged in and not on public pages */}
+      {user && !isPublicPage && (
+        <>
+          <div className="hamburger" onClick={toggleMenu}>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
 
-      <div className={`menu ${menuOpen ? 'open' : ''}`}>
-        <div className="menu-content">
-          <Link to="/home" onClick={closeMenu}>Home</Link>
-          <Link to="/dashboard" onClick={closeMenu}>Dashboard</Link>
-          <Link to="/networth" onClick={closeMenu}>Net Worth</Link>
-          <Link to="/chatbot" onClick={closeMenu}>Financial Assistant</Link>
-          <Link to="/connect" onClick={closeMenu}>Manage Accounts</Link>
-          <Link to="/categorize" onClick={closeMenu}>Transactions</Link>
-          <Link to="/recurring" onClick={closeMenu}>Recurring</Link>
-          <Link to="/settings" onClick={closeMenu}>Settings</Link>
-          <button className="logout-button" onClick={handleAuth}>
-            {user ? "Log out" : "Login"}
-          </button>
-        </div>
-      </div>
+          <div className={`menu ${menuOpen ? 'open' : ''}`}>
+            <div className="menu-content">
+              <Link to="/home" onClick={closeMenu}>Home</Link>
+              <Link to="/dashboard" onClick={closeMenu}>Dashboard</Link>
+              <Link to="/networth" onClick={closeMenu}>Net Worth</Link>
+              <Link to="/chatbot" onClick={closeMenu}>Financial Assistant</Link>
+              <Link to="/connect" onClick={closeMenu}>Manage Accounts</Link>
+              <Link to="/categorize" onClick={closeMenu}>Transactions</Link>
+              <Link to="/recurring" onClick={closeMenu}>Recurring</Link>
+              <Link to="/settings" onClick={closeMenu}>Settings</Link>
+              <button className="logout-button" onClick={handleAuth}>
+                Log out
+              </button>
+            </div>
+          </div>
 
-      {menuOpen && <div className="overlay" onClick={closeMenu}></div>}
+          {menuOpen && <div className="overlay" onClick={closeMenu}></div>}
+        </>
+      )}
 
       <Routes>
         <Route path="/" element={<LoginPage />} />
