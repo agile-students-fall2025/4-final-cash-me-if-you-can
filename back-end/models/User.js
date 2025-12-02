@@ -26,7 +26,6 @@ const UserSchema = new mongoose.Schema(
     plaid_user_id: {
       type: String,
       default: null,
-      unique: true,
       sparse: true,
       index: true,
     },

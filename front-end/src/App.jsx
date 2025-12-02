@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
 import './App.css';
 import SettingsPage from './components/user-data/SettingsPage';
-import { UserProvider } from'./components/user-data/UserContext'
+import { UserProvider, UserContext } from'./components/user-data/UserContext'
 import TransactionCategories from './components/TransactionCategories.jsx';
 import ChatbotPage from './components/ChatbotPage.jsx';
 import LoginPage from './components/user-data/LoginPage.jsx';
+import RegisterPage from './components/user-data/RegisterPage.jsx';
 import ConnectAccounts from './components/ConnectAccounts.jsx';
 import SpendingGraph from './components/SpendingGraph.jsx';
 
@@ -70,6 +71,7 @@ function HomePage() {
 
 function AppContent() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, logoutUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   const toggleMenu = () => {
@@ -80,9 +82,16 @@ function AppContent() {
     setMenuOpen(false);
   };
 
-  const handleLogout = () => {
+  const handleAuth = () => {
     closeMenu();
-    navigate('/');
+
+    if (user) {
+      logoutUser();
+      localStorage.removeItem("token");
+      navigate("/");
+    } else {
+      navigate("/");
+    }
   };
 
   return (
@@ -101,7 +110,9 @@ function AppContent() {
           <Link to="/connect" onClick={closeMenu}>Connect Accounts</Link>
           <Link to="/categorize" onClick={closeMenu}>Categorize Transactions</Link>
           <Link to="/settings" onClick={closeMenu}>Settings</Link>
-          <button className="logout-button" onClick={handleLogout}>Log Out</button>
+          <button className="logout-button" onClick={handleAuth}>
+            {user ? "Log out" : "Login"}
+          </button>
         </div>
       </div>
 
@@ -109,6 +120,7 @@ function AppContent() {
 
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/chatbot" element={<ChatbotPage />} />
         <Route path="/connect" element={<ConnectAccounts />} />

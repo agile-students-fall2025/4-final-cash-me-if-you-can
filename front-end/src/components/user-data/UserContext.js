@@ -10,7 +10,7 @@ export function UserProvider({ children }) {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    fetch("http://localhost:5000/api/users/me", {
+    fetch("http://localhost:5001/api/users/me", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.json())
@@ -20,13 +20,13 @@ export function UserProvider({ children }) {
 
   const loginUser = (data) => setUser(data);
   const updateUser = (data) => setUser(data);
-  const logout = () => {
+  const logoutUser = () => {
     localStorage.removeItem("token");
     setUser(null);
   };
 
   return (
-    <UserContext.Provider value={{ user, loginUser, updateUser, logout }}>
+    <UserContext.Provider value={{ user, loginUser, updateUser, logoutUser }}>
       {children}
     </UserContext.Provider>
   );
