@@ -29,7 +29,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.0.0",
     "openai": "^4.20.1",
-    "plaid": "^18.0.0"
+    "plaid": "^18.0.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "c8": "^10.1.3",

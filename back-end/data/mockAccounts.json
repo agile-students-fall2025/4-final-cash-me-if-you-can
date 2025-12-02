@@ -1,6 +1,9 @@
 [
   {
     "account_id": "acc_checking_001",
+    "user_id": "673e8d9a5e9e123456789abc",
+    "is_manual": true,
+    "bank_name": "Chase",
     "name": "Student Checking",
     "official_name": "Chase College Checking",
     "type": "depository",
@@ -8,12 +11,18 @@
     "balances": {
       "available": 842.15,
       "current": 842.15,
-      "limit": null
+      "limit": null,
+      "currency": "USD"
     },
-    "mask": "0000"
+    "mask": "0000",
+    "verification_status": "verified",
+    "last_sync": "2025-11-16T12:00:00.000Z"
   },
   {
     "account_id": "acc_savings_001",
+    "user_id": "673e8d9a5e9e123456789abc",
+    "is_manual": true,
+    "bank_name": "Chase",
     "name": "Emergency Savings",
     "official_name": "Chase Savings",
     "type": "depository",
@@ -21,12 +30,18 @@
     "balances": {
       "available": 1250.00,
       "current": 1250.00,
-      "limit": null
+      "limit": null,
+      "currency": "USD"
     },
-    "mask": "1111"
+    "mask": "1111",
+    "verification_status": "verified",
+    "last_sync": "2025-11-16T12:00:00.000Z"
   },
   {
     "account_id": "acc_credit_001",
+    "user_id": "673e8d9a5e9e123456789abc",
+    "is_manual": true,
+    "bank_name": "Discover",
     "name": "Student Credit Card",
     "official_name": "Discover it Student",
     "type": "credit",
@@ -34,8 +49,11 @@
     "balances": {
       "available": 685.23,
       "current": 314.77,
-      "limit": 1000
+      "limit": 1000,
+      "currency": "USD"
     },
-    "mask": "2222"
+    "mask": "2222",
+    "verification_status": "verified",
+    "last_sync": "2025-11-16T12:00:00.000Z"
   }
 ]

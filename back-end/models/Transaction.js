@@ -15,6 +15,16 @@ const transactionSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  // Manual vs Plaid flag
+  is_manual: {
+    type: Boolean,
+    default: false,
+  },
+  source: {
+    type: String,
+    enum: ['plaid', 'manual', 'import'],
+    default: 'manual',
+  },
   date: {
     type: Date,
     required: true,
@@ -33,6 +43,13 @@ const transactionSchema = new mongoose.Schema({
   category: {
     type: [String],
     default: [],
+  },
+  // Manual entry fields
+  notes: {
+    type: String,
+  },
+  receipt_url: {
+    type: String,
   },
   pending: {
     type: Boolean,

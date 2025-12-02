@@ -1,134 +1,314 @@
 import React, { useState, useEffect } from 'react';
 import './ConnectAccounts.css';
-import connectedAccountsData from '../data/connectedAccounts.json';
-import availableInstitutionsData from '../data/availableInstitutions.json';
-import { plaidAPI } from '../services/api';
+import { accountAPI } from '../services/api';
 
 function ConnectAccounts() {
-  const [connectedAccounts, setConnectedAccounts] = useState(connectedAccountsData);
-  const availableInstitutions = availableInstitutionsData;
-  const [linkToken, setLinkToken] = useState(null);
+  const [accounts, setAccounts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [formData, setFormData] = useState({
+    bank_name: '',
+    name: '',
+    type: 'depository',
+    subtype: 'checking',
+    current_balance: '',
+    mask: ''
+  });
 
   useEffect(() => {
-    // Load Plaid Link script
-    const script = document.createElement('script');
-    script.src = 'https://cdn.plaid.com/link/v2/stable/link-initialize.js';
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
+    loadAccounts();
   }, []);
 
-  const handleConnectAccount = async (institution) => {
+  const loadAccounts = async () => {
     setIsLoading(true);
     try {
-      // Get link token from backend
-      const response = await plaidAPI.createLinkToken();
-
-      if (!response.link_token) {
-        alert('Unable to connect. Make sure backend server is running with Plaid credentials.');
-        setIsLoading(false);
-        return;
-      }
-
-      // Initialize Plaid Link
-      if (window.Plaid) {
-        const handler = window.Plaid.create({
-          token: response.link_token,
-          onSuccess: async (public_token, metadata) => {
-            console.log('Plaid Link success:', metadata);
-
-            // Exchange public token for access token
-            try {
-              const exchangeResponse = await plaidAPI.exchangePublicToken(public_token);
-              console.log('Token exchange success:', exchangeResponse);
-
-              // Get accounts
-              const accountsResponse = await plaidAPI.getAccounts(exchangeResponse.access_token);
-              console.log('Accounts fetched:', accountsResponse);
-
-              alert(`Successfully connected to ${metadata.institution.name}! Check console for details.`);
-
-              // Update connected accounts list
-              // In production, you'd add the new accounts to state
-            } catch (error) {
-              console.error('Error exchanging token:', error);
-              alert('Connected to Plaid but error exchanging token. Check console.');
-            }
-          },
-          onExit: (err, metadata) => {
-            if (err) {
-              console.error('Plaid Link error:', err);
-            }
-            console.log('Plaid Link exit:', metadata);
-            setIsLoading(false);
-          },
-        });
-
-        handler.open();
-      } else {
-        alert('Plaid SDK not loaded. Please refresh the page.');
-      }
+      const response = await accountAPI.getAccounts();
+      setAccounts(response.accounts || []);
     } catch (error) {
-      console.error('Error creating link token:', error);
-      alert('Error connecting to Plaid. Make sure backend is running on port 5000 (or check your .env file).');
+      console.error('Error loading accounts:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const getAccountIcon = (type) => {
-    switch(type) {
-      case 'bank':
-        return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="1" y="4" width="22" height="16" rx="2" />
-            <path d="M1 10h22" />
-          </svg>
-        );
-      case 'savings':
-        return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 6v6l4 2" />
-          </svg>
-        );
-      case 'investment':
-        return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M3 3v18h18" />
-            <path d="M18 9l-5 5-4-4-4 4" />
-          </svg>
-        );
-      default:
-        return null;
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const accountData = {
+        ...formData,
+        current_balance: parseFloat(formData.current_balance)
+      };
+
+      const response = await accountAPI.createAccount(accountData);
+
+      // Add the new account to the list
+      setAccounts(prev => [...prev, response]);
+
+      // Reset form
+      setFormData({
+        bank_name: '',
+        name: '',
+        type: 'depository',
+        subtype: 'checking',
+        current_balance: '',
+        mask: ''
+      });
+      setShowAddForm(false);
+
+      // Reload accounts to get latest data
+      loadAccounts();
+    } catch (error) {
+      console.error('Error creating account:', error);
+      alert('Failed to create account. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleDeleteAccount = async (accountId) => {
+    if (!window.confirm('Are you sure you want to delete this account?')) {
+      return;
+    }
+
+    try {
+      await accountAPI.deleteAccount(accountId);
+      setAccounts(prev => prev.filter(acc => acc.account_id !== accountId));
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('Failed to delete account. Please try again.');
+    }
+  };
+
+  const getAccountIcon = (type, subtype) => {
+    if (type === 'credit' || subtype === 'credit card') {
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="1" y="4" width="22" height="16" rx="2" />
+          <path d="M1 10h22" />
+        </svg>
+      );
+    } else if (type === 'depository' && subtype === 'savings') {
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+        </svg>
+      );
+    } else if (type === 'investment') {
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M3 3v18h18" />
+          <path d="M18 9l-5 5-4-4-4 4" />
+        </svg>
+      );
+    } else {
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      );
+    }
+  };
+
+  const formatBalance = (balance) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(balance);
+  };
+
+  const getAccountTypeLabel = (type, subtype) => {
+    if (type === 'depository') {
+      return subtype.charAt(0).toUpperCase() + subtype.slice(1);
+    } else if (type === 'credit') {
+      return 'Credit Card';
+    } else if (type === 'investment') {
+      return 'Investment';
+    }
+    return type;
   };
 
   return (
     <div className="connect-accounts-page">
       <div className="page-header">
-        <h1>Connect Accounts</h1>
-        <p>Securely link your financial accounts using Plaid API</p>
+        <h1>My Accounts</h1>
+        <p>Manage your financial accounts</p>
       </div>
 
       <div className="accounts-container">
         <section className="connected-section">
-          <h2>Connected Accounts</h2>
-          {connectedAccounts.length > 0 ? (
+          <div className="section-header">
+            <h2>Your Accounts</h2>
+            <button
+              className="add-account-btn"
+              onClick={() => setShowAddForm(!showAddForm)}
+            >
+              {showAddForm ? 'Cancel' : '+ Add Account'}
+            </button>
+          </div>
+
+          {showAddForm && (
+            <div className="add-account-form">
+              <h3>Add New Account</h3>
+              <form onSubmit={handleSubmit}>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Bank/Institution Name *</label>
+                    <input
+                      type="text"
+                      name="bank_name"
+                      value={formData.bank_name}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Chase, Bank of America"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Account Name *</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Student Checking"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Account Type *</label>
+                    <select
+                      name="type"
+                      value={formData.type}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="depository">Depository</option>
+                      <option value="credit">Credit</option>
+                      <option value="investment">Investment</option>
+                      <option value="loan">Loan</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Subtype *</label>
+                    <select
+                      name="subtype"
+                      value={formData.subtype}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      {formData.type === 'depository' && (
+                        <>
+                          <option value="checking">Checking</option>
+                          <option value="savings">Savings</option>
+                          <option value="money market">Money Market</option>
+                        </>
+                      )}
+                      {formData.type === 'credit' && (
+                        <>
+                          <option value="credit card">Credit Card</option>
+                        </>
+                      )}
+                      {formData.type === 'investment' && (
+                        <>
+                          <option value="brokerage">Brokerage</option>
+                          <option value="401k">401k</option>
+                          <option value="ira">IRA</option>
+                        </>
+                      )}
+                      {formData.type === 'loan' && (
+                        <>
+                          <option value="student">Student Loan</option>
+                          <option value="mortgage">Mortgage</option>
+                          <option value="auto">Auto Loan</option>
+                        </>
+                      )}
+                      {formData.type === 'other' && (
+                        <option value="other">Other</option>
+                      )}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Current Balance *</label>
+                    <input
+                      type="number"
+                      name="current_balance"
+                      value={formData.current_balance}
+                      onChange={handleInputChange}
+                      placeholder="0.00"
+                      step="0.01"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Last 4 Digits (Optional)</label>
+                    <input
+                      type="text"
+                      name="mask"
+                      value={formData.mask}
+                      onChange={handleInputChange}
+                      placeholder="1234"
+                      maxLength="4"
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" className="submit-btn" disabled={isLoading}>
+                  {isLoading ? 'Adding...' : 'Add Account'}
+                </button>
+              </form>
+            </div>
+          )}
+
+          {isLoading && !showAddForm ? (
+            <p className="loading-state">Loading accounts...</p>
+          ) : accounts.length > 0 ? (
             <div className="accounts-grid">
-              {connectedAccounts.map((account) => (
-                <div key={account.id} className="account-card connected">
+              {accounts.map((account) => (
+                <div key={account.account_id} className="account-card">
                   <div className="account-icon">
-                    {getAccountIcon('bank')}
+                    {getAccountIcon(account.type, account.subtype)}
                   </div>
                   <div className="account-info">
-                    <h3>{account.institution}</h3>
-                    <p className="account-type">{account.accountType} {account.accountNumber}</p>
-                    <p className="account-balance">{account.balance}</p>
+                    <div className="account-header">
+                      <h3>{account.bank_name}</h3>
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDeleteAccount(account.account_id)}
+                        title="Delete account"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <p className="account-name">{account.name}</p>
+                    <p className="account-type">
+                      {getAccountTypeLabel(account.type, account.subtype)}
+                      {account.mask && ` •••• ${account.mask}`}
+                    </p>
+                    <p className={`account-balance ${account.type === 'credit' ? 'credit' : ''}`}>
+                      {formatBalance(account.balances.current)}
+                      {account.type === 'credit' && account.balances.limit && (
+                        <span className="credit-limit">
+                          {' '}/ {formatBalance(account.balances.limit)} limit
+                        </span>
+                      )}
+                    </p>
                   </div>
                   <div className="connected-badge">
                     <span>✓</span>
@@ -137,36 +317,10 @@ function ConnectAccounts() {
               ))}
             </div>
           ) : (
-            <p className="empty-state">No accounts connected yet</p>
+            <p className="empty-state">
+              No accounts yet. Click "Add Account" to get started!
+            </p>
           )}
-        </section>
-
-        <section className="available-section">
-          <h2>Available Institutions</h2>
-          <div className="institutions-grid">
-            {availableInstitutions.map((institution, index) => (
-              <div key={index} className="institution-card">
-                <div className="institution-icon">
-                  {getAccountIcon(institution.type)}
-                </div>
-                <div className="institution-info">
-                  <h3>{institution.name}</h3>
-                  <p className="institution-type">
-                    {institution.type === 'bank' && 'Banking'}
-                    {institution.type === 'savings' && 'Savings Account'}
-                    {institution.type === 'investment' && 'Investment Account'}
-                  </p>
-                </div>
-                <button
-                  className="connect-button"
-                  onClick={() => handleConnectAccount(institution)}
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Connecting...' : 'Connect'}
-                </button>
-              </div>
-            ))}
-          </div>
         </section>
       </div>
     </div>

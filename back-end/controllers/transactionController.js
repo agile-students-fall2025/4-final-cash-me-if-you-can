@@ -1,5 +1,6 @@
 const Transaction = require('../models/Transaction');
 const Category = require('../models/Category');
+const { v4: uuidv4 } = require('uuid');
 const {
   categorizeTransaction,
   categorizeTransactions,
@@ -238,8 +239,138 @@ const createCategory = async (req, res) => {
   }
 };
 
+// Create new manual transaction
+const createTransaction = async (req, res) => {
+  try {
+    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const { account_id, date, name, merchant_name, amount, category, payment_channel, notes } = req.body;
+
+    // Validation
+    if (!account_id || !date || !name || amount === undefined) {
+      return res.status(400).json({
+        error: 'Missing required fields: account_id, date, name, amount'
+      });
+    }
+
+    // Create transaction object
+    const newTransaction = {
+      transaction_id: `manual_${uuidv4()}`,
+      account_id,
+      user_id: userId,
+      is_manual: true,
+      source: 'manual',
+      date: new Date(date),
+      name,
+      merchant_name: merchant_name || name,
+      amount: parseFloat(amount),
+      category: category ? (Array.isArray(category) ? category : [category]) : [],
+      payment_channel: payment_channel || 'other',
+      notes: notes || '',
+      pending: false,
+      currency_code: 'USD'
+    };
+
+    // Auto-categorize if no category provided
+    if (newTransaction.category.length === 0) {
+      const suggestedCategory = categorizeTransaction(newTransaction);
+      newTransaction.category = [suggestedCategory];
+    }
+
+    // In production, save to MongoDB:
+    // const transaction = new Transaction(newTransaction);
+    // await transaction.save();
+
+    // For demo: append to mock data file
+    const fs = require('fs');
+    const path = require('path');
+    const mockFilePath = path.join(__dirname, '../data/mockTransactions.json');
+    const mockTransactions = require('../data/mockTransactions.json');
+    mockTransactions.unshift(newTransaction); // Add to beginning
+    fs.writeFileSync(mockFilePath, JSON.stringify(mockTransactions, null, 2));
+
+    res.status(201).json(newTransaction);
+  } catch (error) {
+    console.error('Error creating transaction:', error);
+    res.status(500).json({ error: 'Failed to create transaction' });
+  }
+};
+
+// Update transaction
+const updateTransaction = async (req, res) => {
+  try {
+    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const transactionId = req.params.id;
+    const { date, name, merchant_name, amount, category, payment_channel, notes } = req.body;
+
+    // For demo: update in mock data
+    const fs = require('fs');
+    const path = require('path');
+    const mockFilePath = path.join(__dirname, '../data/mockTransactions.json');
+    const mockTransactions = require('../data/mockTransactions.json');
+
+    const transactionIndex = mockTransactions.findIndex(
+      t => t.transaction_id === transactionId || t.id?.toString() === transactionId
+    );
+
+    if (transactionIndex === -1) {
+      return res.status(404).json({ error: 'Transaction not found' });
+    }
+
+    // Update fields
+    if (date) mockTransactions[transactionIndex].date = new Date(date);
+    if (name) mockTransactions[transactionIndex].name = name;
+    if (merchant_name) mockTransactions[transactionIndex].merchant_name = merchant_name;
+    if (amount !== undefined) mockTransactions[transactionIndex].amount = parseFloat(amount);
+    if (category) mockTransactions[transactionIndex].category = Array.isArray(category) ? category : [category];
+    if (payment_channel) mockTransactions[transactionIndex].payment_channel = payment_channel;
+    if (notes !== undefined) mockTransactions[transactionIndex].notes = notes;
+    mockTransactions[transactionIndex].updatedAt = new Date();
+
+    fs.writeFileSync(mockFilePath, JSON.stringify(mockTransactions, null, 2));
+
+    res.json(mockTransactions[transactionIndex]);
+  } catch (error) {
+    console.error('Error updating transaction:', error);
+    res.status(500).json({ error: 'Failed to update transaction' });
+  }
+};
+
+// Delete transaction
+const deleteTransaction = async (req, res) => {
+  try {
+    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const transactionId = req.params.id;
+
+    // For demo: remove from mock data
+    const fs = require('fs');
+    const path = require('path');
+    const mockFilePath = path.join(__dirname, '../data/mockTransactions.json');
+    const mockTransactions = require('../data/mockTransactions.json');
+
+    const transactionIndex = mockTransactions.findIndex(
+      t => t.transaction_id === transactionId || t.id?.toString() === transactionId
+    );
+
+    if (transactionIndex === -1) {
+      return res.status(404).json({ error: 'Transaction not found' });
+    }
+
+    // Remove transaction
+    const deletedTransaction = mockTransactions.splice(transactionIndex, 1)[0];
+    fs.writeFileSync(mockFilePath, JSON.stringify(mockTransactions, null, 2));
+
+    res.json({ message: 'Transaction deleted successfully', transaction: deletedTransaction });
+  } catch (error) {
+    console.error('Error deleting transaction:', error);
+    res.status(500).json({ error: 'Failed to delete transaction' });
+  }
+};
+
 module.exports = {
   getTransactions,
+  createTransaction,
+  updateTransaction,
+  deleteTransaction,
   categorizeAll,
   updateCategory,
   getCategorySuggestions,

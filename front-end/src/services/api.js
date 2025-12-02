@@ -42,12 +42,77 @@ export const plaidAPI = {
 };
 
 /**
+ * Account API calls
+ */
+export const accountAPI = {
+  getAccounts: async () => {
+    const response = await fetch(`${API_BASE_URL}/accounts`);
+    return response.json();
+  },
+
+  getAccountById: async (accountId) => {
+    const response = await fetch(`${API_BASE_URL}/accounts/${accountId}`);
+    return response.json();
+  },
+
+  createAccount: async (accountData) => {
+    const response = await fetch(`${API_BASE_URL}/accounts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(accountData),
+    });
+    return response.json();
+  },
+
+  updateAccount: async (accountId, accountData) => {
+    const response = await fetch(`${API_BASE_URL}/accounts/${accountId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(accountData),
+    });
+    return response.json();
+  },
+
+  deleteAccount: async (accountId) => {
+    const response = await fetch(`${API_BASE_URL}/accounts/${accountId}`, {
+      method: 'DELETE',
+    });
+    return response.json();
+  },
+};
+
+/**
  * Transaction API calls
  */
 export const transactionAPI = {
   getTransactions: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
     const response = await fetch(`${API_BASE_URL}/transactions?${queryString}`);
+    return response.json();
+  },
+
+  createTransaction: async (transactionData) => {
+    const response = await fetch(`${API_BASE_URL}/transactions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(transactionData),
+    });
+    return response.json();
+  },
+
+  updateTransaction: async (transactionId, transactionData) => {
+    const response = await fetch(`${API_BASE_URL}/transactions/${transactionId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(transactionData),
+    });
+    return response.json();
+  },
+
+  deleteTransaction: async (transactionId) => {
+    const response = await fetch(`${API_BASE_URL}/transactions/${transactionId}`, {
+      method: 'DELETE',
+    });
     return response.json();
   },
 

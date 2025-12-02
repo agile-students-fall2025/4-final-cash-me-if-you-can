@@ -11,7 +11,21 @@ const accountSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  // For Plaid accounts
   item_id: {
+    type: String,
+    required: false,
+  },
+  access_token: {
+    type: String,
+  },
+  // Manual vs Plaid flag
+  is_manual: {
+    type: Boolean,
+    default: false,
+  },
+  // Bank information
+  bank_name: {
     type: String,
     required: true,
   },
@@ -69,10 +83,11 @@ const accountSchema = new mongoose.Schema({
   verification_status: {
     type: String,
     enum: ['pending', 'verified', 'failed'],
-    default: 'pending',
+    default: 'verified',
   },
-  access_token: {
-    type: String,
+  last_sync: {
+    type: Date,
+    default: Date.now,
   },
 }, {
   timestamps: true,
