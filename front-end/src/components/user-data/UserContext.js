@@ -5,7 +5,7 @@ export const UserContext = createContext();
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  // load user from backend on refresh
+  // Load user from backend on refresh
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -14,12 +14,22 @@ export function UserProvider({ children }) {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.json())
-      .then(data => setUser(data))
+      .then(data => {
+        if (data && !data.error) setUser(data);
+      })
       .catch(() => {});
   }, []);
 
-  const loginUser = (data) => setUser(data);
-  const updateUser = (data) => setUser(data);
+  const loginUser = (userData, token) => {
+    setUser(userData);
+    if (token) localStorage.setItem("token", token);
+  };
+
+  const updateUser = (updatedFields) => {
+    if(!updatedFields) return;
+    setUser((prev) => ({ ...prev, ...updatedFields }));
+  };
+
   const logoutUser = () => {
     localStorage.removeItem("token");
     setUser(null);

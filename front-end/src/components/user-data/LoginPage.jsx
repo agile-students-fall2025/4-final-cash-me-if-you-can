@@ -24,7 +24,7 @@ export default function LoginPage() {
     if (!res.ok) return alert(data.error);
 
     localStorage.setItem("token", data.token);
-    loginUser(data.user);
+    loginUser(data.user, data.token);
 
     navigate("/home");
   };

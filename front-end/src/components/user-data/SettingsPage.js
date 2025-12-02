@@ -11,6 +11,7 @@ export default function SettingsPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Fill form fields when user data loads
   useEffect(() => {
     if (user) {
       setFirst(user.firstName || "");
@@ -23,21 +24,28 @@ export default function SettingsPage() {
   const handleSave = async () => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5001/api/users/me", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ firstName, lastName, email, password }),
-    });
+    try {
+      const res = await fetch("http://localhost:5001/api/users/me", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ firstName, lastName, email, password }),
+      });
 
-    const data = await res.json();
-    if (!res.ok) return alert(data.error);
+      const data = await res.json();
+      if (!res.ok) return alert(data.error);
 
-    updateUser(data); 
-    alert("Profile updated!");
-    setPassword(""); // clear password field
+      // Merge updated fields into context
+      const updatedUser = data.user || data
+      updateUser(updatedUser);
+
+      alert("Profile updated!");
+      setPassword(""); // clear password field
+    } catch (err) {
+      alert("Failed to update profile: " + err.message);
+    }
   };
 
   if (loading) return <div>Loading your profile...</div>;
