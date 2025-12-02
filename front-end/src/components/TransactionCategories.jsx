@@ -1,160 +1,391 @@
 import React, { useState, useEffect } from 'react';
 import './TransactionCategories.css';
-import categoriesData from '../data/categories.json';
-import { transactionAPI } from '../services/api';
+import { transactionAPI, accountAPI } from '../services/api';
 
 function TransactionCategories() {
   const [transactions, setTransactions] = useState([]);
+  const [accounts, setAccounts] = useState([]);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
-  const [categories, setCategories] = useState(categoriesData);
-  const [newCategory, setNewCategory] = useState('');
-  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [formData, setFormData] = useState({
+    account_id: '',
+    date: new Date().toISOString().split('T')[0],
+    name: '',
+    amount: '',
+    category: '',
+    payment_channel: 'other',
+    notes: ''
+  });
 
   useEffect(() => {
-    fetchTransactions();
-    fetchCategories();
+    loadData();
   }, []);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await transactionAPI.getCategories();
-      if (response?.categories?.length) {
-        setCategories(response.categories);
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
-
-  const fetchTransactions = async () => {
+  const loadData = async () => {
     setLoading(true);
     try {
-      const response = await transactionAPI.getTransactions();
-      setTransactions(response.transactions || []);
+      const [txnResponse, catResponse, accResponse] = await Promise.all([
+        transactionAPI.getTransactions(),
+        transactionAPI.getCategories(),
+        accountAPI.getAccounts()
+      ]);
+
+      setTransactions(txnResponse.transactions || []);
+      setCategories(catResponse.categories || []);
+      setAccounts(accResponse.accounts || []);
     } catch (error) {
-      console.error('Error fetching transactions:', error);
-      setTransactions([]);
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const selectTransaction = (transaction) => {
-    setSelectedTransaction(transaction);
-    setShowNewCategoryInput(false);
-    setNewCategory('');
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const assignCategory = async (category) => {
-    if (selectedTransaction) {
-      try {
-        await transactionAPI.updateCategory(selectedTransaction.transaction_id, category);
-        setTransactions(transactions.map(t =>
-          t.transaction_id === selectedTransaction.transaction_id ? { ...t, category } : t
-        ));
-        setSelectedTransaction(null);
-      } catch (error) {
-        console.error('Error updating category:', error);
-      }
-    }
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  const handleCreateCategory = () => {
-    if (newCategory.trim() && !categories.includes(newCategory.trim())) {
-      const trimmedCategory = newCategory.trim();
+    try {
+      const transactionData = {
+        ...formData,
+        amount: parseFloat(formData.amount)
+      };
 
-      // Update backend so list stays in sync
-      transactionAPI.createCategory?.(trimmedCategory).catch(() => {
-        // If endpoint missing, fallback to local update only
+      const response = await transactionAPI.createTransaction(transactionData);
+      setTransactions(prev => [response, ...prev]);
+
+      // Reset form
+      setFormData({
+        account_id: '',
+        date: new Date().toISOString().split('T')[0],
+        name: '',
+        amount: '',
+        category: '',
+        payment_channel: 'other',
+        notes: ''
       });
-
-      setCategories(prev => [...prev, trimmedCategory]);
-      assignCategory(trimmedCategory);
-      setNewCategory('');
-      setShowNewCategoryInput(false);
+      setShowAddForm(false);
+      loadData();
+    } catch (error) {
+      console.error('Error creating transaction:', error);
+      alert('Failed to create transaction. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleCreateCategory();
+  const handleEdit = (transaction) => {
+    setFormData({
+      account_id: transaction.account_id,
+      date: transaction.date.split('T')[0],
+      name: transaction.name,
+      amount: Math.abs(transaction.amount).toString(),
+      category: Array.isArray(transaction.category) ? transaction.category[0] : transaction.category,
+      payment_channel: transaction.payment_channel || 'other',
+      notes: transaction.notes || ''
+    });
+    setSelectedTransaction(transaction);
+    setShowEditForm(true);
+    setShowAddForm(false);
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    if (!selectedTransaction) return;
+
+    setLoading(true);
+    try {
+      const transactionData = {
+        ...formData,
+        amount: parseFloat(formData.amount)
+      };
+
+      await transactionAPI.updateTransaction(
+        selectedTransaction.transaction_id || selectedTransaction.id,
+        transactionData
+      );
+
+      loadData();
+      setShowEditForm(false);
+      setSelectedTransaction(null);
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+      alert('Failed to update transaction. Please try again.');
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleDelete = async (transactionId) => {
+    if (!window.confirm('Are you sure you want to delete this transaction?')) {
+      return;
+    }
+
+    try {
+      await transactionAPI.deleteTransaction(transactionId);
+      setTransactions(prev => prev.filter(
+        t => t.transaction_id !== transactionId && t.id !== transactionId
+      ));
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      alert('Failed to delete transaction. Please try again.');
+    }
+  };
+
+  const getCategoryColor = (category) => {
+    const colors = {
+      'Income': '#10b981',
+      'Dining': '#f59e0b',
+      'Groceries': '#84cc16',
+      'Transportation': '#3b82f6',
+      'Entertainment': '#ec4899',
+      'Shopping': '#8b5cf6',
+      'Utilities': '#06b6d4',
+      'Healthcare': '#ef4444',
+      'Education': '#6366f1',
+      'Subscriptions': '#f97316',
+      'Travel': '#14b8a6',
+      'Personal Care': '#d946ef',
+      'Insurance': '#64748b',
+      'Investments': '#22c55e',
+      'Rent/Mortgage': '#dc2626'
+    };
+
+    if (Array.isArray(category) && category.length > 0) {
+      return colors[category[0]] || '#6b7280';
+    }
+    return colors[category] || '#6b7280';
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  const formatAmount = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(Math.abs(amount));
   };
 
   return (
     <div className="transactions-page">
-      <div className="transactions-container">
-        <h2>Categorize Transactions</h2>
+      <div className="page-header">
+        <h1>Transactions</h1>
+        <p>Manage and categorize your transactions</p>
+      </div>
 
-        {loading ? (
-          <div>Loading transactions...</div>
-        ) : (
-          <div className="transactions-list">
-            {transactions.map(transaction => (
-              <div
-                key={transaction.transaction_id}
-                className={`transaction-item ${selectedTransaction?.transaction_id === transaction.transaction_id ? 'selected' : ''}`}
-                onClick={() => selectTransaction(transaction)}
-              >
-                <div className="transaction-info">
-                  <div className="transaction-date">{transaction.date}</div>
-                  <div className="transaction-description">{transaction.name || transaction.merchant_name}</div>
+      <div className="transactions-container">
+        <div className="section-header">
+          <h2>All Transactions</h2>
+          <button
+            className="add-transaction-btn"
+            onClick={() => {
+              setShowAddForm(!showAddForm);
+              setShowEditForm(false);
+              setSelectedTransaction(null);
+            }}
+          >
+            {showAddForm ? 'Cancel' : '+ Add Transaction'}
+          </button>
+        </div>
+
+        {(showAddForm || showEditForm) && (
+          <div className="transaction-form">
+            <h3>{showEditForm ? 'Edit Transaction' : 'Add New Transaction'}</h3>
+            <form onSubmit={showEditForm ? handleUpdate : handleSubmit}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Account *</label>
+                  <select
+                    name="account_id"
+                    value={formData.account_id}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Select Account</option>
+                    {accounts.map((account) => (
+                      <option key={account.account_id} value={account.account_id}>
+                        {account.bank_name} - {account.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div className="transaction-right">
-                  <div className={`transaction-amount ${transaction.amount < 0 ? 'positive' : 'negative'}`}>
-                    {transaction.amount < 0 ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
-                  </div>
-                  {transaction.category && (
-                    <div className="transaction-category">{Array.isArray(transaction.category) ? transaction.category[0] : transaction.category}</div>
-                  )}
+                <div className="form-group">
+                  <label>Date *</label>
+                  <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </div>
               </div>
-            ))}
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Merchant/Description *</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="e.g., Starbucks, Rent Payment"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Amount *</label>
+                  <input
+                    type="number"
+                    name="amount"
+                    value={formData.amount}
+                    onChange={handleInputChange}
+                    placeholder="0.00"
+                    step="0.01"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Category</label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Auto-categorize</option>
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Payment Channel</label>
+                  <select
+                    name="payment_channel"
+                    value={formData.payment_channel}
+                    onChange={handleInputChange}
+                  >
+                    <option value="in store">In Store</option>
+                    <option value="online">Online</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Notes</label>
+                <textarea
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleInputChange}
+                  placeholder="Optional notes about this transaction"
+                  rows="3"
+                />
+              </div>
+
+              <div className="form-actions">
+                <button type="submit" className="submit-btn" disabled={loading}>
+                  {loading ? 'Saving...' : showEditForm ? 'Update Transaction' : 'Add Transaction'}
+                </button>
+                {showEditForm && (
+                  <button
+                    type="button"
+                    className="cancel-btn"
+                    onClick={() => {
+                      setShowEditForm(false);
+                      setSelectedTransaction(null);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </form>
           </div>
         )}
 
-        {selectedTransaction && (
-          <div className="category-selector">
-            <h3>Select Category for: {selectedTransaction.name || selectedTransaction.merchant_name}</h3>
-            <div className="categories-grid">
-              {categories.map(category => (
-                <button
-                  key={category}
-                  className="category-btn"
-                  onClick={() => assignCategory(category)}
-                >
-                  {category}
-                </button>
-              ))}
-              {!showNewCategoryInput && (
-                <button
-                  className="category-btn new-category-btn"
-                  onClick={() => setShowNewCategoryInput(true)}
-                >
-                  + Create New
-                </button>
-              )}
-            </div>
+        {loading && !showAddForm && !showEditForm ? (
+          <p className="loading-state">Loading transactions...</p>
+        ) : transactions.length > 0 ? (
+          <div className="transactions-list">
+            {transactions.map((transaction) => {
+              const category = Array.isArray(transaction.category) ? transaction.category[0] : transaction.category;
+              const isIncome = transaction.amount < 0;
 
-            {showNewCategoryInput && (
-              <div className="new-category-input">
-                <input
-                  type="text"
-                  placeholder="Enter new category name"
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  autoFocus
-                />
-                <button onClick={handleCreateCategory}>Add</button>
-                <button onClick={() => {
-                  setShowNewCategoryInput(false);
-                  setNewCategory('');
-                }}>Cancel</button>
-              </div>
-            )}
+              return (
+                <div key={transaction.transaction_id || transaction.id} className="transaction-item">
+                  <div
+                    className="category-indicator"
+                    style={{ backgroundColor: getCategoryColor(transaction.category) }}
+                  />
+                  <div className="transaction-main">
+                    <div className="transaction-info">
+                      <div className="transaction-name">{transaction.name || transaction.merchant_name}</div>
+                      <div className="transaction-date">{formatDate(transaction.date)}</div>
+                      {transaction.notes && (
+                        <div className="transaction-notes">{transaction.notes}</div>
+                      )}
+                    </div>
+                    <div className="transaction-meta">
+                      {category && (
+                        <span
+                          className="transaction-category-badge"
+                          style={{ backgroundColor: getCategoryColor(transaction.category) }}
+                        >
+                          {category}
+                        </span>
+                      )}
+                      <div className={`transaction-amount ${isIncome ? 'income' : 'expense'}`}>
+                        {isIncome ? '+' : '-'}{formatAmount(transaction.amount)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="transaction-actions">
+                    <button
+                      className="edit-btn"
+                      onClick={() => handleEdit(transaction)}
+                      title="Edit transaction"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(transaction.transaction_id || transaction.id)}
+                      title="Delete transaction"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
+        ) : (
+          <p className="empty-state">
+            No transactions yet. Click "Add Transaction" to get started!
+          </p>
         )}
       </div>
     </div>

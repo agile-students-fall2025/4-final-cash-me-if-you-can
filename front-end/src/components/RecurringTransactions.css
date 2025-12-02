@@ -1,4 +1,4 @@
-.transactions-page {
+.recurring-page {
   min-height: 100vh;
   padding: 100px 40px 60px;
   background-color: #000;
@@ -21,7 +21,7 @@
   font-weight: 300;
 }
 
-.transactions-container {
+.recurring-container {
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -40,7 +40,7 @@
   color: #fff;
 }
 
-.add-transaction-btn {
+.add-recurring-btn {
   padding: 10px 20px;
   background-color: #0066ff;
   color: #fff;
@@ -52,12 +52,12 @@
   transition: all 0.3s ease;
 }
 
-.add-transaction-btn:hover {
+.add-recurring-btn:hover {
   background-color: #0052cc;
   transform: translateY(-2px);
 }
 
-.transaction-form {
+.recurring-form {
   background-color: #111;
   border: 1px solid #222;
   border-radius: 16px;
@@ -65,7 +65,7 @@
   margin-bottom: 30px;
 }
 
-.transaction-form h3 {
+.recurring-form h3 {
   font-size: 1.2rem;
   font-weight: 400;
   margin-bottom: 20px;
@@ -92,8 +92,7 @@
 }
 
 .form-group input,
-.form-group select,
-.form-group textarea {
+.form-group select {
   padding: 12px 16px;
   background-color: #000;
   border: 1px solid #333;
@@ -106,20 +105,13 @@
 }
 
 .form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+.form-group select:focus {
   outline: none;
   border-color: #0066ff;
 }
 
-.form-group input::placeholder,
-.form-group textarea::placeholder {
+.form-group input::placeholder {
   color: #555;
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 80px;
 }
 
 .form-actions {
@@ -144,11 +136,6 @@
   background-color: #0052cc;
 }
 
-.submit-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .cancel-btn {
   padding: 12px 24px;
   background-color: transparent;
@@ -166,104 +153,126 @@
   color: #fff;
 }
 
-.transactions-list {
+.recurring-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.transaction-item {
+.recurring-item {
   background-color: #111;
   border: 1px solid #222;
   border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 0;
-  overflow: hidden;
+  gap: 20px;
+  padding: 20px;
   transition: all 0.3s ease;
 }
 
-.transaction-item:hover {
+.recurring-item:hover {
   border-color: #333;
   transform: translateX(4px);
 }
 
-.category-indicator {
-  width: 4px;
-  min-width: 4px;
-  height: 100%;
-  min-height: 80px;
-  background-color: #6b7280;
+.recurring-item.inactive {
+  opacity: 0.6;
+  border-color: #1a1a1a;
 }
 
-.transaction-main {
+.recurring-main {
   flex: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
   gap: 20px;
 }
 
-.transaction-info {
+.recurring-info {
   flex: 1;
 }
 
-.transaction-name {
+.recurring-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.recurring-name {
   font-size: 1.1rem;
   font-weight: 400;
   color: #fff;
-  margin-bottom: 5px;
+  margin: 0;
 }
 
-.transaction-date {
-  font-size: 0.9rem;
-  color: #888;
-  font-weight: 300;
-}
-
-.transaction-notes {
-  font-size: 0.85rem;
-  color: #666;
-  margin-top: 8px;
-  font-style: italic;
-}
-
-.transaction-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-}
-
-.transaction-category-badge {
-  padding: 4px 12px;
+.status-badge {
+  padding: 4px 10px;
   border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: #fff;
-}
-
-.transaction-amount {
-  font-size: 1.2rem;
+  font-size: 0.75rem;
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.transaction-amount.income {
+.status-badge.active {
+  background-color: rgba(16, 185, 129, 0.15);
   color: #10b981;
 }
 
-.transaction-amount.expense {
+.status-badge.inactive {
+  background-color: rgba(107, 114, 128, 0.15);
+  color: #6b7280;
+}
+
+.recurring-details {
+  font-size: 0.9rem;
+  color: #888;
+  font-weight: 300;
+  margin: 0 0 8px 0;
+}
+
+.recurring-notes {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+  font-style: italic;
+}
+
+.recurring-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.recurring-amount {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.recurring-amount.income {
+  color: #10b981;
+}
+
+.recurring-amount.expense {
   color: #ef4444;
 }
 
-.transaction-actions {
+.recurring-frequency {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
+}
+
+.recurring-actions {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 20px 15px;
 }
 
+.toggle-btn,
 .edit-btn,
 .delete-btn {
   width: 36px;
@@ -271,13 +280,19 @@
   background-color: transparent;
   border: 1px solid #333;
   border-radius: 6px;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #888;
+}
+
+.toggle-btn:hover {
+  background-color: #6366f1;
+  border-color: #6366f1;
+  color: #fff;
 }
 
 .edit-btn:hover {
@@ -311,7 +326,7 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .transactions-page {
+  .recurring-page {
     padding: 80px 20px 40px;
   }
 
@@ -325,7 +340,7 @@
     gap: 15px;
   }
 
-  .add-transaction-btn {
+  .add-recurring-btn {
     width: 100%;
   }
 
@@ -333,33 +348,28 @@
     grid-template-columns: 1fr;
   }
 
-  .transaction-item {
+  .recurring-item {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .category-indicator {
-    width: 100%;
-    height: 4px;
-    min-height: 4px;
-  }
-
-  .transaction-main {
+  .recurring-main {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .transaction-meta {
+  .recurring-meta {
     width: 100%;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
   }
 
-  .transaction-actions {
+  .recurring-actions {
     flex-direction: row;
     justify-content: flex-end;
-    padding: 10px 20px;
     border-top: 1px solid #222;
+    padding-top: 15px;
+    margin-top: 10px;
   }
 }

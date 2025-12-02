@@ -5,6 +5,15 @@ const transactionController = require('../controllers/transactionController');
 // Get all transactions
 router.get('/', transactionController.getTransactions);
 
+// Create new manual transaction
+router.post('/', transactionController.createTransaction);
+
+// Update transaction
+router.put('/:id', transactionController.updateTransaction);
+
+// Delete transaction
+router.delete('/:id', transactionController.deleteTransaction);
+
 // Auto-categorize all transactions
 router.post('/categorize', transactionController.categorizeAll);
 

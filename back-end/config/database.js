@@ -8,12 +8,13 @@ const connectDB = async () => {
       throw new Error('MONGODB_URI is not defined in environment variables');
     }
 
-    await mongoose.connect(mongoUri);
-    console.log('MongoDB connected successfully');
-    return mongoose.connection;
+    const conn = await mongoose.connect(mongoUri);
+    console.log(`MongoDB connected: ${conn.connection.host}`);
+    return conn;
   } catch (error) {
     console.error('MongoDB connection error:', error.message);
-    process.exit(1);
+    // Don't exit process in development - just log the error
+    console.log('⚠️  Continuing without MongoDB - using mock data files');
   }
 };
 

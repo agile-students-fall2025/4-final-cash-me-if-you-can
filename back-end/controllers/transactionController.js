@@ -1,5 +1,6 @@
 const Transaction = require('../models/Transaction');
 const Category = require('../models/Category');
+const { v4: uuidv4 } = require('uuid');
 const {
   categorizeTransaction,
   categorizeTransactions,
@@ -238,8 +239,121 @@ const createCategory = async (req, res) => {
   }
 };
 
+// Create new manual transaction
+const createTransaction = async (req, res) => {
+  try {
+    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const { account_id, date, name, merchant_name, amount, category, payment_channel, notes } = req.body;
+
+    // Validation
+    if (!account_id || !date || !name || amount === undefined) {
+      return res.status(400).json({
+        error: 'Missing required fields: account_id, date, name, amount'
+      });
+    }
+
+    // Create transaction object
+    const transactionData = {
+      transaction_id: `manual_${uuidv4()}`,
+      account_id,
+      user_id: userId,
+      is_manual: true,
+      source: 'manual',
+      date: new Date(date),
+      name,
+      merchant_name: merchant_name || name,
+      amount: parseFloat(amount),
+      category: category ? (Array.isArray(category) ? category : [category]) : [],
+      payment_channel: payment_channel || 'other',
+      notes: notes || '',
+      pending: false,
+      currency_code: 'USD'
+    };
+
+    // Auto-categorize if no category provided
+    if (transactionData.category.length === 0) {
+      const suggestedCategory = categorizeTransaction(transactionData);
+      transactionData.category = [suggestedCategory];
+    }
+
+    // Save to MongoDB
+    const transaction = new Transaction(transactionData);
+    await transaction.save();
+
+    res.status(201).json(transaction);
+  } catch (error) {
+    console.error('Error creating transaction:', error);
+    res.status(500).json({ error: 'Failed to create transaction' });
+  }
+};
+
+// Update transaction
+const updateTransaction = async (req, res) => {
+  try {
+    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const transactionId = req.params.id;
+    const { date, name, merchant_name, amount, category, payment_channel, notes } = req.body;
+
+    // Find transaction by transaction_id or MongoDB _id
+    const transaction = await Transaction.findOne({
+      $or: [
+        { transaction_id: transactionId },
+        { _id: transactionId }
+      ]
+    });
+
+    if (!transaction) {
+      return res.status(404).json({ error: 'Transaction not found' });
+    }
+
+    // Update fields
+    if (date) transaction.date = new Date(date);
+    if (name) transaction.name = name;
+    if (merchant_name) transaction.merchant_name = merchant_name;
+    if (amount !== undefined) transaction.amount = parseFloat(amount);
+    if (category) transaction.category = Array.isArray(category) ? category : [category];
+    if (payment_channel) transaction.payment_channel = payment_channel;
+    if (notes !== undefined) transaction.notes = notes;
+
+    await transaction.save();
+
+    res.json(transaction);
+  } catch (error) {
+    console.error('Error updating transaction:', error);
+    res.status(500).json({ error: 'Failed to update transaction' });
+  }
+};
+
+// Delete transaction
+const deleteTransaction = async (req, res) => {
+  try {
+    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const transactionId = req.params.id;
+
+    // Find and delete transaction by transaction_id or MongoDB _id
+    const transaction = await Transaction.findOneAndDelete({
+      $or: [
+        { transaction_id: transactionId },
+        { _id: transactionId }
+      ]
+    });
+
+    if (!transaction) {
+      return res.status(404).json({ error: 'Transaction not found' });
+    }
+
+    res.json({ message: 'Transaction deleted successfully', transaction });
+  } catch (error) {
+    console.error('Error deleting transaction:', error);
+    res.status(500).json({ error: 'Failed to delete transaction' });
+  }
+};
+
 module.exports = {
   getTransactions,
+  createTransaction,
+  updateTransaction,
+  deleteTransaction,
   categorizeAll,
   updateCategory,
   getCategorySuggestions,
