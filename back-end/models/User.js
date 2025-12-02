@@ -22,7 +22,6 @@ const userSchema = new mongoose.Schema({
   },
   plaid_user_id: {
     type: String,
-    unique: true,
     sparse: true,
   },
   preferences: {
