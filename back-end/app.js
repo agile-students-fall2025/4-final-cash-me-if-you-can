@@ -1,11 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const connectDB = require('./config/database');
 
 const plaidRoutes = require('./routes/plaid');
 const chatRoutes = require('./routes/chat');
 const transactionRoutes = require('./routes/transactions');
 const dashboardRoutes = require('./routes/dashboard');
+
+connectDB();
 
 const app = express();
 
