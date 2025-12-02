@@ -1,21 +1,24 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const connectDB = require('./config/database');
 
 const plaidRoutes = require('./routes/plaid');
 const chatRoutes = require('./routes/chat');
 const transactionRoutes = require('./routes/transactions');
 const dashboardRoutes = require('./routes/dashboard');
+<<<<<<< HEAD
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const { connectDB } = require('./config/database');
+=======
+
+connectDB();
+>>>>>>> main
 
 connectDB();
 
 const app = express();
-
-// Initialize database connection
-connectDB();
 
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',

@@ -1,6 +1,7 @@
 const openai = require('../config/openai');
 const vectorStore = require('../utils/vectorStore');
 const { tools, executeTool } = require('../utils/chatbotTools');
+const userProfile = require('../data/userProfile.json');
 
 // Store conversation history temporarily (use database in production)
 const conversationHistory = {};
@@ -67,7 +68,7 @@ const sendMessage = async (req, res) => {
     }
 
     // Search knowledge base for relevant context
-    const relevantDocs = vectorStore.search(message, 2);
+    const relevantDocs = await vectorStore.search(message, 2);
     const context = relevantDocs.map(doc => `${doc.title}: ${doc.content}`).join('\n\n');
 
     // Use OpenAI if available, otherwise fallback
@@ -79,11 +80,44 @@ const sendMessage = async (req, res) => {
           content: message,
         });
 
-        // Prepare messages with RAG context
+        const userContext = `
+USER PROFILE:
+- Name: ${userProfile.profile.name}
+- Status: ${userProfile.profile.status} at ${userProfile.profile.school}
+- Year: ${userProfile.profile.year}, Major: ${userProfile.profile.major}
+
+FINANCIAL SITUATION:
+- Monthly Income: $${userProfile.financial_context.monthly_income.total} (Part-time: $${userProfile.financial_context.monthly_income.part_time_job}, Family: $${userProfile.financial_context.monthly_income.family_support}, Aid: $${userProfile.financial_context.monthly_income.financial_aid})
+- Monthly Expenses: ~$${userProfile.financial_context.monthly_expenses.total}
+- Current Accounts: Student Checking ($842.15), Emergency Savings ($1,250), Student Credit Card ($314.77 balance / $1,000 limit)
+- Student Loans: $${userProfile.financial_context.debt.student_loans.total} (deferred until graduation)
+- Living: ${userProfile.financial_context.living_situation}
+- Work: ${userProfile.financial_context.work_schedule}
+
+GOALS & CONCERNS:
+- Emergency fund goal: $${userProfile.financial_context.savings_goals.emergency_fund_target} (currently $${userProfile.financial_context.savings_goals.current_emergency_fund})
+- Main concerns: ${userProfile.financial_context.financial_concerns.join(', ')}
+`;
+
         const messages = [
           {
             role: 'system',
-            content: `You are a helpful personal finance assistant. Use the following financial knowledge to help answer questions:\n\n${context}\n\nYou can also query the user's transaction data using available functions. Be concise, friendly, and practical.`,
+            content: `You are a helpful personal finance assistant for college students. You're talking to ${userProfile.profile.name}, a ${userProfile.profile.year} ${userProfile.profile.major} student.
+
+${userContext}
+
+KNOWLEDGE BASE:
+${context}
+
+INSTRUCTIONS:
+- Be friendly, encouraging, and understanding of student financial challenges
+- Provide practical, actionable advice tailored to their situation
+- Reference their specific data when relevant (spending patterns, account balances, goals)
+- Use available functions to query their transaction data when needed
+- Be concise but thorough
+- Help them build good financial habits for life after graduation
+
+You can query transaction data using available functions. Always be supportive and realistic about student budgets.`,
           },
           ...conversationHistory[user_id].slice(-10), // Keep last 10 messages
         ];

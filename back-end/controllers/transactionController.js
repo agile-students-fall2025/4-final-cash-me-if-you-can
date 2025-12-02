@@ -1,46 +1,31 @@
-const mockTransactions = require('../data/mockTransactions.json');
-const defaultCategories = require('../data/categories.json');
+const Transaction = require('../models/Transaction');
+const Category = require('../models/Category');
 const {
   categorizeTransaction,
   categorizeTransactions,
   suggestCategories,
 } = require('../utils/categorizer');
 
-// Store transaction updates temporarily (use database in production)
-let transactionUpdates = {};
-let categoryList = [...new Set(defaultCategories)];
-
 const normalizeCategoryName = (name = '') => name.trim();
-const categoryExists = (name) =>
-  categoryList.some(category => category.toLowerCase() === name.toLowerCase());
 
-/**
- * Get all transactions with auto-categorization
- */
 const getTransactions = async (req, res) => {
   try {
     const { start_date, end_date, category } = req.query;
+    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
 
-    let transactions = [...mockTransactions];
+    let query = { user_id: userId };
 
-    // Apply manual category overrides
-    transactions = transactions.map(t => ({
-      ...t,
-      category: transactionUpdates[t.transaction_id]?.category || t.category?.[0] || categorizeTransaction(t),
-    }));
-
-    // Filter by date
-    if (start_date) {
-      transactions = transactions.filter(t => t.date >= start_date);
-    }
-    if (end_date) {
-      transactions = transactions.filter(t => t.date <= end_date);
+    if (start_date || end_date) {
+      query.date = {};
+      if (start_date) query.date.$gte = new Date(start_date);
+      if (end_date) query.date.$lte = new Date(end_date);
     }
 
-    // Filter by category
     if (category) {
-      transactions = transactions.filter(t => t.category === category);
+      query.category = { $in: [category] };
     }
+
+    const transactions = await Transaction.find(query).sort({ date: -1 });
 
     res.json({
       transactions,
@@ -52,12 +37,22 @@ const getTransactions = async (req, res) => {
   }
 };
 
-/**
- * Auto-categorize all transactions
- */
 const categorizeAll = async (req, res) => {
   try {
-    const categorized = categorizeTransactions(mockTransactions);
+    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+
+    const transactions = await Transaction.find({ user_id: userId });
+
+    const updates = transactions.map(async (transaction) => {
+      if (!transaction.category || transaction.category.length === 0) {
+        const category = categorizeTransaction(transaction);
+        transaction.category = [category];
+        await transaction.save();
+      }
+      return transaction;
+    });
+
+    const categorized = await Promise.all(updates);
 
     res.json({
       transactions: categorized,
@@ -70,37 +65,31 @@ const categorizeAll = async (req, res) => {
   }
 };
 
-/**
- * Update transaction category manually
- */
 const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const { category } = req.body;
+    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
 
     if (!category) {
       return res.status(400).json({ error: 'Category is required' });
     }
 
-    // Find transaction
-    const transaction = mockTransactions.find(t => t.transaction_id === id);
+    const transaction = await Transaction.findById(id);
 
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });
     }
 
-    // Store update
-    transactionUpdates[id] = {
-      ...transactionUpdates[id],
-      category,
-      updated_at: new Date().toISOString(),
-    };
+    if (transaction.user_id.toString() !== userId.toString()) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    transaction.category = Array.isArray(category) ? category : [category];
+    await transaction.save();
 
     res.json({
-      transaction: {
-        ...transaction,
-        category,
-      },
+      transaction,
       message: 'Category updated successfully',
     });
   } catch (error) {
@@ -109,9 +98,6 @@ const updateCategory = async (req, res) => {
   }
 };
 
-/**
- * Get category suggestions for a merchant
- */
 const getCategorySuggestions = async (req, res) => {
   try {
     const { merchant } = req.query;
@@ -132,46 +118,36 @@ const getCategorySuggestions = async (req, res) => {
   }
 };
 
-/**
- * Get spending by category
- */
 const getSpendingByCategory = async (req, res) => {
   try {
     const { start_date, end_date } = req.query;
+    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
 
-    let transactions = [...mockTransactions];
+    let query = { user_id: userId, amount: { $gt: 0 } };
 
-    // Apply categorization
-    transactions = transactions.map(t => ({
-      ...t,
-      category: transactionUpdates[t.transaction_id]?.category || t.category?.[0] || categorizeTransaction(t),
-    }));
-
-    // Filter by date
-    if (start_date) {
-      transactions = transactions.filter(t => t.date >= start_date);
-    }
-    if (end_date) {
-      transactions = transactions.filter(t => t.date <= end_date);
+    if (start_date || end_date) {
+      query.date = {};
+      if (start_date) query.date.$gte = new Date(start_date);
+      if (end_date) query.date.$lte = new Date(end_date);
     }
 
-    // Filter out income
-    transactions = transactions.filter(t => t.amount > 0);
+    const transactions = await Transaction.find(query).sort({ date: -1 });
 
-    // Group by category
     const byCategory = {};
     transactions.forEach(t => {
-      if (!byCategory[t.category]) {
-        byCategory[t.category] = {
-          category: t.category,
+      const categoryName = t.category && t.category.length > 0 ? t.category[0] : 'Uncategorized';
+
+      if (!byCategory[categoryName]) {
+        byCategory[categoryName] = {
+          category: categoryName,
           total: 0,
           count: 0,
           transactions: [],
         };
       }
-      byCategory[t.category].total += t.amount;
-      byCategory[t.category].count += 1;
-      byCategory[t.category].transactions.push({
+      byCategory[categoryName].total += t.amount;
+      byCategory[categoryName].count += 1;
+      byCategory[categoryName].transactions.push({
         id: t.transaction_id,
         date: t.date,
         merchant: t.name,
@@ -179,17 +155,15 @@ const getSpendingByCategory = async (req, res) => {
       });
     });
 
-    // Convert to array and sort by total
     const categories = Object.values(byCategory)
       .map(c => ({
         category: c.category,
         total: parseFloat(c.total.toFixed(2)),
         count: c.count,
-        percentage: 0, // Will calculate after
+        percentage: 0,
       }))
       .sort((a, b) => b.total - a.total);
 
-    // Calculate percentages
     const grandTotal = categories.reduce((sum, c) => sum + c.total, 0);
     categories.forEach(c => {
       c.percentage = parseFloat(((c.total / grandTotal) * 100).toFixed(1));
@@ -209,14 +183,20 @@ const getSpendingByCategory = async (req, res) => {
   }
 };
 
-/**
- * Get available categories (default + custom)
- */
-const getCategories = (req, res) => {
+const getCategories = async (req, res) => {
   try {
+    const userId = req.user?.id;
+
+    const categories = await Category.find({
+      $or: [
+        { system: true },
+        { user_id: userId }
+      ]
+    }).sort({ system: -1, name: 1 });
+
     res.json({
-      categories: [...categoryList],
-      total: categoryList.length,
+      categories: categories.map(c => c.name),
+      total: categories.length,
     });
   } catch (error) {
     console.error('Error getting categories:', error);
@@ -224,26 +204,32 @@ const getCategories = (req, res) => {
   }
 };
 
-/**
- * Create a new custom category
- */
-const createCategory = (req, res) => {
+const createCategory = async (req, res) => {
   try {
+    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
     const normalizedName = normalizeCategoryName(req.body?.name);
 
     if (!normalizedName) {
       return res.status(400).json({ error: 'Category name is required' });
     }
 
-    if (categoryExists(normalizedName)) {
+    const existingCategory = await Category.findOne({
+      name: { $regex: new RegExp(`^${normalizedName}$`, 'i') },
+      $or: [{ system: true }, { user_id: userId }]
+    });
+
+    if (existingCategory) {
       return res.status(409).json({ error: 'Category already exists' });
     }
 
-    categoryList.push(normalizedName);
+    const category = await Category.create({
+      name: normalizedName,
+      user_id: userId,
+      system: false,
+    });
 
     res.status(201).json({
-      category: normalizedName,
-      categories: [...categoryList],
+      category: category.name,
       message: 'Category created successfully',
     });
   } catch (error) {

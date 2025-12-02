@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import './ChatbotPage.css';
 import { chatAPI } from '../services/api';
 
@@ -83,7 +84,9 @@ function ChatbotPage() {
               className={`message ${message.sender}`}
             >
               <div className="message-bubble">
-                <p className="message-text">{message.text}</p>
+                <div className="message-text">
+                  <ReactMarkdown>{message.text}</ReactMarkdown>
+                </div>
                 <span className="message-time">
                   {formatTime(message.timestamp)}
                 </span>
