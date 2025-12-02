@@ -182,6 +182,54 @@ export const dashboardAPI = {
 };
 
 /**
+ * Recurring Transactions API calls
+ */
+export const recurringTransactionAPI = {
+  getRecurringTransactions: async () => {
+    const response = await fetch(`${API_BASE_URL}/recurring-transactions`);
+    return response.json();
+  },
+
+  getRecurringTransactionById: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/recurring-transactions/${id}`);
+    return response.json();
+  },
+
+  createRecurringTransaction: async (data) => {
+    const response = await fetch(`${API_BASE_URL}/recurring-transactions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  updateRecurringTransaction: async (id, data) => {
+    const response = await fetch(`${API_BASE_URL}/recurring-transactions/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  deleteRecurringTransaction: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/recurring-transactions/${id}`, {
+      method: 'DELETE',
+    });
+    return response.json();
+  },
+
+  processDueRecurringTransactions: async () => {
+    const response = await fetch(`${API_BASE_URL}/recurring-transactions/process`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.json();
+  },
+};
+
+/**
  * Chatbot API calls
  */
 export const chatAPI = {
