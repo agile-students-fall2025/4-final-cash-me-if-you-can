@@ -22,10 +22,14 @@ function NetWorth() {
       ]);
       const accountsData = await accountsRes.json();
       const summaryData = await summaryRes.json();
-      setAccounts(accountsData);
+
+      // Ensure accountsData is an array
+      setAccounts(Array.isArray(accountsData) ? accountsData : []);
       setSummary(summaryData);
     } catch (error) {
       console.error('Error loading data:', error);
+      setAccounts([]);
+      setSummary(null);
     } finally {
       setLoading(false);
     }

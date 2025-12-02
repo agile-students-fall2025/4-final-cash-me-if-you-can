@@ -50,10 +50,12 @@ function RecurringTransactions() {
       ]);
       const recurringData = await recurringRes.json();
       const accountsData = await accountsRes.json();
-      setRecurringTransactions(recurringData);
-      setAccounts(accountsData);
+      setRecurringTransactions(Array.isArray(recurringData) ? recurringData : []);
+      setAccounts(Array.isArray(accountsData) ? accountsData : []);
     } catch (error) {
       console.error('Error loading data:', error);
+      setRecurringTransactions([]);
+      setAccounts([]);
     } finally {
       setLoading(false);
     }

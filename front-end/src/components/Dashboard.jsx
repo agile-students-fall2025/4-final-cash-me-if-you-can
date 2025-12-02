@@ -37,16 +37,19 @@ function Dashboard() {
 
       // Transform spending data for chart
       let cumulative = 0;
-      const chartData = spendingResponse.data.map(item => {
-        cumulative += item.total;
-        return {
-          amount: cumulative,
-          date: item.label
-        };
-      });
+      const chartData = Array.isArray(spendingResponse?.data)
+        ? spendingResponse.data.map(item => {
+            cumulative += item.total;
+            return {
+              amount: cumulative,
+              date: item.label
+            };
+          })
+        : [];
+
       setSpendingData(chartData);
       setSummary(summaryResponse);
-      setCategoryData(categoryResponse.categories.slice(0, 5));
+      setCategoryData(Array.isArray(categoryResponse?.categories) ? categoryResponse.categories.slice(0, 5) : []);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       setSpendingData([]);
