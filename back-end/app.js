@@ -7,6 +7,9 @@ const plaidRoutes = require('./routes/plaid');
 const chatRoutes = require('./routes/chat');
 const transactionRoutes = require('./routes/transactions');
 const dashboardRoutes = require('./routes/dashboard');
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
+connectDB();
 
 connectDB();
 
@@ -23,6 +26,8 @@ app.use('/api/plaid', plaidRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({

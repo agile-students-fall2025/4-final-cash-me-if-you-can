@@ -1,98 +1,74 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { UserContext } from './UserContext'
-import './LoginPage.css';
+import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom";
+import { UserContext } from "./UserContext";
+import { useNavigate } from "react-router-dom";
+import "./LoginPage.css";
 
-function LoginPage() {
-  const [isSignUp, setIsSignUp] = useState(false);
-  const { user, changeFirstName, changeLastName, changeEmail, changePassword, resetUser } = useContext(UserContext);
+export default function LoginPage() {
+  const { loginUser } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    navigate('/home');
-  };
 
+    const res = await fetch("http://localhost:5001/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-  const toggleMode = () => {
-    setIsSignUp(!isSignUp);
+    const data = await res.json();
+    if (!res.ok) return alert(data.error);
+
+    localStorage.setItem("token", data.token);
+    loginUser(data.user);
+
+    navigate("/home");
   };
 
   return (
     <div className="login-page">
       <div className="login-container">
         <div className="login-header">
-          <h1>cash me if you can</h1>
-          <p>{isSignUp ? 'Create your account' : 'Sign in to your account'}</p>
+          <h1>Welcome Back</h1>
+          <p>Log in to access your dashboard</p>
         </div>
 
-        <form className="login-form" onSubmit={handleSubmit}>
-          {isSignUp && (
-            <>
-              <div className="form-group">
-                <label htmlFor="firstName">First Name</label>
-                <input
-                  type="text"
-                  id="firstName"
-                  value={user.firstName}
-                  onChange={(e) => changeFirstName(e.target.value)}
-                  placeholder="Enter your first name"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="lastName">Last Name</label>
-                <input
-                  type="text"
-                  id="lastName"
-                  value={user.lastName}
-                  onChange={(e) => changeLastName(e.target.value)}
-                  placeholder="Enter your last name"
-                  required
-                />
-              </div>
-            </>
-          )}
-
+        <form className="login-form" onSubmit={handleLogin}>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
+            <label>Email</label>
+            <input 
               type="email"
-              id="email"
-              value={user.email}
-              onChange={(e) => changeEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter email"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
+            <label>Password</label>
+            <input 
               type="password"
-              id="password"
-              value={user.password}
-              onChange={(e) => changePassword(e.target.value)}
-              placeholder="Enter your password"
-              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter password"
             />
           </div>
 
-          <button type="submit" className="signin-button">
-            {isSignUp ? 'Sign Up' : 'Sign In'}
+          <button className="signin-button" type="submit">
+            Login
           </button>
 
           <div className="form-footer">
-            {!isSignUp && <a href="#" className="forgot-password">Forgot password?</a>}
-            <button type="button" className="toggle-mode" onClick={toggleMode}>
-              {isSignUp ? 'Already have an account? Sign in' : 'Need an account? Sign up'}
-            </button>
+            <Link to="/register" className="forgot-password">
+              No account? Register here
+            </Link>
           </div>
         </form>
       </div>
     </div>
   );
 }
-
-export default LoginPage;

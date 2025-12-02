@@ -1,48 +1,33 @@
-import { createContext, useState, useContext } from 'react'
+import { createContext, useState, useEffect } from "react";
 
 export const UserContext = createContext();
 
 export function UserProvider({ children }) {
-    const [user, setUser] = useState({ 
-        firstName: '', 
-        lastName: '', 
-        email: '', 
-        password:'' 
+  const [user, setUser] = useState(null);
+
+  // load user from backend on refresh
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    fetch("http://localhost:5001/api/users/me", {
+      headers: { Authorization: `Bearer ${token}` },
     })
+      .then(res => res.json())
+      .then(data => setUser(data))
+      .catch(() => {});
+  }, []);
 
-    const changeFirstName = (firstName) => {
-        setUser((prev) => ({ ...prev, firstName }))
-    };
+  const loginUser = (data) => setUser(data);
+  const updateUser = (data) => setUser(data);
+  const logoutUser = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+  };
 
-    const changeLastName = (lastName) => {
-        setUser((prev) => ({ ...prev, lastName }))
-    };
-
-    const changeEmail = (email) => {
-        setUser((prev) => ({ ...prev, email }))
-    };
-
-    const changePassword = (password) => {
-        setUser((prev) => ({ ...prev, password }))
-    };
-    
-    const resetUser = () => {
-        setUser({ firstName: '', lastName: '', email: '', password: '' });
-    };
-
-    return (
-        <UserContext.Provider 
-            value={{ 
-                user, 
-                setUser,
-                changeFirstName,
-                changeLastName,
-                changeEmail,
-                changePassword,
-                resetUser
-            }}
-        >
-            {children}
-        </UserContext.Provider>
-    )
+  return (
+    <UserContext.Provider value={{ user, loginUser, updateUser, logoutUser }}>
+      {children}
+    </UserContext.Provider>
+  );
 }
