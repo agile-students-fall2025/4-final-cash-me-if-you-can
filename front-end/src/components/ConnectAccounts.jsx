@@ -282,20 +282,20 @@ function ConnectAccounts() {
             <div className="accounts-grid">
               {accounts.map((account) => (
                 <div key={account.account_id} className="account-card">
-                  <div className="account-icon">
-                    {getAccountIcon(account.type, account.subtype)}
+                  <div className="account-header">
+                    <div className="account-icon">
+                      {getAccountIcon(account.type, account.subtype)}
+                    </div>
+                    <h3>{account.bank_name}</h3>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDeleteAccount(account.account_id)}
+                      title="Delete account"
+                    >
+                      ×
+                    </button>
                   </div>
                   <div className="account-info">
-                    <div className="account-header">
-                      <h3>{account.bank_name}</h3>
-                      <button
-                        className="delete-btn"
-                        onClick={() => handleDeleteAccount(account.account_id)}
-                        title="Delete account"
-                      >
-                        ×
-                      </button>
-                    </div>
                     <p className="account-name">{account.name}</p>
                     <p className="account-type">
                       {getAccountTypeLabel(account.type, account.subtype)}
@@ -309,9 +309,6 @@ function ConnectAccounts() {
                         </span>
                       )}
                     </p>
-                  </div>
-                  <div className="connected-badge">
-                    <span>✓</span>
                   </div>
                 </div>
               ))}

@@ -157,9 +157,7 @@ function AppContent() {
         </div>
       </div>
 
-          {menuOpen && <div className="overlay" onClick={closeMenu}></div>}
-        </>
-      )}
+      {menuOpen && <div className="overlay" onClick={closeMenu}></div>}
 
       <Routes>
         <Route path="/" element={<LoginPage />} />
