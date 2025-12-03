@@ -7,7 +7,7 @@ A simple and intuitive financial management platform that helps users understand
 ## Team Members
 
 - [Namay Jindal](https://github.com/namayjindal) - GitHub: @namayjindal
-- [Team Member 2](https://github.com/username2) - GitHub: @username2
+- [Louis Dong](https://github.com/username2) - GitHub: @Louis6666666
 - [Team Member 3](https://github.com/username3) - GitHub: @username3
 - [Team Member 4](https://github.com/username4) - GitHub: @username4
 
