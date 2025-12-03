@@ -70,6 +70,14 @@ cd front-end
 npm start
 ```
 
+### An Account with mock data for demo
+```bash
+cd back-end
+npm run seed
+```
+Email: emily.chen@nyu.edu
+Password: demo123
+
 ### Build for production
 ```bash
 cd front-end

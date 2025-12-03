@@ -1,5 +1,6 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
@@ -24,16 +25,18 @@ const seedDatabase = async () => {
     await User.deleteMany({});
 
     console.log('\n1. Creating default user...');
+
+    const password_hash = await bcrypt.hash('demo123', 10);
     const user = await User.create({
       _id: DEFAULT_USER_ID,
       email: 'emily.chen@nyu.edu',
       first_name: 'Emily',
       last_name: 'Chen',
-      password_hash: 'hashed_password_here',
+      password_hash,
       is_active: true,
       email_verified: true,
     });
-    console.log(`Created user: ${user.email}`);
+    console.log(`Created user: ${user.email} (password: demo123)`);
 
     console.log('\n2. Seeding categories...');
     const categoryDocs = categories.map(name => ({
