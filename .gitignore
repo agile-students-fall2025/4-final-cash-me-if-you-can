@@ -131,7 +131,6 @@ typings/
 # Screenshots and images
 *.png
 *.heic
-*.jpg
 *.jpeg
 *.gif
 *.bmp
