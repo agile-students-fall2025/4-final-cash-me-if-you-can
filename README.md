@@ -9,7 +9,8 @@ A simple and intuitive financial management platform that helps users understand
 - [Namay Jindal](https://github.com/namayjindal) - GitHub: @namayjindal
 - [George Ai](https://github.com/GeorgeAi43) - GitHub: @GeorgeAi43
 - [Sanay Daptardar](https://github.com/sanay-d-nyu) - GitHub: @sanay-d-nyu 
-- [Shaurya Jain](https://github.com/shauryajain21) - GitHub: @shauryajain21 
+- [Shaurya Jain](https://github.com/shauryajain21) - GitHub: @shauryajain21
+- [Louis Dong](https://github.com/Louis6666666) - GitHub: @Louis6666666 
 
 ## Project Description
 
