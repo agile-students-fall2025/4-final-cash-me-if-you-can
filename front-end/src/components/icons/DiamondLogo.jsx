@@ -1,9 +1,9 @@
-import React from 'react';
+import logo from './logo.jpg';
 
 function DiamondLogo({ size = 40, className = '' }) {
   return (
     <img
-      src="/diamond-logo.png"
+      src={logo}
       alt="Clarity AI"
       className={className}
       style={{
