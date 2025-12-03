@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
 const Category = require('../models/Category');
+const { syncVectorStore } = require('../utils/vectorStore');
 
 const categories = require('../data/categories.json');
 const mockAccounts = require('../data/mockAccounts.json');
@@ -100,6 +101,10 @@ const seedDatabase = async () => {
       console.log(`  • ${acc.name}: $${acc.balances.current.toFixed(2)}`);
     });
     console.log(`- Transactions: ${transactions.length}`);
+
+    console.log('\n5. Syncing vector store...');
+    await syncVectorStore();
+    console.log('✅ Vector store synced with seeded data');
 
     await mongoose.connection.close();
     console.log('\nDatabase connection closed');

@@ -2,6 +2,7 @@ const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
 const mockAccounts = require('../data/mockAccounts.json');
 const mockTransactions = require('../data/mockTransactions.json');
+const { syncVectorStore } = require('./vectorStore');
 
 /**
  * Check if demo mode is enabled
@@ -40,6 +41,7 @@ const seedMockDataForUser = async (userId) => {
       account_id: `${acc.account_id}_${userId}`,
       user_id: userId,
       item_id: `item_mock_${userId}`,
+      bank_name: acc.institution?.name || 'Unknown Bank',
       name: acc.name,
       official_name: acc.official_name,
       type: acc.type,
@@ -77,6 +79,9 @@ const seedMockDataForUser = async (userId) => {
 
     await Transaction.insertMany(transactionsToInsert);
     console.log(`[DEMO MODE] Created ${transactionsToInsert.length} transactions`);
+
+    // Sync vector store with newly seeded data
+    syncVectorStore().catch(err => console.error('[DEMO MODE] Vector sync failed:', err.message));
   } catch (error) {
     console.error('[DEMO MODE] Error seeding mock data:', error.message);
   }

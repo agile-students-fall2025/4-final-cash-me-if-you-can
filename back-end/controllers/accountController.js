@@ -1,5 +1,6 @@
 const Account = require('../models/Account');
 const { v4: uuidv4 } = require('uuid');
+const { syncVectorStore } = require('../utils/vectorStore');
 
 // Get all accounts for a user
 exports.getAccounts = async (req, res) => {
@@ -80,6 +81,9 @@ exports.createAccount = async (req, res) => {
     const account = new Account(accountData);
     await account.save();
 
+    // Sync vector store with new account data
+    syncVectorStore().catch(err => console.error('[accountController] Vector sync failed:', err.message));
+
     res.status(201).json(account);
   } catch (error) {
     console.error('Error creating account:', error);
@@ -120,6 +124,9 @@ exports.updateAccount = async (req, res) => {
 
     await account.save();
 
+    // Sync vector store with updated account data
+    syncVectorStore().catch(err => console.error('[accountController] Vector sync failed:', err.message));
+
     res.json(account);
   } catch (error) {
     console.error('Error updating account:', error);
@@ -144,6 +151,9 @@ exports.deleteAccount = async (req, res) => {
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });
     }
+
+    // Sync vector store after account deletion
+    syncVectorStore().catch(err => console.error('[accountController] Vector sync failed:', err.message));
 
     res.json({ message: 'Account deleted successfully', account });
   } catch (error) {
