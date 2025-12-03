@@ -18,6 +18,9 @@ function ChatbotPage({ onMenuOpen }) {
     { id: 'dashboard', icon: 'chart', label: 'Dashboard', route: '/dashboard', color: 'purple' },
     { id: 'networth', icon: 'dollar', label: 'Net Worth', route: '/networth', color: 'teal' },
     { id: 'transactions', icon: 'list', label: 'Transactions', route: '/categorize', color: 'cyan' },
+    { id: 'recurring', icon: 'recurring', label: 'Recurring', route: '/recurring', color: 'purple' },
+    { id: 'connect', icon: 'card', label: 'Manage Accounts', route: '/connect', color: 'teal' },
+    { id: 'settings', icon: 'settings', label: 'Settings', route: '/settings', color: 'cyan' },
   ];
 
   const scrollToBottom = () => {
@@ -108,6 +111,27 @@ function ChatbotPage({ onMenuOpen }) {
             <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
           </svg>
         );
+      case 'recurring':
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M23 4v6h-6M1 20v-6h6" />
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
+          </svg>
+        );
+      case 'card':
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <rect x="1" y="4" width="22" height="16" rx="2" />
+            <path d="M1 10h22" />
+          </svg>
+        );
+      case 'settings':
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M12 1v6m0 6v10M3.93 3.93l4.24 4.24m8.48 0l4.24-4.24M1 12h6m6 0h10M3.93 20.07l4.24-4.24m8.48 0l4.24 4.24" />
+          </svg>
+        );
       default:
         return null;
     }
@@ -135,7 +159,7 @@ function ChatbotPage({ onMenuOpen }) {
             onClick={onMenuOpen}
             title="Open Menu"
           >
-            <DiamondLogo size={420} className="diamond-logo" />
+            <DiamondLogo size={200} className="diamond-logo" />
             <h1 className="brand-title">CLARITY AI</h1>
           </div>
           <div className="input-row">
@@ -212,6 +236,19 @@ function ChatbotPage({ onMenuOpen }) {
               Send
             </button>
           </form>
+
+          <div className="chat-quick-actions">
+            {quickActions.map((action) => (
+              <button
+                key={action.id}
+                className={`quick-action-btn ${action.color}`}
+                onClick={() => handleQuickAction(action.route)}
+              >
+                <span className="action-icon">{renderActionIcon(action.icon)}</span>
+                <span className="action-label">{action.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

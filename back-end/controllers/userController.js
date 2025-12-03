@@ -1,4 +1,6 @@
 const User = require("../models/User");
+const Account = require("../models/Account");
+const Transaction = require("../models/Transaction");
 const bcrypt = require("bcrypt");
 
 exports.getMe = async (req, res) => {
@@ -32,6 +34,28 @@ exports.updateMe = async (req, res) => {
         firstName: updated.first_name,
         lastName: updated.last_name,
         email: updated.email,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.clearMyData = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    // Delete all user's transactions
+    const deletedTransactions = await Transaction.deleteMany({ user_id: userId });
+
+    // Delete all user's accounts
+    const deletedAccounts = await Account.deleteMany({ user_id: userId });
+
+    res.json({
+      message: "All data cleared successfully",
+      deleted: {
+        transactions: deletedTransactions.deletedCount,
+        accounts: deletedAccounts.deletedCount,
       },
     });
   } catch (err) {

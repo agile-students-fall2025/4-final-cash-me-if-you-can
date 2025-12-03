@@ -144,6 +144,27 @@ body {
   background-color: rgba(239, 68, 68, 0.1);
 }
 
+.clear-data-button {
+  background: none;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-regular);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  margin-top: var(--spacing-sm);
+}
+
+.clear-data-button:hover {
+  color: var(--accent-orange, #f59e0b);
+  border-color: var(--accent-orange, #f59e0b);
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
 /* ============================================
    OVERLAY
    ============================================ */
