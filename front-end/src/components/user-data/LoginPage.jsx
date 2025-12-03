@@ -26,7 +26,7 @@ export default function LoginPage() {
     localStorage.setItem("token", data.token);
     loginUser(data.user, data.token);
 
-    navigate("/home");
+    navigate("/chatbot");
   };
 
   return (

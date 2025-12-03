@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import SettingsPage from './components/user-data/SettingsPage';
 import { UserProvider, UserContext } from'./components/user-data/UserContext'
@@ -11,16 +11,17 @@ import ConnectAccounts from './components/ConnectAccounts.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import RecurringTransactions from './components/RecurringTransactions.jsx';
 import NetWorth from './components/NetWorth.jsx';
+import DiamondLogo from './components/icons/DiamondLogo';
 
 function HomePage() {
   return (
     <div className="home-page">
       <div className="hero-section">
-        <h1>cash me if you can</h1>
+        <h1>Clarity AI</h1>
         <p className="home-description">
-          Your all-in-one financial management platform. Track your transactions,
-          categorize expenses, and chat with our AI financial assistant to get
-          personalized insights about your spending habits.
+          Your intelligent financial management platform. Track transactions,
+          analyze spending patterns, and get personalized AI-powered insights
+          about your financial health.
         </p>
       </div>
 
@@ -31,7 +32,7 @@ function HomePage() {
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </div>
-          <h3>AI Chatbot</h3>
+          <h3>AI Assistant</h3>
           <p>Get personalized financial advice and insights from our intelligent assistant</p>
         </Link>
 
@@ -97,6 +98,7 @@ function AppContent() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, logoutUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -118,23 +120,33 @@ function AppContent() {
     }
   };
 
+  // Check if we're on the chatbot page (it has its own menu trigger)
+  const isChatbotPage = location.pathname === '/chatbot';
+  // Check if we're on login or register page (hide menu trigger)
+  const isAuthPage = location.pathname === '/' || location.pathname === '/register';
+
   return (
     <div className="App">
-      <div className="hamburger" onClick={toggleMenu}>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      {/* Diamond Logo Menu Trigger - hidden on chatbot and auth pages */}
+      {!isChatbotPage && !isAuthPage && (
+        <div className="menu-trigger" onClick={toggleMenu}>
+          <DiamondLogo size={36} className="menu-logo" />
+        </div>
+      )}
 
+      {/* Sidebar Menu */}
       <div className={`menu ${menuOpen ? 'open' : ''}`}>
+        <div className="menu-header">
+          <DiamondLogo size={32} />
+          <span className="menu-brand">CLARITY AI</span>
+        </div>
         <div className="menu-content">
-          <Link to="/home" onClick={closeMenu}>Home</Link>
+          <Link to="/chatbot" onClick={closeMenu}>Financial Assistant</Link>
           <Link to="/dashboard" onClick={closeMenu}>Dashboard</Link>
           <Link to="/networth" onClick={closeMenu}>Net Worth</Link>
-          <Link to="/chatbot" onClick={closeMenu}>Financial Assistant</Link>
-          <Link to="/connect" onClick={closeMenu}>Manage Accounts</Link>
           <Link to="/categorize" onClick={closeMenu}>Transactions</Link>
           <Link to="/recurring" onClick={closeMenu}>Recurring</Link>
+          <Link to="/connect" onClick={closeMenu}>Manage Accounts</Link>
           <Link to="/settings" onClick={closeMenu}>Settings</Link>
           <button className="logout-button" onClick={handleAuth}>
             {user ? "Log out" : "Login"}
@@ -148,7 +160,7 @@ function AppContent() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/home" element={<HomePage />} />
-        <Route path="/chatbot" element={<ChatbotPage />} />
+        <Route path="/chatbot" element={<ChatbotPage onMenuOpen={toggleMenu} />} />
         <Route path="/connect" element={<ConnectAccounts />} />
         <Route path="/categorize" element={<TransactionCategories />} />
         <Route path="/recurring" element={<RecurringTransactions />} />

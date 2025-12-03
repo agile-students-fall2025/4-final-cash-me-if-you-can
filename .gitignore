@@ -127,3 +127,27 @@ typings/
 ## Jekyll artifacts
 **/.jekyll-cache
 **/_site/
+
+# Screenshots and images
+*.png
+*.heic
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+
+# Environment files
+*.env
+*.env.*
+.env
+.env.local
+.env.*.local
+env*.example
+
+# Claude
+.claude/
+CLAUDE.md
+
+# IDE
+.vscode/
+.idea/
