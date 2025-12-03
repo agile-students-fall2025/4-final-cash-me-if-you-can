@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { seedMockDataForUser } = require("../utils/seedMockData");
 
 exports.signup = async (req, res) => {
   try {
@@ -17,6 +18,9 @@ exports.signup = async (req, res) => {
       last_name: lastName,
       password_hash,
     });
+
+    // Seed mock data for new user in demo mode
+    await seedMockDataForUser(user._id.toString());
 
     return res.json({ message: "User created", user });
   } catch (err) {

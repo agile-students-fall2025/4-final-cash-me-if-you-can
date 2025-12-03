@@ -117,7 +117,13 @@ INSTRUCTIONS:
 - Be concise but thorough
 - Help them build good financial habits for life after graduation
 
-You can query transaction data using available functions. Always be supportive and realistic about student budgets.`,
+BUDGET CAPABILITIES:
+- Use create_budget to set up new budgets (e.g., "Set a $200 budget for groceries")
+- Use get_budget_status to check how they're doing against their budgets
+- Use update_budget to modify existing budget amounts
+- When users ask about budgets or setting limits, use these tools proactively
+
+You can query transaction data and manage budgets using available functions. Always be supportive and realistic about student budgets.`,
           },
           ...conversationHistory[user_id].slice(-10), // Keep last 10 messages
         ];
@@ -138,8 +144,8 @@ You can query transaction data using available functions. Always be supportive a
           const functionName = toolCall.function.name;
           const functionArgs = JSON.parse(toolCall.function.arguments);
 
-          // Execute the tool
-          const functionResponse = executeTool[functionName](functionArgs);
+          // Execute the tool (all tools are now async and need userId for MongoDB queries)
+          const functionResponse = await executeTool[functionName](functionArgs, user_id);
 
           // Call OpenAI again with function result
           conversationHistory[user_id].push(assistantMessage);
@@ -196,28 +202,46 @@ You can query transaction data using available functions. Always be supportive a
       const foundCategory = categories.find(cat => messageLower.includes(cat));
 
       if (foundCategory) {
-        const result = executeTool.get_spending_by_category({
+        const result = await executeTool.get_spending_by_category({
           category: foundCategory.charAt(0).toUpperCase() + foundCategory.slice(1),
           days: 30,
-        });
-        responseMessage = `You spent $${result.total} on ${result.category} over the past ${result.days} days (${result.transaction_count} transactions).`;
+        }, user_id);
+        if (result.error) {
+          responseMessage = `I couldn't fetch your spending data. ${result.error}`;
+        } else {
+          responseMessage = `You spent $${result.total} on ${result.category} over the past ${result.days} days (${result.transaction_count} transactions).`;
+        }
       } else {
-        const result = executeTool.get_spending_by_category({ days: 30 });
-        const topCategories = result.categories.slice(0, 3);
-        responseMessage = `Here's your spending over the past 30 days:\n${topCategories
-          .map(c => `• ${c.category}: $${c.total}`)
-          .join('\n')}`;
+        const result = await executeTool.get_spending_by_category({ days: 30 }, user_id);
+        if (result.error || !result.categories) {
+          responseMessage = `I couldn't fetch your spending data. Try adding some transactions first!`;
+        } else {
+          const topCategories = result.categories.slice(0, 3);
+          responseMessage = topCategories.length > 0
+            ? `Here's your spending over the past 30 days:\n${topCategories
+                .map(c => `• ${c.category}: $${c.total}`)
+                .join('\n')}`
+            : `No spending data found for the past 30 days.`;
+        }
       }
     } else if (messageLower.includes('balance')) {
-      const result = executeTool.get_account_balance({ account_type: 'all' });
-      responseMessage = `Your account balances:\n${result.accounts
-        .map(a => `• ${a.name}: $${a.balance}`)
-        .join('\n')}`;
+      const result = await executeTool.get_account_balance({ account_type: 'all' }, user_id);
+      if (result.error || result.message) {
+        responseMessage = result.message || `I couldn't fetch your account balances. ${result.error}`;
+      } else {
+        responseMessage = `Your account balances:\n${result.accounts
+          .map(a => `• ${a.name}: $${a.balance}`)
+          .join('\n')}`;
+      }
     } else if (messageLower.includes('recent') || messageLower.includes('transaction')) {
-      const result = executeTool.get_recent_transactions({ limit: 5 });
-      responseMessage = `Your recent transactions:\n${result.transactions
-        .map(t => `• ${t.date}: ${t.merchant} - $${t.amount} (${t.category})`)
-        .join('\n')}`;
+      const result = await executeTool.get_recent_transactions({ limit: 5 }, user_id);
+      if (result.error || result.message) {
+        responseMessage = result.message || `I couldn't fetch your transactions. ${result.error}`;
+      } else {
+        responseMessage = `Your recent transactions:\n${result.transactions
+          .map(t => `• ${t.date}: ${t.merchant} - $${t.amount} (${t.category})`)
+          .join('\n')}`;
+      }
     } else if (context) {
       // Use RAG context
       responseMessage = `${relevantDocs[0].content}\n\nWould you like to know more about this topic?`;

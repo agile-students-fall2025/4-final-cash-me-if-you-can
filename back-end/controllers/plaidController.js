@@ -2,15 +2,10 @@ const plaidClient = require('../config/plaid');
 const { CountryCode, Products } = require('plaid');
 const mockAccounts = require('../data/mockAccounts.json');
 const mockTransactions = require('../data/mockTransactions.json');
+const { seedMockDataForUser, isDemoMode } = require('../utils/seedMockData');
 
 // Store access tokens temporarily (use database in production)
 let accessTokens = {};
-
-const isDemoMode = () => {
-  return !process.env.PLAID_CLIENT_ID ||
-         process.env.PLAID_CLIENT_ID === 'your_plaid_client_id' ||
-         process.env.PLAID_CLIENT_ID === '';
-};
 
 const handlePlaidError = (error, res) => {
   console.error('Plaid API Error:', {
@@ -85,15 +80,19 @@ const exchangePublicToken = async (req, res) => {
       });
     }
 
-    // In demo mode, return mock access token
+    // In demo mode, return mock access token and seed data for user
     if (isDemoMode()) {
       console.log('[DEMO MODE] Exchanging mock public token');
+      const userId = req.body.user_id || 'default';
       const mockAccessToken = 'access-sandbox-mock-token-' + Date.now();
       accessTokens[mockAccessToken] = {
         item_id: 'item-mock-' + Date.now(),
         created_at: new Date().toISOString(),
-        user_id: req.body.user_id || 'default'
+        user_id: userId
       };
+
+      // Seed mock data into MongoDB for this user
+      await seedMockDataForUser(userId);
 
       return res.json({
         access_token: mockAccessToken,
