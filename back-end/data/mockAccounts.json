@@ -1,1 +1,116 @@
-[]
+[
+  {
+    "account_id": "chase_student_checking_001",
+    "balances": {
+      "available": 847.23,
+      "current": 847.23,
+      "limit": null,
+      "iso_currency_code": "USD",
+      "unofficial_currency_code": null
+    },
+    "mask": "3341",
+    "name": "Chase College Checking",
+    "official_name": "Chase College Checking℠",
+    "type": "depository",
+    "subtype": "checking",
+    "institution": {
+      "institution_id": "ins_56",
+      "name": "Chase"
+    }
+  },
+  {
+    "account_id": "chase_savings_001",
+    "balances": {
+      "available": 2430.18,
+      "current": 2430.18,
+      "limit": null,
+      "iso_currency_code": "USD",
+      "unofficial_currency_code": null
+    },
+    "mask": "7712",
+    "name": "Chase Savings",
+    "official_name": "Chase Savings℠",
+    "type": "depository",
+    "subtype": "savings",
+    "institution": {
+      "institution_id": "ins_56",
+      "name": "Chase"
+    }
+  },
+  {
+    "account_id": "discover_student_credit_001",
+    "balances": {
+      "available": 745.00,
+      "current": -255.00,
+      "limit": 1000.00,
+      "iso_currency_code": "USD",
+      "unofficial_currency_code": null
+    },
+    "mask": "9024",
+    "name": "Discover it Student Chrome",
+    "official_name": "Discover it® Student Chrome",
+    "type": "credit",
+    "subtype": "credit card",
+    "institution": {
+      "institution_id": "ins_9",
+      "name": "Discover"
+    }
+  },
+  {
+    "account_id": "venmo_001",
+    "balances": {
+      "available": 47.50,
+      "current": 47.50,
+      "limit": null,
+      "iso_currency_code": "USD",
+      "unofficial_currency_code": null
+    },
+    "mask": "1234",
+    "name": "Venmo",
+    "official_name": "Venmo Balance",
+    "type": "depository",
+    "subtype": "other",
+    "institution": {
+      "institution_id": "ins_127990",
+      "name": "Venmo"
+    }
+  },
+  {
+    "account_id": "robinhood_brokerage_001",
+    "balances": {
+      "available": 1234.56,
+      "current": 1234.56,
+      "limit": null,
+      "iso_currency_code": "USD",
+      "unofficial_currency_code": null
+    },
+    "mask": "7890",
+    "name": "Robinhood Individual Brokerage",
+    "official_name": "Robinhood Individual Brokerage Account",
+    "type": "investment",
+    "subtype": "brokerage",
+    "institution": {
+      "institution_id": "ins_115617",
+      "name": "Robinhood"
+    }
+  },
+  {
+    "account_id": "robinhood_crypto_001",
+    "balances": {
+      "available": 189.47,
+      "current": 189.47,
+      "limit": null,
+      "iso_currency_code": "USD",
+      "unofficial_currency_code": null
+    },
+    "mask": "7891",
+    "name": "Robinhood Crypto",
+    "official_name": "Robinhood Crypto Account",
+    "type": "investment",
+    "subtype": "brokerage",
+    "institution": {
+      "institution_id": "ins_115617",
+      "name": "Robinhood"
+    }
+  }
+]
