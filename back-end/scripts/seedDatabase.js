@@ -6,55 +6,15 @@ const Transaction = require('../models/Transaction');
 const Category = require('../models/Category');
 
 const categories = require('../data/categories.json');
+const mockAccounts = require('../data/mockAccounts.json');
+const mockTransactions = require('../data/mockTransactions.json');
 
 const DEFAULT_USER_ID = '673e8d9a5e9e123456789abc';
-
-const MERCHANTS = [
-  'Whole Foods', 'Target', 'Amazon', 'Starbucks', 'Shell Gas',
-  'McDonald\'s', 'Netflix', 'Spotify', 'Uber', 'Lyft',
-  'CVS Pharmacy', 'Walgreens', 'Home Depot', 'Best Buy',
-  'AT&T', 'Verizon', 'ComEd', 'Gym Membership', 'Rent Payment',
-  'Student Loan Payment', 'Credit Card Payment', 'Insurance',
-];
-
-const generateFakeTransactions = (accountId, userId, count = 50) => {
-  const transactions = [];
-  const now = new Date();
-
-  for (let i = 0; i < count; i++) {
-    const daysAgo = Math.floor(Math.random() * 90);
-    const date = new Date(now);
-    date.setDate(date.getDate() - daysAgo);
-
-    const merchant = MERCHANTS[Math.floor(Math.random() * MERCHANTS.length)];
-    const amount = parseFloat((Math.random() * 200 + 5).toFixed(2));
-    const isDebit = Math.random() > 0.2;
-
-    transactions.push({
-      transaction_id: `txn_fake_${Date.now()}_${i}_${Math.random().toString(36).substr(2, 9)}`,
-      account_id: accountId,
-      user_id: userId,
-      date,
-      name: merchant,
-      merchant_name: merchant,
-      amount: isDebit ? amount : -amount,
-      category: [],
-      pending: Math.random() > 0.9,
-      payment_channel: Math.random() > 0.5 ? 'online' : 'in store',
-      currency_code: 'USD',
-    });
-  }
-
-  return transactions;
-};
 
 const seedDatabase = async () => {
   try {
     console.log('Connecting to MongoDB...');
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB');
 
     console.log('\nClearing existing data...');
@@ -66,9 +26,9 @@ const seedDatabase = async () => {
     console.log('\n1. Creating default user...');
     const user = await User.create({
       _id: DEFAULT_USER_ID,
-      email: 'demo@cashme.com',
-      first_name: 'Demo',
-      last_name: 'User',
+      email: 'emily.chen@nyu.edu',
+      first_name: 'Emily',
+      last_name: 'Chen',
       password_hash: 'hashed_password_here',
       is_active: true,
       email_verified: true,
@@ -84,83 +44,59 @@ const seedDatabase = async () => {
     await Category.insertMany(categoryDocs);
     console.log(`Seeded ${categoryDocs.length} categories`);
 
-    console.log('\n3. Creating fake accounts...');
-    const accounts = [
-      {
-        account_id: 'acc_fake_checking_001',
-        user_id: user._id,
-        item_id: 'item_fake_001',
-        name: 'Chase Checking',
-        official_name: 'Chase Total Checking',
-        type: 'depository',
-        subtype: 'checking',
-        balances: {
-          current: 5420.50,
-          available: 5420.50,
-          currency: 'USD',
-        },
-        mask: '1234',
-        verification_status: 'verified',
+    console.log('\n3. Creating accounts from mock data...');
+    const accounts = mockAccounts.map(acc => ({
+      account_id: acc.account_id,
+      user_id: user._id,
+      item_id: `item_${acc.institution?.institution_id || 'manual'}`,
+      bank_name: acc.institution?.name || 'Unknown',
+      name: acc.name,
+      official_name: acc.official_name,
+      type: acc.type,
+      subtype: acc.subtype === 'credit card' ? 'credit card' : acc.subtype,
+      balances: {
+        current: acc.balances.current,
+        available: acc.balances.available,
+        limit: acc.balances.limit,
+        currency: acc.balances.iso_currency_code || 'USD',
       },
-      {
-        account_id: 'acc_fake_savings_001',
-        user_id: user._id,
-        item_id: 'item_fake_001',
-        name: 'Chase Savings',
-        official_name: 'Chase Savings Account',
-        type: 'depository',
-        subtype: 'savings',
-        balances: {
-          current: 12350.00,
-          available: 12350.00,
-          currency: 'USD',
-        },
-        mask: '5678',
-        verification_status: 'verified',
-      },
-      {
-        account_id: 'acc_fake_credit_001',
-        user_id: user._id,
-        item_id: 'item_fake_002',
-        name: 'Discover Credit Card',
-        official_name: 'Discover it Cash Back',
-        type: 'credit',
-        subtype: 'credit card',
-        balances: {
-          current: 1250.75,
-          available: 3749.25,
-          limit: 5000.00,
-          currency: 'USD',
-        },
-        mask: '9012',
-        verification_status: 'verified',
-      },
-    ];
+      mask: acc.mask,
+      verification_status: 'verified',
+      is_manual: false,
+    }));
 
     await Account.insertMany(accounts);
-    console.log(`Created ${accounts.length} fake accounts`);
+    console.log(`Created ${accounts.length} accounts`);
 
-    console.log('\n4. Generating fake transactions...');
-    const allTransactions = [];
-    for (const account of accounts) {
-      const txnCount = account.type === 'credit' ? 30 : 40;
-      const transactions = generateFakeTransactions(
-        account.account_id,
-        user._id,
-        txnCount
-      );
-      allTransactions.push(...transactions);
-    }
+    console.log('\n4. Creating transactions from mock data...');
+    const transactions = mockTransactions.map(txn => ({
+      transaction_id: txn.transaction_id,
+      account_id: txn.account_id,
+      user_id: user._id,
+      is_manual: false,
+      source: 'plaid',
+      date: new Date(txn.date),
+      name: txn.name,
+      merchant_name: txn.merchant_name,
+      amount: txn.amount,
+      category: txn.category || [],
+      pending: txn.pending || false,
+      payment_channel: txn.payment_channel || 'other',
+      currency_code: 'USD',
+    }));
 
-    await Transaction.insertMany(allTransactions);
-    console.log(`Created ${allTransactions.length} fake transactions`);
+    await Transaction.insertMany(transactions);
+    console.log(`Created ${transactions.length} transactions`);
 
-    console.log('\n✅ Database seeded successfully!');
+    console.log('\n✅ Database seeded successfully with mock data!');
     console.log('\nSummary:');
-    console.log(`- Users: 1`);
+    console.log(`- Users: 1 (Emily Chen)`);
     console.log(`- Categories: ${categoryDocs.length}`);
     console.log(`- Accounts: ${accounts.length}`);
-    console.log(`- Transactions: ${allTransactions.length}`);
+    accounts.forEach(acc => {
+      console.log(`  • ${acc.name}: $${acc.balances.current.toFixed(2)}`);
+    });
+    console.log(`- Transactions: ${transactions.length}`);
 
     await mongoose.connection.close();
     console.log('\nDatabase connection closed');
