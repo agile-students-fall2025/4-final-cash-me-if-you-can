@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const accountRoutes = require('./routes/accounts');
 const recurringTransactionRoutes = require('./routes/recurringTransactions');
+const budgetRoutes = require('./routes/budgets');
 
 connectDB();
 
@@ -31,6 +32,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/recurring-transactions', recurringTransactionRoutes);
+app.use('/api/budgets', budgetRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({
