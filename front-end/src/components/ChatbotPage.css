@@ -62,7 +62,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: fadeIn 500ms ease;
-  margin-top: -80px;
+  margin-top: var(--spacing-md);
   margin-bottom: var(--spacing-xl);
 }
 
@@ -516,6 +516,16 @@
   background: var(--border-default);
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+/* Chat Quick Actions */
+.chat-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) 0;
+  justify-content: center;
+  border-top: 1px solid var(--border-subtle);
 }
 
 /* ============================================

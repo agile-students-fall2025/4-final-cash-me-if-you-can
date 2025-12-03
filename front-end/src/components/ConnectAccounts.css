@@ -180,7 +180,7 @@
   border-radius: 16px;
   padding: 24px;
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
   gap: 16px;
   transition: all 0.3s ease;
   position: relative;
@@ -201,6 +201,7 @@
   justify-content: center;
   background-color: rgba(0, 102, 255, 0.1);
   border-radius: 12px;
+  align-self: flex-start;
 }
 
 .account-icon svg {
@@ -211,22 +212,25 @@
 .account-info {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .account-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 8px;
+  align-items: center;
   gap: 12px;
+  width: 100%;
 }
 
-.account-info h3 {
+.account-header h3 {
   font-size: 1.15rem;
   font-weight: 400;
   margin: 0;
   color: #fff;
   line-height: 1.3;
+  flex: 1;
 }
 
 .delete-btn {
@@ -256,16 +260,16 @@
 .account-name {
   font-size: 0.95rem;
   color: #aaa;
-  margin: 4px 0 6px 0;
-  line-height: 1.3;
+  margin: 0;
+  line-height: 1.4;
 }
 
 .account-type {
   font-size: 0.85rem;
   color: #666;
   font-weight: 300;
-  margin: 0 0 12px 0;
-  line-height: 1.3;
+  margin: 0;
+  line-height: 1.4;
 }
 
 .account-balance {
@@ -273,7 +277,7 @@
   color: #10b981;
   font-weight: 500;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 .account-balance.credit {
@@ -284,19 +288,6 @@
   font-size: 0.85rem;
   color: #666;
   font-weight: 400;
-}
-
-.connected-badge {
-  width: 32px;
-  height: 32px;
-  background-color: rgba(16, 185, 129, 0.15);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #10b981;
-  font-size: 1rem;
-  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 /* Responsive design */
@@ -373,12 +364,6 @@
   .account-icon svg {
     width: 22px;
     height: 22px;
-  }
-
-  .connected-badge {
-    width: 28px;
-    height: 28px;
-    font-size: 0.9rem;
   }
 
   .delete-btn {

@@ -100,6 +100,9 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Determine if we're on a public page (login/register)
+  const isPublicPage = location.pathname === '/' || location.pathname === '/register';
+
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
@@ -155,7 +158,7 @@ function AppContent() {
   return (
     <div className="App">
       {/* Diamond Logo Menu Trigger - hidden on chatbot and auth pages */}
-      {!isChatbotPage && !isAuthPage && (
+      {!isChatbotPage && !isAuthPage && !isPublicPage &&(
         <div className="menu-trigger" onClick={toggleMenu}>
           <DiamondLogo size={36} className="menu-logo" />
         </div>

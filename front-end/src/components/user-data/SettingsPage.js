@@ -1,9 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { UserContext } from "./UserContext";
 import "./LoginPage.css";
 
 export default function SettingsPage() {
-  const { user, updateUser } = useContext(UserContext);
+  const navigate = useNavigate();
+  const { user, updateUser, logoutUser } = useContext(UserContext);
 
   const [firstName, setFirst] = useState("");
   const [lastName, setLast] = useState("");
@@ -45,6 +47,34 @@ export default function SettingsPage() {
       setPassword(""); // clear password field
     } catch (err) {
       alert("Failed to update profile: " + err.message);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone. All your data including accounts and transactions will be permanently deleted."
+    );
+
+    if (!confirmed) return;
+
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch("http://localhost:5001/api/users/me", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      if (!res.ok) return alert(data.error);
+
+      alert("Account deleted successfully");
+      logoutUser();
+      navigate("/login");
+    } catch (err) {
+      alert("Failed to delete account: " + err.message);
     }
   };
 
@@ -96,6 +126,23 @@ export default function SettingsPage() {
           <button className="signin-button" onClick={handleSave}>
             Save Changes
           </button>
+
+          <div style={{ marginTop: "40px", paddingTop: "20px", borderTop: "1px solid #333" }}>
+            <p style={{ color: "#ff4444", fontSize: "0.9rem", marginBottom: "10px" }}>
+              Danger Zone
+            </p>
+            <button
+              className="signin-button"
+              onClick={handleDeleteAccount}
+              style={{
+                backgroundColor: "transparent",
+                border: "1px solid #ff4444",
+                color: "#ff4444"
+              }}
+            >
+              Delete Account
+            </button>
+          </div>
         </div>
       </div>
     </div>
