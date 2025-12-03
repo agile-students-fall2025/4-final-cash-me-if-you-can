@@ -93,8 +93,9 @@ const executeTool = {
     cutoffDate.setDate(cutoffDate.getDate() - days);
     const cutoffStr = cutoffDate.toISOString().split('T')[0];
 
+    // Expenses are negative amounts in the mock data
     let filteredTransactions = mockTransactions.filter(
-      t => t.amount > 0 && t.date >= cutoffStr
+      t => t.amount < 0 && t.date >= cutoffStr
     );
 
     if (category) {
@@ -102,7 +103,8 @@ const executeTool = {
         t => t.category && t.category[0] === category
       );
 
-      const total = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
+      // Use Math.abs since amounts are negative
+      const total = filteredTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
       return {
         category,
         total: total.toFixed(2),
@@ -117,7 +119,7 @@ const executeTool = {
         if (!byCategory[cat]) {
           byCategory[cat] = { total: 0, count: 0 };
         }
-        byCategory[cat].total += t.amount;
+        byCategory[cat].total += Math.abs(t.amount);
         byCategory[cat].count += 1;
       });
 
@@ -134,9 +136,10 @@ const executeTool = {
 
   get_spending_trend: ({ period }) => {
     // Simplified trend - in production would calculate actual trends
+    // Expenses are negative amounts in the mock data
     const totalSpending = mockTransactions
-      .filter(t => t.amount > 0)
-      .reduce((sum, t) => sum + t.amount, 0);
+      .filter(t => t.amount < 0)
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
     return {
       period,
