@@ -123,6 +123,33 @@ function AppContent() {
     }
   };
 
+  const handleClearData = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to clear all your data? This will remove all your accounts and transactions. This action cannot be undone."
+    );
+
+    if (!confirmed) return;
+
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch("http://localhost:5001/api/users/me/data", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      if (!res.ok) return alert(data.error);
+
+      alert(`Data cleared successfully! Removed ${data.deleted.accounts} accounts and ${data.deleted.transactions} transactions.`);
+      closeMenu();
+    } catch (err) {
+      alert("Failed to clear data: " + err.message);
+    }
+  };
+
   // Check if we're on the chatbot page (it has its own menu trigger)
   const isChatbotPage = location.pathname === '/chatbot';
   // Check if we're on login or register page (hide menu trigger)
@@ -151,6 +178,11 @@ function AppContent() {
           <Link to="/recurring" onClick={closeMenu}>Recurring</Link>
           <Link to="/connect" onClick={closeMenu}>Manage Accounts</Link>
           <Link to="/settings" onClick={closeMenu}>Settings</Link>
+          {user && (
+            <button className="clear-data-button" onClick={handleClearData}>
+              Clear All Data
+            </button>
+          )}
           <button className="logout-button" onClick={handleAuth}>
             {user ? "Log out" : "Login"}
           </button>

@@ -41,20 +41,23 @@ exports.updateMe = async (req, res) => {
   }
 };
 
-exports.deleteMe = async (req, res) => {
+exports.clearMyData = async (req, res) => {
   try {
     const userId = req.userId;
 
     // Delete all user's transactions
-    await Transaction.deleteMany({ user_id: userId });
+    const deletedTransactions = await Transaction.deleteMany({ user_id: userId });
 
     // Delete all user's accounts
-    await Account.deleteMany({ user_id: userId });
+    const deletedAccounts = await Account.deleteMany({ user_id: userId });
 
-    // Delete the user
-    await User.findByIdAndDelete(userId);
-
-    res.json({ message: "Account deleted successfully" });
+    res.json({
+      message: "All data cleared successfully",
+      deleted: {
+        transactions: deletedTransactions.deletedCount,
+        accounts: deletedAccounts.deletedCount,
+      },
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
