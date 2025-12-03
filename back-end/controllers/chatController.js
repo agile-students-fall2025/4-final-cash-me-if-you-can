@@ -56,7 +56,7 @@ function getFallbackResponse(message) {
  */
 const sendMessage = async (req, res) => {
   try {
-    const { message, user_id = 'default' } = req.body;
+    const { message, user_id = '673e8d9a5e9e123456789abc' } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
@@ -138,23 +138,29 @@ You can query transaction data and manage budgets using available functions. Alw
 
         const assistantMessage = response.choices[0].message;
 
-        // Handle function calls
+        // Handle function calls (may be multiple)
         if (assistantMessage.tool_calls) {
-          const toolCall = assistantMessage.tool_calls[0];
-          const functionName = toolCall.function.name;
-          const functionArgs = JSON.parse(toolCall.function.arguments);
-
-          // Execute the tool (all tools are now async and need userId for MongoDB queries)
-          const functionResponse = await executeTool[functionName](functionArgs, user_id);
-
-          // Call OpenAI again with function result
           conversationHistory[user_id].push(assistantMessage);
-          conversationHistory[user_id].push({
-            role: 'tool',
-            tool_call_id: toolCall.id,
-            content: JSON.stringify(functionResponse),
-          });
 
+          // Execute all tool calls
+          const toolsUsed = [];
+          for (const toolCall of assistantMessage.tool_calls) {
+            const functionName = toolCall.function.name;
+            const functionArgs = JSON.parse(toolCall.function.arguments);
+            toolsUsed.push(functionName);
+
+            // Execute the tool (all tools are now async and need userId for MongoDB queries)
+            const functionResponse = await executeTool[functionName](functionArgs, user_id);
+
+            // Add tool response to conversation
+            conversationHistory[user_id].push({
+              role: 'tool',
+              tool_call_id: toolCall.id,
+              content: JSON.stringify(functionResponse),
+            });
+          }
+
+          // Call OpenAI again with all function results
           const finalResponse = await openai.chat.completions.create({
             model: 'gpt-4o-mini',
             messages: [
@@ -172,7 +178,7 @@ You can query transaction data and manage budgets using available functions. Alw
           return res.json({
             message: finalMessage,
             context_used: relevantDocs.map(d => d.title),
-            tool_used: functionName,
+            tools_used: toolsUsed,
           });
         }
 
@@ -271,7 +277,7 @@ You can query transaction data and manage budgets using available functions. Alw
  */
 const getHistory = async (req, res) => {
   try {
-    const { user_id = 'default' } = req.query;
+    const { user_id = '673e8d9a5e9e123456789abc' } = req.query;
     const history = conversationHistory[user_id] || [];
 
     res.json({
@@ -289,7 +295,7 @@ const getHistory = async (req, res) => {
  */
 const clearHistory = async (req, res) => {
   try {
-    const { user_id = 'default' } = req.body;
+    const { user_id = '673e8d9a5e9e123456789abc' } = req.body;
     conversationHistory[user_id] = [];
 
     res.json({ message: 'History cleared successfully' });

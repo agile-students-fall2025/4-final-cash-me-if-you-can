@@ -6,6 +6,7 @@ const {
   categorizeTransactions,
   suggestCategories,
 } = require('../utils/categorizer');
+const { syncVectorStore } = require('../utils/vectorStore');
 
 const normalizeCategoryName = (name = '') => name.trim();
 
@@ -280,6 +281,9 @@ const createTransaction = async (req, res) => {
     const transaction = new Transaction(transactionData);
     await transaction.save();
 
+    // Sync vector store with new transaction data
+    syncVectorStore().catch(err => console.error('[transactionController] Vector sync failed:', err.message));
+
     res.status(201).json(transaction);
   } catch (error) {
     console.error('Error creating transaction:', error);
@@ -317,6 +321,9 @@ const updateTransaction = async (req, res) => {
 
     await transaction.save();
 
+    // Sync vector store with updated transaction data
+    syncVectorStore().catch(err => console.error('[transactionController] Vector sync failed:', err.message));
+
     res.json(transaction);
   } catch (error) {
     console.error('Error updating transaction:', error);
@@ -341,6 +348,9 @@ const deleteTransaction = async (req, res) => {
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });
     }
+
+    // Sync vector store after transaction deletion
+    syncVectorStore().catch(err => console.error('[transactionController] Vector sync failed:', err.message));
 
     res.json({ message: 'Transaction deleted successfully', transaction });
   } catch (error) {

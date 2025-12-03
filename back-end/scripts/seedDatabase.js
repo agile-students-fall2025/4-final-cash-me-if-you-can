@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
 const Category = require('../models/Category');
+const { syncVectorStore } = require('../utils/vectorStore');
 
 const categories = require('../data/categories.json');
 
@@ -90,6 +91,7 @@ const seedDatabase = async () => {
         account_id: 'acc_fake_checking_001',
         user_id: user._id,
         item_id: 'item_fake_001',
+        bank_name: 'Chase',
         name: 'Chase Checking',
         official_name: 'Chase Total Checking',
         type: 'depository',
@@ -106,6 +108,7 @@ const seedDatabase = async () => {
         account_id: 'acc_fake_savings_001',
         user_id: user._id,
         item_id: 'item_fake_001',
+        bank_name: 'Chase',
         name: 'Chase Savings',
         official_name: 'Chase Savings Account',
         type: 'depository',
@@ -122,6 +125,7 @@ const seedDatabase = async () => {
         account_id: 'acc_fake_credit_001',
         user_id: user._id,
         item_id: 'item_fake_002',
+        bank_name: 'Discover',
         name: 'Discover Credit Card',
         official_name: 'Discover it Cash Back',
         type: 'credit',
@@ -161,6 +165,10 @@ const seedDatabase = async () => {
     console.log(`- Categories: ${categoryDocs.length}`);
     console.log(`- Accounts: ${accounts.length}`);
     console.log(`- Transactions: ${allTransactions.length}`);
+
+    console.log('\n5. Syncing vector store...');
+    await syncVectorStore();
+    console.log('✅ Vector store synced with seeded data');
 
     await mongoose.connection.close();
     console.log('\nDatabase connection closed');

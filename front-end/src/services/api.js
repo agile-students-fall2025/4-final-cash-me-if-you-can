@@ -233,7 +233,7 @@ export const recurringTransactionAPI = {
  * Chatbot API calls
  */
 export const chatAPI = {
-  sendMessage: async (message, userId = 'default') => {
+  sendMessage: async (message, userId = '673e8d9a5e9e123456789abc') => {
     const response = await fetch(`${API_BASE_URL}/chat/message`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -242,12 +242,12 @@ export const chatAPI = {
     return response.json();
   },
 
-  getHistory: async (userId = 'default') => {
+  getHistory: async (userId = '673e8d9a5e9e123456789abc') => {
     const response = await fetch(`${API_BASE_URL}/chat/history?user_id=${userId}`);
     return response.json();
   },
 
-  clearHistory: async (userId = 'default') => {
+  clearHistory: async (userId = '673e8d9a5e9e123456789abc') => {
     const response = await fetch(`${API_BASE_URL}/chat/clear`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

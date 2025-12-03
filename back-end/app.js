@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const connectDB = require('./config/database');
+const { initializeVectorStore } = require('./utils/vectorStore');
 
 const plaidRoutes = require('./routes/plaid');
 const chatRoutes = require('./routes/chat');
@@ -13,7 +14,13 @@ const accountRoutes = require('./routes/accounts');
 const recurringTransactionRoutes = require('./routes/recurringTransactions');
 const budgetRoutes = require('./routes/budgets');
 
-connectDB();
+// Connect to database and initialize vector store
+connectDB().then(() => {
+  // Initialize vector store with current MongoDB data after DB connection
+  initializeVectorStore()
+    .then(() => console.log('✅ Vector store initialized with MongoDB data'))
+    .catch(err => console.error('⚠️  Vector store initialization failed:', err.message));
+});
 
 const app = express();
 

@@ -83,7 +83,7 @@ const exchangePublicToken = async (req, res) => {
     // In demo mode, return mock access token and seed data for user
     if (isDemoMode()) {
       console.log('[DEMO MODE] Exchanging mock public token');
-      const userId = req.body.user_id || 'default';
+      const userId = req.body.user_id || '673e8d9a5e9e123456789abc';
       const mockAccessToken = 'access-sandbox-mock-token-' + Date.now();
       accessTokens[mockAccessToken] = {
         item_id: 'item-mock-' + Date.now(),
@@ -111,7 +111,7 @@ const exchangePublicToken = async (req, res) => {
     accessTokens[access_token] = {
       item_id,
       created_at: new Date().toISOString(),
-      user_id: req.body.user_id || 'default'
+      user_id: req.body.user_id || '673e8d9a5e9e123456789abc'
     };
 
     console.log('Token exchanged successfully, item_id:', item_id);
