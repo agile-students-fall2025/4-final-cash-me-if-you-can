@@ -108,6 +108,5 @@ const transactionSchema = new mongoose.Schema({
 transactionSchema.index({ user_id: 1, date: -1 });
 transactionSchema.index({ user_id: 1, account_id: 1, date: -1 });
 transactionSchema.index({ user_id: 1, pending: 1 });
-transactionSchema.index({ transaction_id: 1 });
 
 module.exports = mongoose.model('Transaction', transactionSchema);

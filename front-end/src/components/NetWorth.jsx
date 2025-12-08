@@ -16,15 +16,25 @@ function NetWorth() {
   const loadData = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
       const [accountsRes, summaryRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/accounts`),
-        fetch(`${API_BASE_URL}/dashboard/summary`)
+        fetch(`${API_BASE_URL}/accounts`, { headers }),
+        fetch(`${API_BASE_URL}/dashboard/summary`, { headers })
       ]);
+
       const accountsData = await accountsRes.json();
       const summaryData = await summaryRes.json();
 
-      // Ensure accountsData is an array
-      setAccounts(Array.isArray(accountsData) ? accountsData : []);
+      // Handle the response structure - accountsData might be {accounts: [], total_balance: 0}
+      if (accountsData.accounts) {
+        setAccounts(accountsData.accounts);
+      } else {
+        setAccounts(Array.isArray(accountsData) ? accountsData : []);
+      }
       setSummary(summaryData);
     } catch (error) {
       console.error('Error loading data:', error);

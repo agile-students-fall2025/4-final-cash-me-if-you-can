@@ -298,13 +298,20 @@ const updateTransaction = async (req, res) => {
     const transactionId = req.params.id;
     const { date, name, merchant_name, amount, category, payment_channel, notes } = req.body;
 
-    // Find transaction by transaction_id or MongoDB _id
-    const transaction = await Transaction.findOne({
-      $or: [
-        { transaction_id: transactionId },
-        { _id: transactionId }
-      ]
-    });
+    let transaction;
+
+    // Check if transactionId is a valid MongoDB ObjectId (24 hex characters)
+    if (transactionId.match(/^[0-9a-fA-F]{24}$/)) {
+      transaction = await Transaction.findOne({
+        $or: [
+          { transaction_id: transactionId },
+          { _id: transactionId }
+        ]
+      });
+    } else {
+      // Search only by transaction_id for UUID strings
+      transaction = await Transaction.findOne({ transaction_id: transactionId });
+    }
 
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });
@@ -337,13 +344,31 @@ const deleteTransaction = async (req, res) => {
     const userId = req.user?.id || '673e8d9a5e9e123456789abc';
     const transactionId = req.params.id;
 
-    // Find and delete transaction by transaction_id or MongoDB _id
-    const transaction = await Transaction.findOneAndDelete({
-      $or: [
-        { transaction_id: transactionId },
-        { _id: transactionId }
-      ]
-    });
+    // Build query - only include _id if it's a valid ObjectId
+    const query = { transaction_id: transactionId };
+
+    // Check if transactionId is a valid MongoDB ObjectId (24 hex characters)
+    if (transactionId.match(/^[0-9a-fA-F]{24}$/)) {
+      // If valid ObjectId, search by both transaction_id and _id
+      const transaction = await Transaction.findOneAndDelete({
+        $or: [
+          { transaction_id: transactionId },
+          { _id: transactionId }
+        ]
+      });
+
+      if (!transaction) {
+        return res.status(404).json({ error: 'Transaction not found' });
+      }
+
+      // Sync vector store after transaction deletion
+      syncVectorStore().catch(err => console.error('[transactionController] Vector sync failed:', err.message));
+
+      return res.json({ message: 'Transaction deleted successfully', transaction });
+    }
+
+    // Otherwise, only search by transaction_id (e.g., for manual_ UUIDs)
+    const transaction = await Transaction.findOneAndDelete(query);
 
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });

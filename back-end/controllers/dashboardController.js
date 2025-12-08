@@ -7,8 +7,10 @@ const { categorizeTransaction } = require('../utils/categorizer');
  */
 const getSummary = async (req, res) => {
   try {
-    // Get all accounts
-    const accounts = await Account.find();
+    const userId = req.userId; // From auth middleware
+
+    // Get all accounts for this user
+    const accounts = await Account.find({ user_id: userId });
 
     // Calculate total balance across all accounts
     const totalBalance = accounts.reduce((sum, acc) => {
@@ -19,9 +21,15 @@ const getSummary = async (req, res) => {
     const now = new Date();
     const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
+    // Exclude transfers and credit card payments from spending
     const thisMonthTransactions = await Transaction.find({
+      user_id: userId,
       date: { $gte: thisMonthStart },
-      amount: { $gt: 0 }
+      amount: { $gt: 0 },
+      // Exclude transfers and credit card payments
+      category: {
+        $nin: ['Transfer', 'Credit Card Payment', 'Payment']
+      }
     });
 
     const thisMonthSpending = thisMonthTransactions.reduce(
@@ -34,8 +42,12 @@ const getSummary = async (req, res) => {
     const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
     const lastMonthTransactions = await Transaction.find({
+      user_id: userId,
       date: { $gte: lastMonthStart, $lte: lastMonthEnd },
-      amount: { $gt: 0 }
+      amount: { $gt: 0 },
+      category: {
+        $nin: ['Transfer', 'Credit Card Payment', 'Payment']
+      }
     });
 
     const lastMonthSpending = lastMonthTransactions.reduce(
@@ -48,10 +60,14 @@ const getSummary = async (req, res) => {
         ? ((thisMonthSpending - lastMonthSpending) / lastMonthSpending) * 100
         : 0;
 
-    // Get income this month
+    // Get income this month (negative amounts, excluding transfers)
     const thisMonthIncomeTransactions = await Transaction.find({
+      user_id: userId,
       date: { $gte: thisMonthStart },
-      amount: { $lt: 0 }
+      amount: { $lt: 0 },
+      category: {
+        $nin: ['Transfer']
+      }
     });
 
     const thisMonthIncome = thisMonthIncomeTransactions.reduce(
@@ -99,13 +115,20 @@ const getSummary = async (req, res) => {
  */
 const getSpendingByPeriod = async (req, res) => {
   try {
+    const userId = req.userId; // From auth middleware
     const { period = 'month' } = req.params;
 
     let groupedData = [];
     const now = new Date();
 
-    // Get all transactions with positive amounts (expenses)
-    const allTransactions = await Transaction.find({ amount: { $gt: 0 } }).sort({ date: 1 });
+    // Get all transactions with positive amounts (expenses), excluding transfers and payments
+    const allTransactions = await Transaction.find({
+      user_id: userId,
+      amount: { $gt: 0 },
+      category: {
+        $nin: ['Transfer', 'Credit Card Payment', 'Payment']
+      }
+    }).sort({ date: 1 });
 
     if (period === 'week') {
       // Last 7 days
@@ -221,6 +244,7 @@ const getSpendingByPeriod = async (req, res) => {
  */
 const getCategoryBreakdown = async (req, res) => {
   try {
+    const userId = req.userId; // From auth middleware
     const { period = 'month' } = req.query;
 
     // Determine date range
@@ -241,10 +265,14 @@ const getCategoryBreakdown = async (req, res) => {
       startDate.setFullYear(startDate.getFullYear() - 1);
     }
 
-    // Filter transactions
+    // Filter transactions, excluding transfers and payments
     const periodTransactions = await Transaction.find({
+      user_id: userId,
       date: { $gte: startDate },
-      amount: { $gt: 0 }
+      amount: { $gt: 0 },
+      category: {
+        $nin: ['Transfer', 'Credit Card Payment', 'Payment']
+      }
     });
 
     // Categorize and group

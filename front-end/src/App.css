@@ -75,6 +75,7 @@ body {
   gap: var(--spacing-md);
   padding: var(--spacing-xl) var(--spacing-lg);
   border-bottom: 1px solid var(--border-subtle);
+  min-height: 80px;
 }
 
 .menu-brand {
@@ -82,6 +83,8 @@ body {
   font-weight: var(--font-weight-medium);
   letter-spacing: 4px;
   color: var(--text-primary);
+  flex: 1;
+  min-width: 0;
 }
 
 .menu-content {

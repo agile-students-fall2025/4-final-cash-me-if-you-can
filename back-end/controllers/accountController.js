@@ -5,9 +5,10 @@ const { syncVectorStore } = require('../utils/vectorStore');
 // Get all accounts for a user
 exports.getAccounts = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
 
-    const accounts = await Account.find();
+    // Fetch only accounts for this user
+    const accounts = await Account.find({ user_id: userId });
 
     const total_balance = accounts.reduce((sum, acc) => sum + acc.balances.current, 0);
 
@@ -27,12 +28,20 @@ exports.getAccountById = async (req, res) => {
     const userId = req.user?.id || '673e8d9a5e9e123456789abc';
     const accountId = req.params.id;
 
-    const account = await Account.findOne({
-      $or: [
-        { account_id: accountId },
-        { _id: accountId }
-      ]
-    });
+    let account;
+
+    // Check if accountId is a valid MongoDB ObjectId (24 hex characters)
+    if (accountId.match(/^[0-9a-fA-F]{24}$/)) {
+      account = await Account.findOne({
+        $or: [
+          { account_id: accountId },
+          { _id: accountId }
+        ]
+      });
+    } else {
+      // Search only by account_id for UUID strings
+      account = await Account.findOne({ account_id: accountId });
+    }
 
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });
@@ -98,13 +107,20 @@ exports.updateAccount = async (req, res) => {
     const accountId = req.params.id;
     const { bank_name, name, type, subtype, current_balance, mask } = req.body;
 
-    // Find account by account_id or MongoDB _id
-    const account = await Account.findOne({
-      $or: [
-        { account_id: accountId },
-        { _id: accountId }
-      ]
-    });
+    let account;
+
+    // Check if accountId is a valid MongoDB ObjectId (24 hex characters)
+    if (accountId.match(/^[0-9a-fA-F]{24}$/)) {
+      account = await Account.findOne({
+        $or: [
+          { account_id: accountId },
+          { _id: accountId }
+        ]
+      });
+    } else {
+      // Search only by account_id for UUID strings
+      account = await Account.findOne({ account_id: accountId });
+    }
 
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });
@@ -140,13 +156,31 @@ exports.deleteAccount = async (req, res) => {
     const userId = req.user?.id || '673e8d9a5e9e123456789abc';
     const accountId = req.params.id;
 
-    // Find and delete account by account_id or MongoDB _id
-    const account = await Account.findOneAndDelete({
-      $or: [
-        { account_id: accountId },
-        { _id: accountId }
-      ]
-    });
+    // Build query - only include _id if it's a valid ObjectId
+    const query = { account_id: accountId };
+
+    // Check if accountId is a valid MongoDB ObjectId (24 hex characters)
+    if (accountId.match(/^[0-9a-fA-F]{24}$/)) {
+      // If valid ObjectId, search by both account_id and _id
+      const account = await Account.findOneAndDelete({
+        $or: [
+          { account_id: accountId },
+          { _id: accountId }
+        ]
+      });
+
+      if (!account) {
+        return res.status(404).json({ error: 'Account not found' });
+      }
+
+      // Sync vector store after account deletion
+      syncVectorStore().catch(err => console.error('[accountController] Vector sync failed:', err.message));
+
+      return res.json({ message: 'Account deleted successfully', account });
+    }
+
+    // Otherwise, only search by account_id (e.g., for manual_ UUIDs)
+    const account = await Account.findOneAndDelete(query);
 
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });

@@ -557,14 +557,33 @@
 
   .quick-actions {
     flex-wrap: wrap;
+    gap: var(--spacing-sm);
   }
 
   .quick-action-btn {
     padding: var(--spacing-xs) var(--spacing-md);
+    flex: 1 1 calc(50% - var(--spacing-sm));
+    min-width: 140px;
+    justify-content: center;
+  }
+
+  .quick-action-btn .action-icon {
+    width: 18px;
+    height: 18px;
   }
 
   .quick-action-btn .action-label {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  .chat-quick-actions {
+    gap: var(--spacing-xs);
+  }
+
+  .chat-quick-actions .quick-action-btn {
+    flex: 1 1 calc(33.333% - var(--spacing-xs));
+    min-width: 100px;
+    padding: var(--spacing-xs) var(--spacing-sm);
   }
 
   .diamond-logo-container.centered {
