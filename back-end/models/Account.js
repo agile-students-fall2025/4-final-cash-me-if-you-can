@@ -94,6 +94,5 @@ const accountSchema = new mongoose.Schema({
 });
 
 accountSchema.index({ user_id: 1, item_id: 1 });
-accountSchema.index({ account_id: 1 });
 
 module.exports = mongoose.model('Account', accountSchema);

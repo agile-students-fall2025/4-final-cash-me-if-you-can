@@ -3,7 +3,12 @@ const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
   const authHeader = req.headers.authorization;
+
   // Expect header form: "Bearer <token>"
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Authentication token missing' });
+  }
+
   const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
 
   if (!token) {

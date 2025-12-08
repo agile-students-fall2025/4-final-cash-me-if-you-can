@@ -302,8 +302,8 @@ function ConnectAccounts() {
                       {account.mask && ` •••• ${account.mask}`}
                     </p>
                     <p className={`account-balance ${account.type === 'credit' ? 'credit' : ''}`}>
-                      {formatBalance(account.balances.current)}
-                      {account.type === 'credit' && account.balances.limit && (
+                      {formatBalance(account.balances?.current || 0)}
+                      {account.type === 'credit' && account.balances?.limit && (
                         <span className="credit-limit">
                           {' '}/ {formatBalance(account.balances.limit)} limit
                         </span>

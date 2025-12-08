@@ -13,7 +13,7 @@ const normalizeCategoryName = (name = '') => name.trim();
 const getTransactions = async (req, res) => {
   try {
     const { start_date, end_date, category } = req.query;
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
 
     let query = { user_id: userId };
 
@@ -41,7 +41,7 @@ const getTransactions = async (req, res) => {
 
 const categorizeAll = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
 
     const transactions = await Transaction.find({ user_id: userId });
 
@@ -71,7 +71,7 @@ const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const { category } = req.body;
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
 
     if (!category) {
       return res.status(400).json({ error: 'Category is required' });
@@ -123,7 +123,7 @@ const getCategorySuggestions = async (req, res) => {
 const getSpendingByCategory = async (req, res) => {
   try {
     const { start_date, end_date } = req.query;
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
 
     let query = { user_id: userId, amount: { $gt: 0 } };
 
@@ -187,7 +187,7 @@ const getSpendingByCategory = async (req, res) => {
 
 const getCategories = async (req, res) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.userId; // From auth middleware
 
     const categories = await Category.find({
       $or: [
@@ -208,7 +208,7 @@ const getCategories = async (req, res) => {
 
 const createCategory = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
     const normalizedName = normalizeCategoryName(req.body?.name);
 
     if (!normalizedName) {
@@ -243,7 +243,7 @@ const createCategory = async (req, res) => {
 // Create new manual transaction
 const createTransaction = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
     const { account_id, date, name, merchant_name, amount, category, payment_channel, notes } = req.body;
 
     // Validation
@@ -294,17 +294,24 @@ const createTransaction = async (req, res) => {
 // Update transaction
 const updateTransaction = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
     const transactionId = req.params.id;
     const { date, name, merchant_name, amount, category, payment_channel, notes } = req.body;
 
-    // Find transaction by transaction_id or MongoDB _id
-    const transaction = await Transaction.findOne({
-      $or: [
-        { transaction_id: transactionId },
-        { _id: transactionId }
-      ]
-    });
+    let transaction;
+
+    // Check if transactionId is a valid MongoDB ObjectId (24 hex characters)
+    if (transactionId.match(/^[0-9a-fA-F]{24}$/)) {
+      transaction = await Transaction.findOne({
+        $or: [
+          { transaction_id: transactionId },
+          { _id: transactionId }
+        ]
+      });
+    } else {
+      // Search only by transaction_id for UUID strings
+      transaction = await Transaction.findOne({ transaction_id: transactionId });
+    }
 
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });
@@ -334,16 +341,34 @@ const updateTransaction = async (req, res) => {
 // Delete transaction
 const deleteTransaction = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
     const transactionId = req.params.id;
 
-    // Find and delete transaction by transaction_id or MongoDB _id
-    const transaction = await Transaction.findOneAndDelete({
-      $or: [
-        { transaction_id: transactionId },
-        { _id: transactionId }
-      ]
-    });
+    // Build query - only include _id if it's a valid ObjectId
+    const query = { transaction_id: transactionId };
+
+    // Check if transactionId is a valid MongoDB ObjectId (24 hex characters)
+    if (transactionId.match(/^[0-9a-fA-F]{24}$/)) {
+      // If valid ObjectId, search by both transaction_id and _id
+      const transaction = await Transaction.findOneAndDelete({
+        $or: [
+          { transaction_id: transactionId },
+          { _id: transactionId }
+        ]
+      });
+
+      if (!transaction) {
+        return res.status(404).json({ error: 'Transaction not found' });
+      }
+
+      // Sync vector store after transaction deletion
+      syncVectorStore().catch(err => console.error('[transactionController] Vector sync failed:', err.message));
+
+      return res.json({ message: 'Transaction deleted successfully', transaction });
+    }
+
+    // Otherwise, only search by transaction_id (e.g., for manual_ UUIDs)
+    const transaction = await Transaction.findOneAndDelete(query);
 
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });

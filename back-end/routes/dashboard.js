@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const dashboardController = require('../controllers/dashboardController');
+const auth = require('../middleware/authMiddleware');
 
-// Get dashboard summary
-router.get('/summary', dashboardController.getSummary);
+// Get dashboard summary (requires authentication)
+router.get('/summary', auth, dashboardController.getSummary);
 
-// Get spending by time period (week, month, quarter, year)
-router.get('/spending/:period', dashboardController.getSpendingByPeriod);
+// Get spending by time period (requires authentication)
+router.get('/spending/:period', auth, dashboardController.getSpendingByPeriod);
 
-// Get category breakdown
-router.get('/categories', dashboardController.getCategoryBreakdown);
+// Get category breakdown (requires authentication)
+router.get('/categories', auth, dashboardController.getCategoryBreakdown);
 
 module.exports = router;

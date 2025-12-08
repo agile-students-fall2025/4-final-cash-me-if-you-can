@@ -13,17 +13,39 @@ export default function RegisterPage() {
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5001/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ firstName, lastName, email, password }),
-    });
+    // Validate inputs
+    if (!firstName.trim()) {
+      return alert("Please enter your first name");
+    }
+    if (!lastName.trim()) {
+      return alert("Please enter your last name");
+    }
+    if (!email.trim()) {
+      return alert("Please enter your email");
+    }
+    if (!password.trim()) {
+      return alert("Please enter a password");
+    }
+    if (password.length < 6) {
+      return alert("Password must be at least 6 characters long");
+    }
 
-    const data = await res.json();
-    if (!res.ok) return alert(data.error);
+    try {
+      const res = await fetch("http://localhost:5001/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName, lastName, email, password }),
+      });
 
-    alert("Account created! Log in now."); 
-    navigate("/");
+      const data = await res.json();
+      if (!res.ok) return alert(data.error || "Registration failed");
+
+      alert("Account created! Log in now.");
+      navigate("/");
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert("Failed to connect to server. Please try again.");
+    }
   };
 
   return (
@@ -37,39 +59,46 @@ export default function RegisterPage() {
         <form className="login-form" onSubmit={handleSignup}>
           <div className="form-group">
             <label>First Name</label>
-            <input 
+            <input
+              type="text"
               value={firstName}
               onChange={(e) => setFirst(e.target.value)}
               placeholder="First name"
+              required
             />
           </div>
 
           <div className="form-group">
             <label>Last Name</label>
-            <input 
+            <input
+              type="text"
               value={lastName}
               onChange={(e) => setLast(e.target.value)}
               placeholder="Last name"
+              required
             />
           </div>
 
           <div className="form-group">
             <label>Email</label>
-            <input 
+            <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email address"
+              required
             />
           </div>
 
           <div className="form-group">
             <label>Password</label>
-            <input 
+            <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Create password"
+              minLength="6"
+              required
             />
           </div>
 

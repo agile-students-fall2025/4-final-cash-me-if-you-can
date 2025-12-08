@@ -18,23 +18,21 @@ const isDemoMode = () => {
 
 /**
  * Seed mock accounts and transactions for a user in MongoDB
- * Only runs in demo mode and only if user doesn't already have data
+ * Always seeds mock data for new users to provide a demo experience
  */
 const seedMockDataForUser = async (userId) => {
-  // Only seed in demo mode
-  if (!isDemoMode()) {
-    return;
-  }
+  // Always seed mock data for new users (removed demo mode check)
+  // This gives all users sample data to explore the app
 
   try {
     // Check if user already has accounts (don't re-seed)
     const existingAccounts = await Account.findOne({ user_id: userId });
     if (existingAccounts) {
-      console.log(`[DEMO MODE] User ${userId} already has mock data`);
+      console.log(`User ${userId} already has data - skipping mock data seeding`);
       return;
     }
 
-    console.log(`[DEMO MODE] Seeding mock data for user: ${userId}`);
+    console.log(`Seeding mock data for new user: ${userId}`);
 
     // Create accounts for this user
     const accountsToInsert = mockAccounts.map(acc => ({
@@ -52,7 +50,7 @@ const seedMockDataForUser = async (userId) => {
     }));
 
     await Account.insertMany(accountsToInsert);
-    console.log(`[DEMO MODE] Created ${accountsToInsert.length} accounts`);
+    console.log(`Created ${accountsToInsert.length} mock accounts`);
 
     // Create transactions for this user with recent dates
     const now = new Date();
@@ -78,12 +76,12 @@ const seedMockDataForUser = async (userId) => {
     });
 
     await Transaction.insertMany(transactionsToInsert);
-    console.log(`[DEMO MODE] Created ${transactionsToInsert.length} transactions`);
+    console.log(`Created ${transactionsToInsert.length} mock transactions`);
 
     // Sync vector store with newly seeded data
-    syncVectorStore().catch(err => console.error('[DEMO MODE] Vector sync failed:', err.message));
+    syncVectorStore().catch(err => console.error('Vector sync failed:', err.message));
   } catch (error) {
-    console.error('[DEMO MODE] Error seeding mock data:', error.message);
+    console.error('Error seeding mock data:', error.message);
   }
 };
 

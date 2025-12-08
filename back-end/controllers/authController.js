@@ -19,8 +19,8 @@ exports.signup = async (req, res) => {
       password_hash,
     });
 
-    // Seed mock data for new user in demo mode
-    await seedMockDataForUser(user._id.toString());
+    // Seed mock data for new user
+    await seedMockDataForUser(user._id);
 
     return res.json({ message: "User created", user });
   } catch (err) {

@@ -46,36 +46,58 @@ export const plaidAPI = {
  */
 export const accountAPI = {
   getAccounts: async () => {
-    const response = await fetch(`${API_BASE_URL}/accounts`);
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/accounts`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return response.json();
   },
 
   getAccountById: async (accountId) => {
-    const response = await fetch(`${API_BASE_URL}/accounts/${accountId}`);
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/accounts/${accountId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return response.json();
   },
 
   createAccount: async (accountData) => {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/accounts`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
       body: JSON.stringify(accountData),
     });
     return response.json();
   },
 
   updateAccount: async (accountId, accountData) => {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/accounts/${accountId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
       body: JSON.stringify(accountData),
     });
     return response.json();
   },
 
   deleteAccount: async (accountId) => {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/accounts/${accountId}`, {
       method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
     return response.json();
   },
@@ -86,77 +108,121 @@ export const accountAPI = {
  */
 export const transactionAPI = {
   getTransactions: async (params = {}) => {
+    const token = localStorage.getItem('token');
     const queryString = new URLSearchParams(params).toString();
-    const response = await fetch(`${API_BASE_URL}/transactions?${queryString}`);
+    const response = await fetch(`${API_BASE_URL}/transactions?${queryString}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return response.json();
   },
 
   createTransaction: async (transactionData) => {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/transactions`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
       body: JSON.stringify(transactionData),
     });
     return response.json();
   },
 
   updateTransaction: async (transactionId, transactionData) => {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/transactions/${transactionId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
       body: JSON.stringify(transactionData),
     });
     return response.json();
   },
 
   deleteTransaction: async (transactionId) => {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/transactions/${transactionId}`, {
       method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
     return response.json();
   },
 
   categorizeAll: async () => {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/transactions/categorize`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
     });
     return response.json();
   },
 
   getCategories: async () => {
-    const response = await fetch(`${API_BASE_URL}/transactions/categories`);
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/transactions/categories`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return response.json();
   },
 
   createCategory: async (name) => {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/transactions/categories`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
       body: JSON.stringify({ name }),
     });
     return response.json();
   },
 
   updateCategory: async (transactionId, category) => {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/transactions/${transactionId}/category`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
       body: JSON.stringify({ category }),
     });
     return response.json();
   },
 
   getSpendingByCategory: async (startDate, endDate) => {
+    const token = localStorage.getItem('token');
     const params = new URLSearchParams();
     if (startDate) params.append('start_date', startDate);
     if (endDate) params.append('end_date', endDate);
-    const response = await fetch(`${API_BASE_URL}/transactions/by-category?${params}`);
+    const response = await fetch(`${API_BASE_URL}/transactions/by-category?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return response.json();
   },
 
   getSuggestions: async (merchant) => {
-    const response = await fetch(`${API_BASE_URL}/transactions/suggest-category?merchant=${merchant}`);
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/transactions/suggest-category?merchant=${merchant}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return response.json();
   },
 };
@@ -233,25 +299,37 @@ export const recurringTransactionAPI = {
  * Chatbot API calls
  */
 export const chatAPI = {
-  sendMessage: async (message, userId = '673e8d9a5e9e123456789abc') => {
+  sendMessage: async (message) => {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/chat/message`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, user_id: userId }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ message }),
     });
     return response.json();
   },
 
-  getHistory: async (userId = '673e8d9a5e9e123456789abc') => {
-    const response = await fetch(`${API_BASE_URL}/chat/history?user_id=${userId}`);
+  getHistory: async () => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/chat/history`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return response.json();
   },
 
-  clearHistory: async (userId = '673e8d9a5e9e123456789abc') => {
+  clearHistory: async () => {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/chat/clear`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: userId }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
     });
     return response.json();
   },

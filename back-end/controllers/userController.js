@@ -62,3 +62,25 @@ exports.clearMyData = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.deleteMe = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    // Delete all user's transactions
+    await Transaction.deleteMany({ user_id: userId });
+
+    // Delete all user's accounts
+    await Account.deleteMany({ user_id: userId });
+
+    // Delete the user
+    await User.findByIdAndDelete(userId);
+
+    res.json({
+      message: "Account deleted successfully",
+    });
+  } catch (err) {
+    console.error("Error deleting user account:", err);
+    res.status(500).json({ error: err.message });
+  }
+};

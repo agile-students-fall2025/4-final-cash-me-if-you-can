@@ -56,7 +56,8 @@ function getFallbackResponse(message) {
  */
 const sendMessage = async (req, res) => {
   try {
-    const { message, user_id = '673e8d9a5e9e123456789abc' } = req.body;
+    const { message } = req.body;
+    const user_id = req.userId; // From auth middleware
 
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
@@ -277,7 +278,7 @@ You can query transaction data and manage budgets using available functions. Alw
  */
 const getHistory = async (req, res) => {
   try {
-    const { user_id = '673e8d9a5e9e123456789abc' } = req.query;
+    const user_id = req.userId; // From auth middleware
     const history = conversationHistory[user_id] || [];
 
     res.json({
@@ -295,7 +296,7 @@ const getHistory = async (req, res) => {
  */
 const clearHistory = async (req, res) => {
   try {
-    const { user_id = '673e8d9a5e9e123456789abc' } = req.body;
+    const user_id = req.userId; // From auth middleware
     conversationHistory[user_id] = [];
 
     res.json({ message: 'History cleared successfully' });
