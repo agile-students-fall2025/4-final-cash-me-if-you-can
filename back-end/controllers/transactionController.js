@@ -13,7 +13,7 @@ const normalizeCategoryName = (name = '') => name.trim();
 const getTransactions = async (req, res) => {
   try {
     const { start_date, end_date, category } = req.query;
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
 
     let query = { user_id: userId };
 
@@ -41,7 +41,7 @@ const getTransactions = async (req, res) => {
 
 const categorizeAll = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
 
     const transactions = await Transaction.find({ user_id: userId });
 
@@ -71,7 +71,7 @@ const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const { category } = req.body;
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
 
     if (!category) {
       return res.status(400).json({ error: 'Category is required' });
@@ -123,7 +123,7 @@ const getCategorySuggestions = async (req, res) => {
 const getSpendingByCategory = async (req, res) => {
   try {
     const { start_date, end_date } = req.query;
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
 
     let query = { user_id: userId, amount: { $gt: 0 } };
 
@@ -187,7 +187,7 @@ const getSpendingByCategory = async (req, res) => {
 
 const getCategories = async (req, res) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.userId; // From auth middleware
 
     const categories = await Category.find({
       $or: [
@@ -208,7 +208,7 @@ const getCategories = async (req, res) => {
 
 const createCategory = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
     const normalizedName = normalizeCategoryName(req.body?.name);
 
     if (!normalizedName) {
@@ -243,7 +243,7 @@ const createCategory = async (req, res) => {
 // Create new manual transaction
 const createTransaction = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
     const { account_id, date, name, merchant_name, amount, category, payment_channel, notes } = req.body;
 
     // Validation
@@ -294,7 +294,7 @@ const createTransaction = async (req, res) => {
 // Update transaction
 const updateTransaction = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
     const transactionId = req.params.id;
     const { date, name, merchant_name, amount, category, payment_channel, notes } = req.body;
 
@@ -341,7 +341,7 @@ const updateTransaction = async (req, res) => {
 // Delete transaction
 const deleteTransaction = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId; // From auth middleware
     const transactionId = req.params.id;
 
     // Build query - only include _id if it's a valid ObjectId

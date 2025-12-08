@@ -70,9 +70,10 @@ export default function SettingsPage() {
       const data = await res.json();
       if (!res.ok) return alert(data.error);
 
-      alert("Account deleted successfully");
+      // Clear user session and redirect to login
       logoutUser();
-      navigate("/login");
+      localStorage.removeItem("token");
+      navigate("/");
     } catch (err) {
       alert("Failed to delete account: " + err.message);
     }

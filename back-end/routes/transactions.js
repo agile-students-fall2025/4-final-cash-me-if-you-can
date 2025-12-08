@@ -1,33 +1,34 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/authMiddleware');
 const transactionController = require('../controllers/transactionController');
 
 // Get all transactions
-router.get('/', transactionController.getTransactions);
+router.get('/', auth, transactionController.getTransactions);
 
 // Create new manual transaction
-router.post('/', transactionController.createTransaction);
+router.post('/', auth, transactionController.createTransaction);
 
 // Update transaction
-router.put('/:id', transactionController.updateTransaction);
+router.put('/:id', auth, transactionController.updateTransaction);
 
 // Delete transaction
-router.delete('/:id', transactionController.deleteTransaction);
+router.delete('/:id', auth, transactionController.deleteTransaction);
 
 // Auto-categorize all transactions
-router.post('/categorize', transactionController.categorizeAll);
+router.post('/categorize', auth, transactionController.categorizeAll);
 
 // Category management
-router.get('/categories', transactionController.getCategories);
-router.post('/categories', transactionController.createCategory);
+router.get('/categories', auth, transactionController.getCategories);
+router.post('/categories', auth, transactionController.createCategory);
 
 // Update transaction category
-router.put('/:id/category', transactionController.updateCategory);
+router.put('/:id/category', auth, transactionController.updateCategory);
 
 // Get category suggestions
-router.get('/suggest-category', transactionController.getCategorySuggestions);
+router.get('/suggest-category', auth, transactionController.getCategorySuggestions);
 
 // Get spending by category
-router.get('/by-category', transactionController.getSpendingByCategory);
+router.get('/by-category', auth, transactionController.getSpendingByCategory);
 
 module.exports = router;
