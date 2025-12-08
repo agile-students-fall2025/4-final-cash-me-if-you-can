@@ -193,6 +193,9 @@ function ChatbotPage({ onMenuOpen }) {
                 </button>
               ))}
             </div>
+            <p className="chat-disclosure">
+              We might send your transactiona and spending records to OpenAI to generate a comprehensive response. We will not send any personal information.
+            </p>
           </div>
         </div>
       )}
@@ -236,6 +239,9 @@ function ChatbotPage({ onMenuOpen }) {
               Send
             </button>
           </form>
+          <p className="chat-disclosure">
+            We might send your transactiona and spending records to OpenAI to generate a comprehensive response. We will not send any personal information.
+          </p>
 
           <div className="chat-quick-actions">
             {quickActions.map((action) => (
