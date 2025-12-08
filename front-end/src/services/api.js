@@ -232,17 +232,32 @@ export const transactionAPI = {
  */
 export const dashboardAPI = {
   getSummary: async () => {
-    const response = await fetch(`${API_BASE_URL}/dashboard/summary`);
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/dashboard/summary`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return response.json();
   },
 
   getSpendingByPeriod: async (period = 'month') => {
-    const response = await fetch(`${API_BASE_URL}/dashboard/spending/${period}`);
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/dashboard/spending/${period}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return response.json();
   },
 
   getCategoryBreakdown: async (period = 'month') => {
-    const response = await fetch(`${API_BASE_URL}/dashboard/categories?period=${period}`);
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/dashboard/categories?period=${period}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     return response.json();
   },
 };
