@@ -8,6 +8,8 @@ on:
 
 jobs:
   backend-tests:
+    env:
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
