@@ -28,7 +28,7 @@ echo "Pulling latest frontend code..."
 git pull origin
 
 echo "Installing frontend dependencies..."
-rm -rf node_modules/
+# rm -rf node_modules/
 npm install --legacy-peer-deps
 
 echo "Cleaning old build..."
@@ -46,8 +46,13 @@ echo "Pulling latest backend code..."
 git pull origin
 
 echo "Installing backend dependencies..."
-rm -rf node_modules/
+# rm -rf node_modules/
 npm install --legacy-peer-deps
+
+# --- NGINX RELOAD ---
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Reloading Nginx..."
+sudo systemctl reload nginx
+echo "✅ Nginx reloaded."
 
 echo "Restarting backend via PM2..."
 pm2 stop all
@@ -58,10 +63,5 @@ pm2 status
 
 echo "Testing api health..."
 curl http://137.184.20.219/api/health
-
-# --- NGINX RELOAD ---
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Reloading Nginx..."
-sudo systemctl reload nginx
-echo "✅ Nginx reloaded."
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] 🎉 Deployment complete!"
