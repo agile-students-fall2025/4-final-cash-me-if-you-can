@@ -16,6 +16,10 @@ if [ -f "$FRONTEND_DIR/.env" ]; then
     export $(grep -v '^#' "$FRONTEND_DIR/.env" | xargs)
 fi
 
+git reset --hard
+git clean -fd
+git pull origin
+
 # --- FRONTEND DEPLOY ---
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] 🚀 Deploying frontend..."
 cd "$FRONTEND_DIR"
