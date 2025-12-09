@@ -55,7 +55,7 @@ pm2 save
 pm2 status
 
 echo "Testing api health..."
-curl http://localhost:5001/api/health
+curl http://137.184.20.219/api/health
 
 # --- NGINX RELOAD ---
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Reloading Nginx..."
