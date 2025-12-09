@@ -27,7 +27,7 @@ jobs:
         run: |
           git config --global user.name "${{ secrets.GIT_NAME }}"
           git config --global user.email "${{ secrets.GIT_EMAIL }}"
-          git remote set-url origin https://x-access-token:${{ secrets.REPO_TOKEN }}@github.com/${{ github.repository }}.git
+          git remote set-url origin https://x-access-token:${{ secrets.REPO_TOKEN }}@github.com/agile-students-fall2025/4-final-cash-me-if-you-can.git
           git fetch origin staging 
           git checkout main
           git merge origin/staging --allow-unrelated-histories --no-ff -m "Auto-merge staging → main [skip ci]"
