@@ -50,7 +50,7 @@ npm install --legacy-peer-deps
 echo "Restarting backend via PM2..."
 pm2 stop all
 pm2 delete all
-pm2 start ecosystem.config.js --only cashme-backend
+pm2 start ecosystem.config.js
 pm2 save
 pm2 status
 
