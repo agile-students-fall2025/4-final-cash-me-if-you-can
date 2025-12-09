@@ -48,12 +48,14 @@ echo "Installing backend dependencies..."
 npm install --legacy-peer-deps
 
 echo "Restarting backend via PM2..."
-if pm2 list | grep -q "$PM2_APP_NAME"; then
-    pm2 restart "$PM2_APP_NAME"
-else
-    pm2 start app.js --name "$PM2_APP_NAME"
-fi
-echo "✅ Backend deployed."
+pm2 stop all
+pm2 delete all
+pm2 start ecosystem.config.js --only cashme-backend
+pm2 save
+pm2 status
+
+echo "Testing api health..."
+curl http://localhost:5001/api/health
 
 # --- NGINX RELOAD ---
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Reloading Nginx..."
