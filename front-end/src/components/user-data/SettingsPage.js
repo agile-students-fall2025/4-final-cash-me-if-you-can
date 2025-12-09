@@ -27,7 +27,7 @@ export default function SettingsPage() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("http://localhost:5001/api/users/me", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/users/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +60,7 @@ export default function SettingsPage() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("http://localhost:5001/api/users/me", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/users/me`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

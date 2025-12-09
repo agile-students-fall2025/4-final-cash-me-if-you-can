@@ -1,5 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 
+var React = require('react');
+
 export const UserContext = createContext();
 
 export function UserProvider({ children }) {
@@ -10,7 +12,7 @@ export function UserProvider({ children }) {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    fetch("http://localhost:5001/api/users/me", {
+    fetch(`${process.env.REACT_APP_API_URL}/users/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.json())
