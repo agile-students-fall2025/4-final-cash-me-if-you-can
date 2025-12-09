@@ -17,7 +17,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -44,5 +44,10 @@
     "@testing-library/react": "^16.3.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.5.0"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^react-markdown$": "<rootDir>/src/__mocks__/react-markdown.js"
+    }
   }
 }

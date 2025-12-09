@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [ '**' ]           # Runs on pushes to any branch
+  pull_request:
+    branches: [ staging, main ]  # Runs on PRs targeting staging or main
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 24.9.0
+          cache: 'npm'
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: ./back-end
+
+      - name: Run backend tests
+        run: npm test
+        working-directory: ./back-end
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+    needs: backend-tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 24.9.0
+          cache: 'npm'
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: ./front-end
+
+      - name: Run frontend tests
+        run: npm test -- --watchAll=false
+        working-directory: ./front-end
