@@ -39,14 +39,6 @@ jobs:
         run: npm ci
         working-directory: ./back-end
 
-      - name: Wait for MongoDB
-        run: |
-          for i in {1..10}; do
-            mongosh --host localhost --eval "db.adminCommand({ ping: 1 })" && break
-            echo "Waiting for MongoDB..."
-            sleep 2
-          done
-
       - name: Run backend tests
         run: npm test
         working-directory: ./back-end
