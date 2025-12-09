@@ -52,7 +52,7 @@ export default function SettingsPage() {
 
   const handleDeleteAccount = async () => {
     const confirmed = window.confirm(
-      "Are you sure you want to delete your account? This action cannot be undone. All your data including accounts and transactions will be permanently deleted."
+      "Are you sure you want to delete your account?? This action cannot be undone. All your data including accounts and transactions will be permanently deleted."
     );
 
     if (!confirmed) return;
