@@ -1,0 +1,37 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - staging  # Only runs when staging is updated
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DO_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+        shell: bash
+
+      - name: Auto-merge staging → main
+        run: |
+          git config --global user.name "${{ secrets.GIT_NAME }}"
+          git config --global user.email "${{ secrets.GIT_EMAIL }}"
+          git remote set-url origin https://x-access-token:${{ secrets.REPO_TOKEN }}@github.com/${{ github.repository }}.git
+          git fetch origin main
+          git checkout main
+          git merge origin/staging --no-ff -m "Auto-merge staging → main [skip ci]"
+          git push origin main
+        shell: bash
+
+      - name: Deploy to Droplet
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SSH_HOST }} "cd ~/app/4-final-cash-me-if-you-can/scripts && ./deploy.sh"
+        shell: bash

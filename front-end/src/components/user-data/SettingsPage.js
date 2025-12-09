@@ -91,7 +91,7 @@ export default function SettingsPage() {
 
         <div className="login-form">
           <div className="form-group">
-            <label>First Name</label>
+            <label>First Name:</label>
             <input 
               value={firstName}
               onChange={(e) => setFirst(e.target.value)}
@@ -99,7 +99,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="form-group">
-            <label>Last Name</label>
+            <label>Last Name:</label>
             <input 
               value={lastName}
               onChange={(e) => setLast(e.target.value)}
@@ -107,7 +107,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="form-group">
-            <label>Email</label>
+            <label>Email:</label>
             <input 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -115,7 +115,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="form-group">
-            <label>New Password</label>
+            <label>New Password:</label>
             <input 
               type="password"
               placeholder="New password"

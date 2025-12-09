@@ -18,8 +18,10 @@
   "license": "MIT",
   "dependencies": {
     "@lancedb/lancedb": "^0.19.1",
-    "@langchain/community": "^0.3.0",
-    "@langchain/openai": "^0.4.0",
+    "@langchain/community": "^0.3.58",
+    "@langchain/core": "^0.3.79",
+    "@langchain/openai": "^0.4.9",
+    "apache-arrow": "^18.0.0",
     "axios": "^1.6.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
