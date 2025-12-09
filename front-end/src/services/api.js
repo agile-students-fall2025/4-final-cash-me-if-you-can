@@ -314,7 +314,7 @@ export const recurringTransactionAPI = {
  * Chatbot API calls
  */
 export const chatAPI = {
-  sendMessage: async (message) => {
+  sendMessage: async (message, conversationId = null) => {
     const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/chat/message`, {
       method: 'POST',
@@ -322,7 +322,38 @@ export const chatAPI = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message, conversationId }),
+    });
+    return response.json();
+  },
+
+  getConversations: async (limit = 20, offset = 0) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/chat/conversations?limit=${limit}&offset=${offset}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.json();
+  },
+
+  getConversation: async (conversationId) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/chat/conversations/${conversationId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.json();
+  },
+
+  deleteConversation: async (conversationId) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/chat/conversations/${conversationId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
     return response.json();
   },
