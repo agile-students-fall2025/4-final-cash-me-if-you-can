@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import './TransactionCategories.css';
 import { dashboardAPI } from '../services/api';
 
+var React = require('react');
+
 function Accounts() {
   const [accounts, setAccounts] = useState([]);
   const [totalBalance, setTotalBalance] = useState(0);
