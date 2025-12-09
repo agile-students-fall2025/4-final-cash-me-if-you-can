@@ -28,6 +28,7 @@ echo "Pulling latest frontend code..."
 git pull origin
 
 echo "Installing frontend dependencies..."
+rm -rf node_modules/
 npm install --legacy-peer-deps
 
 echo "Cleaning old build..."
@@ -45,6 +46,7 @@ echo "Pulling latest backend code..."
 git pull origin
 
 echo "Installing backend dependencies..."
+rm -rf node_modules/
 npm install --legacy-peer-deps
 
 echo "Restarting backend via PM2..."
