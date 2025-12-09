@@ -28,9 +28,9 @@ jobs:
           git config --global user.name "${{ secrets.GIT_NAME }}"
           git config --global user.email "${{ secrets.GIT_EMAIL }}"
           git remote set-url origin https://x-access-token:${{ secrets.REPO_TOKEN }}@github.com/${{ github.repository }}.git
-          git fetch origin main
+          git fetch origin staging 
           git checkout main
-          git merge origin/staging --no-ff -m "Auto-merge staging → main [skip ci]"
+          git merge origin/staging --allow-unrelated-histories --no-ff -m "Auto-merge staging → main [skip ci]"
           git push origin main
         shell: bash
 
