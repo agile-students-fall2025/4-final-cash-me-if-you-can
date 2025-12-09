@@ -124,7 +124,14 @@ BUDGET CAPABILITIES:
 - Use update_budget to modify existing budget amounts
 - When users ask about budgets or setting limits, use these tools proactively
 
-You can query transaction data and manage budgets using available functions. Always be supportive and realistic about student budgets.`,
+SPLIT EXPENSE CAPABILITIES:
+- Use create_split_expense when users want to split a bill (e.g., "Split my $60 dinner with 3 friends")
+- Use get_split_expenses to show pending or settled splits (e.g., "Show my split expenses")
+- Use settle_split_expense to mark a split as paid back (e.g., "Mark the dinner as settled")
+- When users mention splitting costs, roommates owing money, or shared expenses, use these tools
+- Remember: "split with 3 friends" means 4 people total (user + 3 friends)
+
+You can query transaction data, manage budgets, and track split expenses using available functions. Always be supportive and realistic about student budgets.`,
           },
           ...conversationHistory[user_id].slice(-10), // Keep last 10 messages
         ];
