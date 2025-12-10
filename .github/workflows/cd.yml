@@ -57,6 +57,10 @@ jobs:
         run: |
           echo "User: '${{ secrets.DO_SSH_USER }}'"
           echo "Host: '${{ secrets.DP_SSH_HOST }}'"
-          ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DP_SSH_HOST }} \
-          "cd ~/app/4-final-cash-me-if-you-can/scripts && chmod +x deploy.sh && ./deploy.sh"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SSH_HOST }} "
+            export NVM_DIR=\"$HOME/.nvm\" &&
+            [ -s \"$NVM_DIR/nvm.sh\" ] && \. \"$NVM_DIR/nvm.sh\" && \
+            nvm use 24 &&
+            cd ~/app/4-final-cash-me-if-you-can/scripts && chmod +x deploy.sh && ./deploy.sh
+            "
         shell: bash
