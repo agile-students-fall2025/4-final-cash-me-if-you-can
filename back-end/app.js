@@ -18,8 +18,8 @@ const budgetRoutes = require('./routes/budgets');
 connectDB().then(() => {
   // Initialize vector store with current MongoDB data after DB connection
   initializeVectorStore()
-    .then(() => console.log('✅ Vector store initialized with MongoDB data'))
-    .catch(err => console.error('⚠️  Vector store initialization failed:', err.message));
+    .then(() => console.log('[vectorStore] Vector store initialized with MongoDB data'))
+    .catch(err => console.error('[vectorStore] Vector store initialization failed:', err.message));
 });
 
 const app = express();
