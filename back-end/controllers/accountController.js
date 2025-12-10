@@ -25,7 +25,7 @@ exports.getAccounts = async (req, res) => {
 // Get single account by ID
 exports.getAccountById = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId;
     const accountId = req.params.id;
 
     let account;
@@ -57,7 +57,7 @@ exports.getAccountById = async (req, res) => {
 // Create new manual account
 exports.createAccount = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId;
     const { bank_name, name, type, subtype, current_balance, mask } = req.body;
 
     // Validation
@@ -103,7 +103,7 @@ exports.createAccount = async (req, res) => {
 // Update account
 exports.updateAccount = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId;
     const accountId = req.params.id;
     const { bank_name, name, type, subtype, current_balance, mask } = req.body;
 
@@ -153,7 +153,7 @@ exports.updateAccount = async (req, res) => {
 // Delete account
 exports.deleteAccount = async (req, res) => {
   try {
-    const userId = req.user?.id || '673e8d9a5e9e123456789abc';
+    const userId = req.userId;
     const accountId = req.params.id;
 
     // Build query - only include _id if it's a valid ObjectId
