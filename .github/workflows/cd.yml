@@ -58,6 +58,7 @@ jobs:
           echo "User: '${{ secrets.DO_SSH_USER }}'"
           echo "Host: '${{ secrets.DP_SSH_HOST }}'"
           ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DP_SSH_HOST }} "
+            export NVM_DIR=/root/.nvm && \
             chmod +x /root/.nvm/nvm.sh && \
             /root/.nvm/nvm.sh && \
             nvm use 24 && \
