@@ -64,7 +64,7 @@ jobs:
             export NVM_DIR=/root/.nvm && \
             chmod +x /root/.nvm/nvm.sh && \
             . /root/.nvm/nvm.sh && \
-            echo "Node version after nvm: $(node -v) && \
+            echo "Node version after nvm: $(node -v)" && \
             cd ~/app/4-final-cash-me-if-you-can/scripts && chmod +x deploy.sh && ./deploy.sh
           EOF
         shell: bash
