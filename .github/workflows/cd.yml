@@ -57,6 +57,6 @@ jobs:
         run: |
           echo "User: '${{ secrets.DO_SSH_USER }}'"
           echo "Host: '${{ secrets.DO_SSH_HOST }}'"
-          ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SSH_HOST }} \
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DP_SSH_HOST }} \
           "cd ~/app/4-final-cash-me-if-you-can/scripts && ./deploy.sh"
         shell: bash
