@@ -57,7 +57,7 @@ jobs:
         run: |
           echo "User: '${{ secrets.DO_SSH_USER }}'"
           echo "Host: '${{ secrets.DP_SSH_HOST }}'"
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no root@137.184.20.219 << 'EOF' 
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no root@137.184.20.219 << 'EOF'
             echo $(hostname) && \
             echo "Node version before nvm: $(node -v)" && \
             env && \
@@ -66,4 +66,5 @@ jobs:
             . /root/.nvm/nvm.sh && \
             echo "Node version after nvm: $(node -v) && \
             cd ~/app/4-final-cash-me-if-you-can/scripts && chmod +x deploy.sh && ./deploy.sh
+          EOF
         shell: bash
