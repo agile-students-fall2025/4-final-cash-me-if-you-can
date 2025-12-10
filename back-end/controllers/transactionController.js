@@ -286,10 +286,13 @@ const createTransaction = async (req, res) => {
     // Positive amounts are expenses (reduce balance), negative amounts are income (increase balance)
     const account = await Account.findOne({ account_id: account_id });
     if (account) {
-      account.balances.current -= parseFloat(amount);
-      account.balances.available -= parseFloat(amount);
-      account.last_sync = new Date();
-      await account.save();
+      const amountNum = parseFloat(amount);
+      if (!isNaN(amountNum)) {
+        account.balances.current = (account.balances.current || 0) - amountNum;
+        account.balances.available = (account.balances.available || account.balances.current) - amountNum;
+        account.last_sync = new Date();
+        await account.save();
+      }
     }
 
     // Sync vector store with new transaction data
@@ -346,14 +349,17 @@ const updateTransaction = async (req, res) => {
     if (amount !== undefined) {
       const account = await Account.findOne({ account_id: transaction.account_id });
       if (account) {
-        // Revert old transaction effect
-        account.balances.current += oldAmount;
-        account.balances.available += oldAmount;
-        // Apply new transaction effect
-        account.balances.current -= parseFloat(amount);
-        account.balances.available -= parseFloat(amount);
-        account.last_sync = new Date();
-        await account.save();
+        const newAmountNum = parseFloat(amount);
+        if (!isNaN(oldAmount) && !isNaN(newAmountNum)) {
+          // Revert old transaction effect
+          account.balances.current = (account.balances.current || 0) + oldAmount;
+          account.balances.available = (account.balances.available || account.balances.current) + oldAmount;
+          // Apply new transaction effect
+          account.balances.current -= newAmountNum;
+          account.balances.available -= newAmountNum;
+          account.last_sync = new Date();
+          await account.save();
+        }
       }
     }
 
@@ -392,9 +398,9 @@ const deleteTransaction = async (req, res) => {
 
       // Revert account balance change
       const account = await Account.findOne({ account_id: transaction.account_id });
-      if (account) {
-        account.balances.current += transaction.amount;
-        account.balances.available += transaction.amount;
+      if (account && !isNaN(transaction.amount)) {
+        account.balances.current = (account.balances.current || 0) + transaction.amount;
+        account.balances.available = (account.balances.available || account.balances.current) + transaction.amount;
         account.last_sync = new Date();
         await account.save();
       }
@@ -414,9 +420,9 @@ const deleteTransaction = async (req, res) => {
 
     // Revert account balance change
     const account = await Account.findOne({ account_id: transaction.account_id });
-    if (account) {
-      account.balances.current += transaction.amount;
-      account.balances.available += transaction.amount;
+    if (account && !isNaN(transaction.amount)) {
+      account.balances.current = (account.balances.current || 0) + transaction.amount;
+      account.balances.available = (account.balances.available || account.balances.current) + transaction.amount;
       account.last_sync = new Date();
       await account.save();
     }
