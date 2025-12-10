@@ -61,6 +61,6 @@ jobs:
             export NVM_DIR=\"$HOME/.nvm\" &&
             [ -s \"$NVM_DIR/nvm.sh\" ] && \. \"$NVM_DIR/nvm.sh\" && \
             nvm use 24 &&
-            cd ~/app/4-final-cash-me-if-you-can/scripts && chmod +x deploy.sh && ./deploy.sh
+            cd ~/app/4-final-cash-me-if-you-can/scripts && chmod +x deploy.sh && bash -x deploy.sh
             "
         shell: bash
