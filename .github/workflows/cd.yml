@@ -21,7 +21,7 @@ jobs:
           sudo apt install -y gh
 
       - name: Authenticate GH CLI
-        run: echo "${{ secrets.GH_PAT }}" | gh auth login --with-token
+        run: echo "${{ secrets.REPO_TOKEN }}" | gh auth login --with-token
 
       - name: Authenticate GH CLI
         run: gh auth login --with-token <<< "${{ secrets.REPO_TOKEN }}"
