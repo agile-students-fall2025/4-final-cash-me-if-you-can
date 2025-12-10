@@ -17,7 +17,8 @@ function TransactionCategories() {
     amount: '',
     category: '',
     payment_channel: 'other',
-    notes: ''
+    notes: '',
+    transactionType: 'expense'
   });
 
   useEffect(() => {
@@ -56,10 +57,15 @@ function TransactionCategories() {
     setLoading(true);
 
     try {
+      // Convert amount to positive for expenses, negative for income
+      const amount = parseFloat(formData.amount);
+      const finalAmount = formData.transactionType === 'income' ? -Math.abs(amount) : Math.abs(amount);
+
       const transactionData = {
         ...formData,
-        amount: parseFloat(formData.amount)
+        amount: finalAmount
       };
+      delete transactionData.transactionType; // Remove UI-only field
 
       const response = await transactionAPI.createTransaction(transactionData);
       setTransactions(prev => [response, ...prev]);
@@ -72,7 +78,8 @@ function TransactionCategories() {
         amount: '',
         category: '',
         payment_channel: 'other',
-        notes: ''
+        notes: '',
+        transactionType: 'expense'
       });
       setShowAddForm(false);
       loadData();
@@ -92,7 +99,8 @@ function TransactionCategories() {
       amount: Math.abs(transaction.amount).toString(),
       category: Array.isArray(transaction.category) ? transaction.category[0] : transaction.category,
       payment_channel: transaction.payment_channel || 'other',
-      notes: transaction.notes || ''
+      notes: transaction.notes || '',
+      transactionType: transaction.amount < 0 ? 'income' : 'expense'
     });
     setSelectedTransaction(transaction);
     setShowEditForm(true);
@@ -105,10 +113,15 @@ function TransactionCategories() {
 
     setLoading(true);
     try {
+      // Convert amount to positive for expenses, negative for income
+      const amount = parseFloat(formData.amount);
+      const finalAmount = formData.transactionType === 'income' ? -Math.abs(amount) : Math.abs(amount);
+
       const transactionData = {
         ...formData,
-        amount: parseFloat(formData.amount)
+        amount: finalAmount
       };
+      delete transactionData.transactionType; // Remove UI-only field
 
       await transactionAPI.updateTransaction(
         selectedTransaction.transaction_id || selectedTransaction.id,
@@ -209,6 +222,26 @@ function TransactionCategories() {
           <div className="transaction-form">
             <h3>{showEditForm ? 'Edit Transaction' : 'Add New Transaction'}</h3>
             <form onSubmit={showEditForm ? handleUpdate : handleSubmit}>
+              <div className="form-group">
+                <label>Transaction Type *</label>
+                <div className="transaction-type-toggle">
+                  <button
+                    type="button"
+                    className={`toggle-btn ${formData.transactionType === 'expense' ? 'active' : ''}`}
+                    onClick={() => setFormData(prev => ({ ...prev, transactionType: 'expense' }))}
+                  >
+                    Expense
+                  </button>
+                  <button
+                    type="button"
+                    className={`toggle-btn ${formData.transactionType === 'income' ? 'active' : ''}`}
+                    onClick={() => setFormData(prev => ({ ...prev, transactionType: 'income' }))}
+                  >
+                    Income
+                  </button>
+                </div>
+              </div>
+
               <div className="form-row">
                 <div className="form-group">
                   <label>Account *</label>

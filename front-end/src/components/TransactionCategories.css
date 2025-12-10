@@ -122,6 +122,36 @@
   min-height: 80px;
 }
 
+.transaction-type-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 12px 20px;
+  background-color: #000;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #888;
+  font-size: 1rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  border-color: #0066ff;
+  color: #fff;
+}
+
+.toggle-btn.active {
+  background-color: #0066ff;
+  border-color: #0066ff;
+  color: #fff;
+}
+
 .form-actions {
   display: flex;
   gap: 10px;
