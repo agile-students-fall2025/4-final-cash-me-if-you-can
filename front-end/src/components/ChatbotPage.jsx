@@ -16,6 +16,7 @@ function ChatbotPage({ onMenuOpen, isMenuOpen }) {
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
+  const [onboardingQueryProcessed, setOnboardingQueryProcessed] = useState(false);
 
   // Quick action buttons configuration
   const quickActions = [
@@ -106,12 +107,66 @@ function ChatbotPage({ onMenuOpen, isMenuOpen }) {
     const date = new Date(dateString);
     const now = new Date();
     const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
     if (diffDays < 7) return `${diffDays} days ago`;
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
+
+  // Check for onboarding suggested query
+  useEffect(() => {
+    const suggestedQuery = localStorage.getItem('onboarding_suggested_query');
+    if (suggestedQuery && !onboardingQueryProcessed) {
+      // Clear it immediately
+      localStorage.removeItem('onboarding_suggested_query');
+      setOnboardingQueryProcessed(true);
+
+      // Set the input and auto-send after delay
+      setInputText(suggestedQuery);
+      setHasStartedChat(true);
+
+      setTimeout(async () => {
+        const userMessage = {
+          id: Date.now(),
+          text: suggestedQuery,
+          sender: 'user',
+          timestamp: new Date().toISOString()
+        };
+
+        setMessages(prev => [...prev, userMessage]);
+        setInputText('');
+        setIsLoading(true);
+
+        try {
+          const response = await chatAPI.sendMessage(suggestedQuery, currentConversationId);
+          if (response.conversationId && !currentConversationId) {
+            setCurrentConversationId(response.conversationId);
+          }
+          const botResponse = {
+            id: Date.now() + 1,
+            text: response.message,
+            sender: 'bot',
+            timestamp: new Date().toISOString(),
+            context: response.context_used,
+            tool: response.tool_used
+          };
+          setMessages(prev => [...prev, botResponse]);
+        } catch (error) {
+          console.error('Error:', error);
+          setMessages(prev => [...prev, {
+            id: Date.now() + 1,
+            text: "Sorry, I'm having trouble connecting. Please try again.",
+            sender: 'bot',
+            timestamp: new Date().toISOString()
+          }]);
+        } finally {
+          setIsLoading(false);
+        }
+      }, 500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onboardingQueryProcessed]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();

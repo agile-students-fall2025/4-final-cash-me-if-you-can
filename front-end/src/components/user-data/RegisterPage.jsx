@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "./UserContext";
 import "./LoginPage.css";
 
 export default function RegisterPage() {
+  const { loginUser } = useContext(UserContext);
   const [firstName, setFirst] = useState("");
   const [lastName, setLast] = useState("");
   const [email, setEmail] = useState("");
@@ -40,8 +42,14 @@ export default function RegisterPage() {
       const data = await res.json();
       if (!res.ok) return alert(data.error || "Registration failed");
 
-      alert("Account created! Log in now.");
-      navigate("/");
+      // Auto-login after successful registration
+      if (data.token && data.user) {
+        loginUser(data.user, data.token, true); // true indicates new user
+        navigate("/chatbot");
+      } else {
+        alert("Account created! Log in now.");
+        navigate("/");
+      }
     } catch (error) {
       console.error("Registration error:", error);
       alert("Failed to connect to server. Please try again.");

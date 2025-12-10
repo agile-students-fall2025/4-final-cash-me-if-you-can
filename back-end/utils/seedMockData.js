@@ -19,6 +19,12 @@ const isDemoMode = () => {
 /**
  * Seed mock accounts and transactions for a user in MongoDB
  * Always seeds mock data for new users to provide a demo experience
+ *
+ * Note: This mock data is intentionally created for educational purposes
+ * and to give users a complete onboarding experience. Users are guided
+ * through an interactive tutorial that showcases the app's full capabilities
+ * with realistic data. At the end of the tutorial, users can choose to
+ * clear this sample data and start with their own transactions.
  */
 const seedMockDataForUser = async (userId) => {
   // Always seed mock data for new users (removed demo mode check)
