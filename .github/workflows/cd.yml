@@ -3,7 +3,7 @@ name: CD
 on:
   push:
     branches:
-      - staging  # Runs when staging is updated
+      - staging  # Runs when staging is updated t
 
 jobs:
   deploy:
