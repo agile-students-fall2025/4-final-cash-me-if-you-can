@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, ComposedChart, Cell, PieChart, Pie } from 'recharts';
+import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, ComposedChart, Cell, PieChart, Pie, BarChart, Bar, Legend } from 'recharts';
 import './Dashboard.css';
 import { dashboardAPI } from '../services/api';
 import budgetConfigData from '../data/budgetConfig.json';
@@ -20,6 +20,7 @@ function Dashboard() {
   const [spendingData, setSpendingData] = useState([]);
   const [summary, setSummary] = useState(null);
   const [categoryData, setCategoryData] = useState([]);
+  const [comparisonData, setComparisonData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,10 +30,11 @@ function Dashboard() {
   const fetchAllData = async (period) => {
     setLoading(true);
     try {
-      const [spendingResponse, summaryResponse, categoryResponse] = await Promise.all([
+      const [spendingResponse, summaryResponse, categoryResponse, comparisonResponse] = await Promise.all([
         dashboardAPI.getSpendingByPeriod(period),
         dashboardAPI.getSummary(),
-        dashboardAPI.getCategoryBreakdown(period)
+        dashboardAPI.getCategoryBreakdown(period),
+        dashboardAPI.getMonthlyComparison()
       ]);
 
       // Transform spending data for chart
@@ -50,11 +52,13 @@ function Dashboard() {
       setSpendingData(chartData);
       setSummary(summaryResponse);
       setCategoryData(Array.isArray(categoryResponse?.categories) ? categoryResponse.categories.slice(0, 5) : []);
+      setComparisonData(comparisonResponse);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       setSpendingData([]);
       setSummary(null);
       setCategoryData([]);
+      setComparisonData(null);
     } finally {
       setLoading(false);
     }
@@ -240,6 +244,81 @@ function Dashboard() {
               <div className="empty-state">No spending data yet</div>
             )}
           </div>
+        </div>
+
+        {/* Monthly Comparison */}
+        <div className="dashboard-card comparison-card">
+          <div className="card-header">
+            <h3>Monthly Comparison</h3>
+            <p className="card-subtitle">
+              {comparisonData?.thisMonth?.name || 'This Month'} vs {comparisonData?.lastMonth?.name || 'Last Month'}
+            </p>
+          </div>
+
+          {comparisonData && comparisonData.thisMonth && comparisonData.lastMonth ? (
+            <>
+              <div className="chart-container comparison-chart">
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart
+                    data={comparisonData.thisMonth.weeks.map((w, i) => ({
+                      week: w.week,
+                      thisMonth: w.amount,
+                      lastMonth: comparisonData.lastMonth.weeks[i]?.amount || 0
+                    }))}
+                    margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                  >
+                    <XAxis
+                      dataKey="week"
+                      stroke="#444"
+                      tick={{ fill: '#666', fontSize: 12 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      stroke="#444"
+                      tick={{ fill: '#666', fontSize: 12 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#000',
+                        border: '1px solid #333',
+                        borderRadius: '8px'
+                      }}
+                      formatter={(value) => [`$${value.toFixed(2)}`, '']}
+                      labelStyle={{ color: '#888' }}
+                    />
+                    <Legend
+                      wrapperStyle={{ paddingTop: '10px' }}
+                      formatter={(value) => <span style={{ color: '#888', fontSize: '12px' }}>{value}</span>}
+                    />
+                    <Bar dataKey="thisMonth" fill="#22d3ee" name="This Month" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="lastMonth" fill="#8b5cf6" name="Last Month" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="comparison-summary">
+                <div className="comparison-totals">
+                  <div className="comparison-total">
+                    <span className="total-label">This Month</span>
+                    <span className="total-value this-month">${comparisonData.thisMonth.total.toFixed(2)}</span>
+                  </div>
+                  <div className="comparison-total">
+                    <span className="total-label">Last Month</span>
+                    <span className="total-value last-month">${comparisonData.lastMonth.total.toFixed(2)}</span>
+                  </div>
+                </div>
+                <div className={`comparison-change ${comparisonData.trend === 'up' ? 'negative' : comparisonData.trend === 'down' ? 'positive' : ''}`}>
+                  {comparisonData.trend === 'up' ? '↑' : comparisonData.trend === 'down' ? '↓' : '→'}
+                  {Math.abs(comparisonData.percentChange).toFixed(1)}% vs last month
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="empty-state">No comparison data available</div>
+          )}
         </div>
 
         {/* Accounts */}

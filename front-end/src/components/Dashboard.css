@@ -155,6 +155,70 @@
   grid-column: span 12;
 }
 
+.comparison-card {
+  grid-column: span 12;
+}
+
+.comparison-chart {
+  margin-bottom: 24px;
+}
+
+.comparison-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid #222;
+}
+
+.comparison-totals {
+  display: flex;
+  gap: 40px;
+}
+
+.comparison-total {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.total-label {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 300;
+}
+
+.total-value {
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.total-value.this-month {
+  color: #22d3ee;
+}
+
+.total-value.last-month {
+  color: #8b5cf6;
+}
+
+.comparison-change {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background-color: #1a1a1a;
+}
+
+.comparison-change.positive {
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.comparison-change.negative {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -426,8 +490,25 @@
 
   .spending-chart-card,
   .categories-card,
-  .accounts-card {
+  .accounts-card,
+  .comparison-card {
     grid-column: span 1;
+  }
+
+  .comparison-summary {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .comparison-totals {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .comparison-change {
+    width: 100%;
+    text-align: center;
   }
 
   .time-period-selector {

@@ -240,6 +240,85 @@ const getSpendingByPeriod = async (req, res) => {
 };
 
 /**
+ * Get monthly comparison (this month vs last month by week)
+ */
+const getMonthlyComparison = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const now = new Date();
+
+    // This month date range
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+    // Last month date range
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+
+    // Fetch transactions for both months
+    const [thisMonthTxns, lastMonthTxns] = await Promise.all([
+      Transaction.find({
+        user_id: userId,
+        date: { $gte: thisMonthStart, $lte: thisMonthEnd },
+        amount: { $gt: 0 },
+        category: { $nin: ['Transfer', 'Credit Card Payment', 'Payment'] }
+      }),
+      Transaction.find({
+        user_id: userId,
+        date: { $gte: lastMonthStart, $lte: lastMonthEnd },
+        amount: { $gt: 0 },
+        category: { $nin: ['Transfer', 'Credit Card Payment', 'Payment'] }
+      })
+    ]);
+
+    // Helper to group transactions by week of month
+    const groupByWeek = (transactions, monthStart) => {
+      const weeks = [0, 0, 0, 0];
+      transactions.forEach(t => {
+        const dayOfMonth = new Date(t.date).getDate();
+        const weekIndex = Math.min(Math.floor((dayOfMonth - 1) / 7), 3);
+        weeks[weekIndex] += t.amount;
+      });
+      return weeks.map((amount, i) => ({
+        week: `Week ${i + 1}`,
+        amount: parseFloat(amount.toFixed(2))
+      }));
+    };
+
+    const thisMonthWeeks = groupByWeek(thisMonthTxns, thisMonthStart);
+    const lastMonthWeeks = groupByWeek(lastMonthTxns, lastMonthStart);
+
+    const thisMonthTotal = thisMonthTxns.reduce((sum, t) => sum + t.amount, 0);
+    const lastMonthTotal = lastMonthTxns.reduce((sum, t) => sum + t.amount, 0);
+
+    const percentChange = lastMonthTotal > 0
+      ? ((thisMonthTotal - lastMonthTotal) / lastMonthTotal) * 100
+      : 0;
+
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'];
+
+    res.json({
+      thisMonth: {
+        name: `${monthNames[now.getMonth()]} ${now.getFullYear()}`,
+        total: parseFloat(thisMonthTotal.toFixed(2)),
+        weeks: thisMonthWeeks
+      },
+      lastMonth: {
+        name: `${monthNames[(now.getMonth() + 11) % 12]} ${now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear()}`,
+        total: parseFloat(lastMonthTotal.toFixed(2)),
+        weeks: lastMonthWeeks
+      },
+      percentChange: parseFloat(percentChange.toFixed(1)),
+      trend: percentChange > 0 ? 'up' : percentChange < 0 ? 'down' : 'stable'
+    });
+  } catch (error) {
+    console.error('Error getting monthly comparison:', error);
+    res.status(500).json({ error: 'Failed to get monthly comparison' });
+  }
+};
+
+/**
  * Get category breakdown
  */
 const getCategoryBreakdown = async (req, res) => {
@@ -320,4 +399,5 @@ module.exports = {
   getSummary,
   getSpendingByPeriod,
   getCategoryBreakdown,
+  getMonthlyComparison,
 };

@@ -12,4 +12,7 @@ router.get('/spending/:period', auth, dashboardController.getSpendingByPeriod);
 // Get category breakdown (requires authentication)
 router.get('/categories', auth, dashboardController.getCategoryBreakdown);
 
+// Get monthly comparison (requires authentication)
+router.get('/monthly-comparison', auth, dashboardController.getMonthlyComparison);
+
 module.exports = router;

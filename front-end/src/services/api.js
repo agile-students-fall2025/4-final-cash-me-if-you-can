@@ -260,6 +260,16 @@ export const dashboardAPI = {
     });
     return response.json();
   },
+
+  getMonthlyComparison: async () => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/dashboard/monthly-comparison`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.json();
+  },
 };
 
 /**
