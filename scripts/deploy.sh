@@ -73,7 +73,6 @@ done
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Reloading Nginx..."
 sudo systemctl restart nginx
 sudo systemctl reload nginx
-sudo systemctl nging -t
 echo "✅ Nginx reloaded."
 
 echo "Testing api health..."
