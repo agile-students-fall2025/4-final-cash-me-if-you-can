@@ -57,7 +57,7 @@ jobs:
         run: |
           echo "User: '${{ secrets.DO_SSH_USER }}'"
           echo "Host: '${{ secrets.DP_SSH_HOST }}'"
-          ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DP_SSH_HOST }} "
+          ssh -i ~/.ssh/id_ed25519 root@$137.184.20.219 "
             echo "Node version before nvm: $(node -v) && \
             env && \
             export NVM_DIR=/root/.nvm && \
