@@ -38,6 +38,11 @@ rm -rf build/
 
 echo "Building frontend..."
 npm run build
+
+echo "Copying build to Nginx web directory..."
+rm -rf /var/www/cashme/*          # <-- wipes old version
+cp -r build/* /var/www/cashme/    # <-- installs new version
+
 echo "✅ Frontend deployed."
 
 # --- BACKEND DEPLOY ---
