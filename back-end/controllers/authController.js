@@ -22,7 +22,21 @@ exports.signup = async (req, res) => {
     // Seed mock data for new user
     await seedMockDataForUser(user._id);
 
-    return res.json({ message: "User created", user });
+    // Generate token for auto-login
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    return res.json({
+      message: "User created",
+      token,
+      user: {
+        _id: user._id,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        email: user.email,
+      },
+    });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
