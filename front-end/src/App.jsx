@@ -195,7 +195,7 @@ function AppContent() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/home" element={<HomePage />} />
-        <Route path="/chatbot" element={<ChatbotPage onMenuOpen={toggleMenu} />} />
+        <Route path="/chatbot" element={<ChatbotPage onMenuOpen={toggleMenu} isMenuOpen={menuOpen} />} />
         <Route path="/connect" element={<ConnectAccounts />} />
         <Route path="/categorize" element={<TransactionCategories />} />
         <Route path="/recurring" element={<RecurringTransactions />} />
