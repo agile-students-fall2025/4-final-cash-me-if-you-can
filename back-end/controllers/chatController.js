@@ -2,9 +2,10 @@ const openai = require('../config/openai');
 const vectorStore = require('../utils/vectorStore');
 const { tools, executeTool } = require('../utils/chatbotTools');
 const userProfile = require('../data/userProfile.json');
+const ChatConversation = require('../models/ChatConversation');
 
-// Store conversation history temporarily (use database in production)
-const conversationHistory = {};
+// In-memory cache for active conversations (for performance)
+const activeConversations = {};
 
 /**
  * Fallback rule-based responses when OpenAI API is not available
@@ -56,27 +57,65 @@ function getFallbackResponse(message) {
  */
 const sendMessage = async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, conversationId } = req.body;
     const user_id = req.userId; // From auth middleware
 
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    // Initialize conversation history for user
-    if (!conversationHistory[user_id]) {
-      conversationHistory[user_id] = [];
+    // Get or create conversation
+    let conversation;
+    if (conversationId) {
+      conversation = await ChatConversation.findOne({ 
+        _id: conversationId, 
+        user_id,
+        is_active: true 
+      });
     }
+    
+    if (!conversation) {
+      // Create new conversation
+      conversation = new ChatConversation({
+        user_id,
+        messages: [],
+      });
+    }
+
+    // Get conversation history from the conversation document
+    const conversationHistory = conversation.messages.map(m => ({
+      role: m.role,
+      content: m.content,
+      ...(m.tool_call_id && { tool_call_id: m.tool_call_id }),
+      ...(m.tool_calls && { tool_calls: m.tool_calls }),
+    }));
 
     // Search knowledge base for relevant context
     const relevantDocs = await vectorStore.search(message, 2);
     const context = relevantDocs.map(doc => `${doc.title}: ${doc.content}`).join('\n\n');
 
+    // Track if this is a new conversation (no messages yet)
+    const isNewConversation = conversation.messages.length === 0;
+
+    // Helper function to save conversation to MongoDB
+    const saveConversation = async () => {
+      // Generate title from first message if new conversation
+      if (isNewConversation) {
+        conversation.generateTitle();
+      }
+      conversation.last_message_at = new Date();
+      await conversation.save();
+    };
+
     // Use OpenAI if available, otherwise fallback
     if (openai) {
       try {
-        // Add user message to history
-        conversationHistory[user_id].push({
+        // Add user message to conversation
+        conversation.messages.push({
+          role: 'user',
+          content: message,
+        });
+        conversationHistory.push({
           role: 'user',
           content: message,
         });
@@ -126,7 +165,7 @@ BUDGET CAPABILITIES:
 
 You can query transaction data and manage budgets using available functions. Always be supportive and realistic about student budgets.`,
           },
-          ...conversationHistory[user_id].slice(-10), // Keep last 10 messages
+          ...conversationHistory.slice(-10), // Keep last 10 messages
         ];
 
         // Call OpenAI with function calling
@@ -141,7 +180,7 @@ You can query transaction data and manage budgets using available functions. Alw
 
         // Handle function calls (may be multiple)
         if (assistantMessage.tool_calls) {
-          conversationHistory[user_id].push(assistantMessage);
+          conversationHistory.push(assistantMessage);
 
           // Execute all tool calls
           const toolsUsed = [];
@@ -154,7 +193,7 @@ You can query transaction data and manage budgets using available functions. Alw
             const functionResponse = await executeTool[functionName](functionArgs, user_id);
 
             // Add tool response to conversation
-            conversationHistory[user_id].push({
+            conversationHistory.push({
               role: 'tool',
               tool_call_id: toolCall.id,
               content: JSON.stringify(functionResponse),
@@ -166,31 +205,37 @@ You can query transaction data and manage budgets using available functions. Alw
             model: 'gpt-4o-mini',
             messages: [
               messages[0],
-              ...conversationHistory[user_id].slice(-10),
+              ...conversationHistory.slice(-10),
             ],
           });
 
           const finalMessage = finalResponse.choices[0].message.content;
-          conversationHistory[user_id].push({
+          
+          // Save assistant response to conversation
+          conversation.messages.push({
             role: 'assistant',
             content: finalMessage,
           });
+          await saveConversation();
 
           return res.json({
             message: finalMessage,
+            conversationId: conversation._id,
             context_used: relevantDocs.map(d => d.title),
             tools_used: toolsUsed,
           });
         }
 
-        // No function call - return assistant message
-        conversationHistory[user_id].push({
+        // No function call - save assistant message
+        conversation.messages.push({
           role: 'assistant',
           content: assistantMessage.content,
         });
+        await saveConversation();
 
         return res.json({
           message: assistantMessage.content,
+          conversationId: conversation._id,
           context_used: relevantDocs.map(d => d.title),
         });
       } catch (openaiError) {
@@ -257,13 +302,16 @@ You can query transaction data and manage budgets using available functions. Alw
       responseMessage = getFallbackResponse(message);
     }
 
-    conversationHistory[user_id].push(
+    // Save both messages to conversation
+    conversation.messages.push(
       { role: 'user', content: message },
       { role: 'assistant', content: responseMessage }
     );
+    await saveConversation();
 
     res.json({
       message: responseMessage,
+      conversationId: conversation._id,
       context_used: relevantDocs.map(d => d.title),
       mode: 'fallback',
     });
@@ -274,16 +322,94 @@ You can query transaction data and manage budgets using available functions. Alw
 };
 
 /**
- * Get conversation history
+ * Get all conversations for a user (for history sidebar)
+ */
+const getConversations = async (req, res) => {
+  try {
+    const user_id = req.userId;
+    const { limit = 20, offset = 0 } = req.query;
+
+    const conversations = await ChatConversation.find({ 
+      user_id, 
+      is_active: true 
+    })
+      .select('_id title last_message_at createdAt')
+      .sort({ last_message_at: -1 })
+      .skip(parseInt(offset))
+      .limit(parseInt(limit));
+
+    const total = await ChatConversation.countDocuments({ user_id, is_active: true });
+
+    res.json({
+      conversations,
+      total,
+      hasMore: parseInt(offset) + conversations.length < total,
+    });
+  } catch (error) {
+    console.error('Error getting conversations:', error);
+    res.status(500).json({ error: 'Failed to get conversations' });
+  }
+};
+
+/**
+ * Get a specific conversation by ID
+ */
+const getConversation = async (req, res) => {
+  try {
+    const user_id = req.userId;
+    const { conversationId } = req.params;
+
+    const conversation = await ChatConversation.findOne({
+      _id: conversationId,
+      user_id,
+      is_active: true,
+    });
+
+    if (!conversation) {
+      return res.status(404).json({ error: 'Conversation not found' });
+    }
+
+    res.json({
+      conversation: {
+        _id: conversation._id,
+        title: conversation.title,
+        messages: conversation.messages.filter(m => m.role !== 'system' && m.role !== 'tool'),
+        last_message_at: conversation.last_message_at,
+        createdAt: conversation.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error('Error getting conversation:', error);
+    res.status(500).json({ error: 'Failed to get conversation' });
+  }
+};
+
+/**
+ * Get conversation history (legacy - returns current session messages)
  */
 const getHistory = async (req, res) => {
   try {
-    const user_id = req.userId; // From auth middleware
-    const history = conversationHistory[user_id] || [];
+    const user_id = req.userId;
+    
+    // Get the most recent conversation
+    const conversation = await ChatConversation.findOne({ 
+      user_id, 
+      is_active: true 
+    }).sort({ last_message_at: -1 });
+
+    if (!conversation) {
+      return res.json({
+        history: [],
+        message_count: 0,
+      });
+    }
+
+    const history = conversation.messages.filter(msg => msg.role !== 'system' && msg.role !== 'tool');
 
     res.json({
-      history: history.filter(msg => msg.role !== 'system'),
+      history,
       message_count: history.length,
+      conversationId: conversation._id,
     });
   } catch (error) {
     console.error('Error getting history:', error);
@@ -292,14 +418,43 @@ const getHistory = async (req, res) => {
 };
 
 /**
- * Clear conversation history
+ * Delete a specific conversation
+ */
+const deleteConversation = async (req, res) => {
+  try {
+    const user_id = req.userId;
+    const { conversationId } = req.params;
+
+    const result = await ChatConversation.findOneAndUpdate(
+      { _id: conversationId, user_id },
+      { is_active: false },
+      { new: true }
+    );
+
+    if (!result) {
+      return res.status(404).json({ error: 'Conversation not found' });
+    }
+
+    res.json({ message: 'Conversation deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting conversation:', error);
+    res.status(500).json({ error: 'Failed to delete conversation' });
+  }
+};
+
+/**
+ * Clear all conversation history for user
  */
 const clearHistory = async (req, res) => {
   try {
-    const user_id = req.userId; // From auth middleware
-    conversationHistory[user_id] = [];
+    const user_id = req.userId;
+    
+    await ChatConversation.updateMany(
+      { user_id },
+      { is_active: false }
+    );
 
-    res.json({ message: 'History cleared successfully' });
+    res.json({ message: 'All conversations cleared successfully' });
   } catch (error) {
     console.error('Error clearing history:', error);
     res.status(500).json({ error: 'Failed to clear history' });
@@ -308,6 +463,9 @@ const clearHistory = async (req, res) => {
 
 module.exports = {
   sendMessage,
+  getConversations,
+  getConversation,
   getHistory,
+  deleteConversation,
   clearHistory,
 };

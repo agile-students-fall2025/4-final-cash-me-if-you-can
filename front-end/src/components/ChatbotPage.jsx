@@ -1,15 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import './ChatbotPage.css';
 import { chatAPI } from '../services/api';
 import DiamondLogo from './icons/DiamondLogo';
 
-function ChatbotPage({ onMenuOpen }) {
+function ChatbotPage({ onMenuOpen, isMenuOpen }) {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasStartedChat, setHasStartedChat] = useState(false);
+  const [currentConversationId, setCurrentConversationId] = useState(null);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [conversations, setConversations] = useState([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
 
@@ -30,6 +34,84 @@ function ChatbotPage({ onMenuOpen }) {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Fetch conversations for history sidebar
+  const fetchConversations = useCallback(async () => {
+    setIsLoadingHistory(true);
+    try {
+      const response = await chatAPI.getConversations();
+      if (response.conversations) {
+        setConversations(response.conversations);
+      }
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  }, []);
+
+  // Load a specific conversation
+  const loadConversation = async (conversationId) => {
+    try {
+      const response = await chatAPI.getConversation(conversationId);
+      if (response.conversation) {
+        const loadedMessages = response.conversation.messages.map((m, idx) => ({
+          id: `${conversationId}-${idx}`,
+          text: m.content,
+          sender: m.role === 'user' ? 'user' : 'bot',
+          timestamp: m.timestamp || new Date().toISOString(),
+        }));
+        setMessages(loadedMessages);
+        setCurrentConversationId(conversationId);
+        setHasStartedChat(true);
+        setIsHistoryOpen(false);
+      }
+    } catch (error) {
+      console.error('Error loading conversation:', error);
+    }
+  };
+
+  // Delete a conversation
+  const handleDeleteConversation = async (e, conversationId) => {
+    e.stopPropagation();
+    try {
+      await chatAPI.deleteConversation(conversationId);
+      setConversations(prev => prev.filter(c => c._id !== conversationId));
+      if (currentConversationId === conversationId) {
+        handleNewChat();
+      }
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+    }
+  };
+
+  // Start a new chat
+  const handleNewChat = () => {
+    setMessages([]);
+    setCurrentConversationId(null);
+    setHasStartedChat(false);
+    setIsHistoryOpen(false);
+  };
+
+  // Toggle history sidebar
+  const toggleHistory = () => {
+    if (!isHistoryOpen) {
+      fetchConversations();
+    }
+    setIsHistoryOpen(!isHistoryOpen);
+  };
+
+  // Format date for history items
+  const formatHistoryDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -53,7 +135,13 @@ function ChatbotPage({ onMenuOpen }) {
     setIsLoading(true);
 
     try {
-      const response = await chatAPI.sendMessage(currentMessage);
+      const response = await chatAPI.sendMessage(currentMessage, currentConversationId);
+      
+      // Update conversation ID if this is a new conversation
+      if (response.conversationId && !currentConversationId) {
+        setCurrentConversationId(response.conversationId);
+      }
+      
       const botResponse = {
         id: Date.now() + 1,
         text: response.message,
@@ -138,16 +226,78 @@ function ChatbotPage({ onMenuOpen }) {
   };
 
   return (
-    <div className={`chatbot-page ${hasStartedChat ? 'chat-active' : 'landing'}`}>
-      {/* Diamond Logo - Top Left when chat active */}
-      {hasStartedChat && (
-        <div
-          className="diamond-logo-container corner"
-          onClick={onMenuOpen}
-          title="Open Menu"
-        >
-          <DiamondLogo size={80} className="diamond-logo" />
-          <span className="menu-tooltip">Menu</span>
+    <div className={`chatbot-page ${hasStartedChat ? 'chat-active' : 'landing'} ${isHistoryOpen ? 'history-open' : ''}`}>
+      {/* History Sidebar */}
+      <div className={`history-sidebar ${isHistoryOpen ? 'open' : ''}`}>
+        <div className="history-header">
+          <h2>Chat History</h2>
+          <button className="close-history-btn" onClick={toggleHistory}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <button className="new-chat-btn" onClick={handleNewChat}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          New Chat
+        </button>
+        <div className="history-list">
+          {isLoadingHistory ? (
+            <div className="history-loading">
+              <div className="typing-indicator">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          ) : conversations.length === 0 ? (
+            <div className="history-empty">
+              <p>No conversations yet</p>
+            </div>
+          ) : (
+            conversations.map((conv) => (
+              <div
+                key={conv._id}
+                className={`history-item ${currentConversationId === conv._id ? 'active' : ''}`}
+                onClick={() => loadConversation(conv._id)}
+              >
+                <div className="history-item-content">
+                  <span className="history-item-title">{conv.title}</span>
+                  <span className="history-item-date">{formatHistoryDate(conv.last_message_at)}</span>
+                </div>
+                <button
+                  className="history-item-delete"
+                  onClick={(e) => handleDeleteConversation(e, conv._id)}
+                  title="Delete conversation"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                  </svg>
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* History Overlay */}
+      {isHistoryOpen && <div className="history-overlay" onClick={toggleHistory} />}
+
+      {/* History Toggle Button - Always visible */}
+      <button
+        className="history-toggle-btn"
+        onClick={toggleHistory}
+        title="Chat History"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </button>
+
+      {/* Diamond Logo - Fixed top left, same as other pages */}
+      {hasStartedChat && !isMenuOpen && (
+        <div className="menu-trigger" onClick={onMenuOpen}>
+          <DiamondLogo size={36} className="menu-logo" />
         </div>
       )}
 
@@ -194,7 +344,7 @@ function ChatbotPage({ onMenuOpen }) {
               ))}
             </div>
             <p className="chat-disclosure">
-              We might send your transactiona and spending records to OpenAI to generate a comprehensive response. We will not send any personal information.
+              We might send your transaction and spending records to OpenAI to generate a comprehensive response. We will not send any personal information.
             </p>
           </div>
         </div>
@@ -240,7 +390,7 @@ function ChatbotPage({ onMenuOpen }) {
             </button>
           </form>
           <p className="chat-disclosure">
-            We might send your transactiona and spending records to OpenAI to generate a comprehensive response. We will not send any personal information.
+            We might send your transaction and spending records to OpenAI to generate a comprehensive response. We will not send any personal information.
           </p>
 
           <div className="chat-quick-actions">
