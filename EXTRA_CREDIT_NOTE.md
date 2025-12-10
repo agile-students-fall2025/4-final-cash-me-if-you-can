@@ -45,7 +45,7 @@ The application is deployed to a server environment where builds are generated, 
 ## How a Request Flows Through the System
 
 1. User visits the site  
-   → Browser requests `https://domain.com`
+   → Browser requests `http://137.184.20.219`
 
 2. NGINX serves `index.html`, JS, CSS (the frontend build)
 
