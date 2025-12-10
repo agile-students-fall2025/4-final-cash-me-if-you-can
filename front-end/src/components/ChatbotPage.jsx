@@ -14,6 +14,7 @@ function ChatbotPage({ onMenuOpen, isMenuOpen }) {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
   const [onboardingQueryProcessed, setOnboardingQueryProcessed] = useState(false);
@@ -26,6 +27,15 @@ function ChatbotPage({ onMenuOpen, isMenuOpen }) {
     { id: 'recurring', icon: 'recurring', label: 'Recurring', route: '/recurring', color: 'purple' },
     { id: 'connect', icon: 'card', label: 'Manage Accounts', route: '/connect', color: 'teal' },
     { id: 'settings', icon: 'settings', label: 'Settings', route: '/settings', color: 'cyan' },
+  ];
+
+  // Suggested questions for new users
+  const suggestedQuestions = [
+    "How much did I spend on food this month?",
+    "What's my spending trend this week?",
+    "Set a $200 budget for groceries",
+    "Split my $60 dinner with 3 friends",
+    "Show me my recent transactions",
   ];
 
   const scrollToBottom = () => {
@@ -223,6 +233,10 @@ function ChatbotPage({ onMenuOpen, isMenuOpen }) {
     navigate(route);
   };
 
+  const handleSuggestedQuestion = (question) => {
+    setInputText(question);
+  };
+
   const formatTime = (timestamp) => {
     return new Date(timestamp).toLocaleTimeString('en-US', {
       hour: 'numeric',
@@ -376,6 +390,8 @@ function ChatbotPage({ onMenuOpen, isMenuOpen }) {
                 type="text"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setTimeout(() => setIsInputFocused(false), 150)}
                 placeholder="Ask me anything about your finances..."
                 className="landing-input"
               />
@@ -385,6 +401,23 @@ function ChatbotPage({ onMenuOpen, isMenuOpen }) {
                 </svg>
               </button>
             </form>
+
+            {isInputFocused && (
+              <div className="suggested-questions">
+                <p className="suggested-label">Try asking:</p>
+                <div className="suggested-buttons">
+                  {suggestedQuestions.map((question, index) => (
+                    <button
+                      key={index}
+                      className="suggested-btn"
+                      onClick={() => handleSuggestedQuestion(question)}
+                    >
+                      {question}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="quick-actions">
               {quickActions.map((action) => (
