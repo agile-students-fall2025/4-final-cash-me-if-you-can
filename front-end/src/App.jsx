@@ -12,6 +12,7 @@ import Dashboard from './components/Dashboard.jsx';
 import RecurringTransactions from './components/RecurringTransactions.jsx';
 import NetWorth from './components/NetWorth.jsx';
 import DiamondLogo from './components/icons/DiamondLogo';
+import OnboardingTutorial from './components/OnboardingTutorial.jsx';
 
 function HomePage() {
   return (
@@ -96,7 +97,7 @@ function HomePage() {
 
 function AppContent() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, logoutUser } = useContext(UserContext);
+  const { user, logoutUser, showOnboarding, completeOnboarding, skipOnboarding } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -150,6 +151,30 @@ function AppContent() {
     }
   };
 
+  const handleOnboardingComplete = async (keepData) => {
+    if (!keepData) {
+      // User chose to clear sample data
+      const token = localStorage.getItem("token");
+
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/users/me/data`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.ok) {
+          alert("Sample data cleared! You can now start adding your own transactions.");
+        }
+      } catch (err) {
+        console.error("Failed to clear data:", err);
+      }
+    }
+
+    completeOnboarding();
+  };
+
   // Check if we're on the chatbot page (it has its own menu trigger)
   const isChatbotPage = location.pathname === '/chatbot';
   // Check if we're on login or register page (hide menu trigger)
@@ -157,6 +182,14 @@ function AppContent() {
 
   return (
     <div className="App">
+      {/* Onboarding Tutorial */}
+      {showOnboarding && (
+        <OnboardingTutorial
+          onComplete={handleOnboardingComplete}
+          onSkip={skipOnboarding}
+        />
+      )}
+
       {/* Diamond Logo Menu Trigger - hidden on chatbot and auth pages */}
       {!isChatbotPage && !isAuthPage && !isPublicPage &&(
         <div className="menu-trigger" onClick={toggleMenu}>
