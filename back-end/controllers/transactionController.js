@@ -1,5 +1,6 @@
 const Transaction = require('../models/Transaction');
 const Category = require('../models/Category');
+const Account = require('../models/Account');
 const { v4: uuidv4 } = require('uuid');
 const {
   categorizeTransaction,
@@ -281,6 +282,16 @@ const createTransaction = async (req, res) => {
     const transaction = new Transaction(transactionData);
     await transaction.save();
 
+    // Update account balance
+    // Positive amounts are expenses (reduce balance), negative amounts are income (increase balance)
+    const account = await Account.findOne({ account_id: account_id });
+    if (account) {
+      account.balances.current -= parseFloat(amount);
+      account.balances.available -= parseFloat(amount);
+      account.last_sync = new Date();
+      await account.save();
+    }
+
     // Sync vector store with new transaction data
     syncVectorStore().catch(err => console.error('[transactionController] Vector sync failed:', err.message));
 
@@ -317,6 +328,9 @@ const updateTransaction = async (req, res) => {
       return res.status(404).json({ error: 'Transaction not found' });
     }
 
+    // Store old amount to calculate the difference
+    const oldAmount = transaction.amount;
+
     // Update fields
     if (date) transaction.date = new Date(date);
     if (name) transaction.name = name;
@@ -327,6 +341,21 @@ const updateTransaction = async (req, res) => {
     if (notes !== undefined) transaction.notes = notes;
 
     await transaction.save();
+
+    // Update account balance if amount changed
+    if (amount !== undefined) {
+      const account = await Account.findOne({ account_id: transaction.account_id });
+      if (account) {
+        // Revert old transaction effect
+        account.balances.current += oldAmount;
+        account.balances.available += oldAmount;
+        // Apply new transaction effect
+        account.balances.current -= parseFloat(amount);
+        account.balances.available -= parseFloat(amount);
+        account.last_sync = new Date();
+        await account.save();
+      }
+    }
 
     // Sync vector store with updated transaction data
     syncVectorStore().catch(err => console.error('[transactionController] Vector sync failed:', err.message));
@@ -361,6 +390,15 @@ const deleteTransaction = async (req, res) => {
         return res.status(404).json({ error: 'Transaction not found' });
       }
 
+      // Revert account balance change
+      const account = await Account.findOne({ account_id: transaction.account_id });
+      if (account) {
+        account.balances.current += transaction.amount;
+        account.balances.available += transaction.amount;
+        account.last_sync = new Date();
+        await account.save();
+      }
+
       // Sync vector store after transaction deletion
       syncVectorStore().catch(err => console.error('[transactionController] Vector sync failed:', err.message));
 
@@ -372,6 +410,15 @@ const deleteTransaction = async (req, res) => {
 
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });
+    }
+
+    // Revert account balance change
+    const account = await Account.findOne({ account_id: transaction.account_id });
+    if (account) {
+      account.balances.current += transaction.amount;
+      account.balances.available += transaction.amount;
+      account.last_sync = new Date();
+      await account.save();
     }
 
     // Sync vector store after transaction deletion
