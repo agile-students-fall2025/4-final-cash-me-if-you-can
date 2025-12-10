@@ -1,5 +1,6 @@
 const Transaction = require('../models/Transaction');
 const Account = require('../models/Account');
+const SplitExpense = require('../models/SplitExpense');
 const {
   getBudgetStatus,
   createBudgetForChat,
@@ -147,6 +148,78 @@ const tools = [
           },
         },
         required: ['category', 'new_amount'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'create_split_expense',
+      description: 'Create a new split expense to track shared costs with friends or roommates. Use this when a user says they want to split a bill or expense.',
+      parameters: {
+        type: 'object',
+        properties: {
+          description: {
+            type: 'string',
+            description: 'What the expense was for (e.g., "dinner", "groceries", "utilities")',
+          },
+          total_amount: {
+            type: 'number',
+            description: 'The total amount of the expense in dollars',
+          },
+          split_with: {
+            type: 'number',
+            description: 'Total number of people splitting (including the user who paid). E.g., "split with 3 friends" means 4 people total.',
+          },
+          participants: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Optional names of people involved in the split',
+          },
+          category: {
+            type: 'string',
+            description: 'Optional category for the expense',
+          },
+        },
+        required: ['description', 'total_amount', 'split_with'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_split_expenses',
+      description: 'Get a list of split expenses. Shows pending splits (money owed to the user) or settled splits.',
+      parameters: {
+        type: 'object',
+        properties: {
+          status: {
+            type: 'string',
+            enum: ['pending', 'settled', 'all'],
+            description: 'Filter by status: pending (unsettled), settled, or all',
+          },
+          limit: {
+            type: 'number',
+            description: 'Maximum number of splits to return (default: 10)',
+          },
+        },
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'settle_split_expense',
+      description: 'Mark a split expense as settled/paid. Use when someone has paid back their share.',
+      parameters: {
+        type: 'object',
+        properties: {
+          description: {
+            type: 'string',
+            description: 'The description of the split to settle (will match partially)',
+          },
+        },
+        required: ['description'],
       },
     },
   },
@@ -383,6 +456,128 @@ const executeTool = {
       return { error: 'User not authenticated' };
     }
     return await updateBudgetForChat(userId, category, new_amount);
+  },
+
+  // Split expense tools
+  create_split_expense: async ({ description, total_amount, split_with, participants, category }, userId) => {
+    if (!userId) {
+      return { error: 'User not authenticated' };
+    }
+
+    try {
+      const splitExpense = new SplitExpense({
+        user_id: userId,
+        description,
+        total_amount,
+        split_with,
+        participants: participants || [],
+        category: category || 'Other',
+      });
+
+      await splitExpense.save();
+
+      const amountOwedToUser = (splitExpense.per_person_amount * (split_with - 1)).toFixed(2);
+
+      return {
+        success: true,
+        message: `Split expense created successfully`,
+        details: {
+          description: splitExpense.description,
+          total_amount: splitExpense.total_amount,
+          split_with: splitExpense.split_with,
+          per_person: splitExpense.per_person_amount.toFixed(2),
+          total_owed_to_you: amountOwedToUser,
+          participants: splitExpense.participants,
+        },
+      };
+    } catch (err) {
+      return { error: err.message };
+    }
+  },
+
+  get_split_expenses: async ({ status = 'pending', limit = 10 }, userId) => {
+    if (!userId) {
+      return { error: 'User not authenticated' };
+    }
+
+    try {
+      const query = { user_id: userId };
+
+      if (status === 'pending') {
+        query.is_settled = false;
+      } else if (status === 'settled') {
+        query.is_settled = true;
+      }
+
+      const splits = await SplitExpense.find(query)
+        .sort({ date: -1 })
+        .limit(limit);
+
+      if (splits.length === 0) {
+        return {
+          message: status === 'pending'
+            ? 'No pending split expenses. Use "split" to create one!'
+            : 'No split expenses found.',
+          splits: [],
+          total_owed: '0.00',
+        };
+      }
+
+      const pendingSplits = splits.filter(s => !s.is_settled);
+      const totalOwed = pendingSplits.reduce(
+        (sum, s) => sum + (s.per_person_amount * (s.split_with - 1)),
+        0
+      );
+
+      return {
+        splits: splits.map(s => ({
+          description: s.description,
+          total_amount: s.total_amount,
+          split_with: s.split_with,
+          per_person: s.per_person_amount.toFixed(2),
+          owed_to_you: (s.per_person_amount * (s.split_with - 1)).toFixed(2),
+          is_settled: s.is_settled,
+          date: s.date.toISOString().split('T')[0],
+          participants: s.participants,
+        })),
+        total_owed_to_you: totalOwed.toFixed(2),
+        count: splits.length,
+      };
+    } catch (err) {
+      return { error: err.message };
+    }
+  },
+
+  settle_split_expense: async ({ description }, userId) => {
+    if (!userId) {
+      return { error: 'User not authenticated' };
+    }
+
+    try {
+      const split = await SplitExpense.findOne({
+        user_id: userId,
+        description: { $regex: description, $options: 'i' },
+        is_settled: false,
+      });
+
+      if (!split) {
+        return {
+          success: false,
+          message: `No pending split expense found matching "${description}"`,
+        };
+      }
+
+      split.is_settled = true;
+      await split.save();
+
+      return {
+        success: true,
+        message: `Marked "${split.description}" as settled`,
+        settled_amount: split.total_amount,
+      };
+    } catch (err) {
+      return { error: err.message };
+    }
   },
 };
 
