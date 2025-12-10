@@ -58,11 +58,11 @@ jobs:
           echo "User: '${{ secrets.DO_SSH_USER }}'"
           echo "Host: '${{ secrets.DP_SSH_HOST }}'"
           ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DP_SSH_HOST }} "
+            echo "Node version before nvm: $(node -v) && \
             export NVM_DIR=/root/.nvm && \
             chmod +x /root/.nvm/nvm.sh && \
             /root/.nvm/nvm.sh && \
             echo "Node version after nvm: $(node -v) && \
-            nvm use 24 && \
             cd ~/app/4-final-cash-me-if-you-can/scripts && chmod +x deploy.sh && ./deploy.sh
             "
         shell: bash
