@@ -3,7 +3,7 @@ name: CD
 on:
   push:
     branches:
-      - staging  # Runs when staging is updated t
+      - staging  # Runs when staging is updated
 
 jobs:
   deploy:
@@ -22,9 +22,6 @@ jobs:
 
       - name: Authenticate GH CLI
         run: echo "${{ secrets.REPO_TOKEN }}" | gh auth login --with-token
-
-      - name: Authenticate GH CLI
-        run: gh auth login --with-token <<< "${{ secrets.REPO_TOKEN }}"
 
       - name: Create or update PR from staging → main
         run: |
