@@ -3,7 +3,7 @@ name: CD
 on:
   push:
     branches:
-      - staging  # Only runs when staging is updated
+      - staging  # Runs when staging is updated t
 
 jobs:
   deploy:
@@ -14,7 +14,40 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: main
+
+      - name: Install GitHub CLI
+        run: |
+          sudo apt update
+          sudo apt install -y gh
+
+      - name: Authenticate GH CLI
+        run: echo "${{ secrets.REPO_TOKEN }}" | gh auth login --with-token
+
+      - name: Authenticate GH CLI
+        run: gh auth login --with-token <<< "${{ secrets.REPO_TOKEN }}"
+
+      - name: Create or update PR from staging → main
+        run: |
+          # Check if PR already exists
+          PR_URL=$(gh pr list --head staging --base main --json url -q '.[0].url')
+          if [ -z "$PR_URL" ]; then
+            echo "Creating new PR..."
+            gh pr create --title "Auto-merge staging → main [skip ci]" \
+                         --body "Auto-generated PR from CI/CD workflow." \
+                         --head staging --base main
+          else
+            echo "PR already exists: $PR_URL"
+          fi
+
+      - name: Auto-merge PR
+        run: |
+          PR_URL=$(gh pr list --head staging --base main --json url,state -q '.[0].url')
+          if [ ! -z "$PR_URL" ]; then
+            echo "Merging PR..."
+            gh pr merge $PR_URL --merge --auto --delete-branch
+          else
+            echo "No PR to merge"
+          fi
 
       - name: Set up SSH key
         run: |
@@ -23,18 +56,8 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
         shell: bash
 
-      - name: Auto-merge staging → main
-        run: |
-          git config --global user.name "${{ secrets.GIT_NAME }}"
-          git config --global user.email "${{ secrets.GIT_EMAIL }}"
-          git remote set-url origin https://x-access-token:${{ secrets.REPO_TOKEN }}@github.com/agile-students-fall2025/4-final-cash-me-if-you-can.git
-          git fetch origin staging 
-          git checkout main
-          git merge origin/staging --allow-unrelated-histories --no-ff -m "Auto-merge staging → main [skip ci]"
-          git push origin main
-        shell: bash
-
       - name: Deploy to Droplet
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SSH_HOST }} "cd ~/app/4-final-cash-me-if-you-can/scripts && ./deploy.sh"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SSH_HOST }} \
+          "cd ~/app/4-final-cash-me-if-you-can/scripts && ./deploy.sh"
         shell: bash
