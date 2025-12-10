@@ -71,7 +71,6 @@ done
 
 # --- NGINX RELOAD ---
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Reloading Nginx..."
-sudo systemctl restart nginx
 sudo systemctl reload nginx
 echo "✅ Nginx reloaded."
 
