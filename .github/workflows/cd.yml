@@ -41,7 +41,7 @@ jobs:
           PR_URL=$(gh pr list --head staging --base main --json url,state -q '.[0].url')
           if [ ! -z "$PR_URL" ]; then
             echo "Merging PR..."
-            gh pr merge $PR_URL --merge --auto 
+            gh pr merge $PR_URL --merge 
           else
             echo "No PR to merge"
           fi
