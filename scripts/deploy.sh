@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+source ~/.bashrc
 set -euo pipefail   # Exit on errors, undefined variables, or failed pipes
 IFS=$'\n\t'          # Better handling of spaces in filenames
 
