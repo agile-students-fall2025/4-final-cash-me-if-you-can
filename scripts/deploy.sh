@@ -23,7 +23,7 @@ echo "Using API URL: $API_URL"
 echo "Pulling latest code..."
 git reset --hard
 git clean -fd
-git pull
+git pull origin
 
 # --- FRONTEND DEPLOY ---
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] 🚀 Deploying frontend..."
