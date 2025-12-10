@@ -118,7 +118,7 @@ export default function SettingsPage() {
             <label>New Password:</label>
             <input 
               type="password"
-              placeholder="New passwordsssss"
+              placeholder="New passwordsss"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
